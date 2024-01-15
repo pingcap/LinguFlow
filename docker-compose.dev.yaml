@@ -1,0 +1,12 @@
+services:
+  api:
+    build: 
+      context: .
+      dockerfile: dev.Dockerfile
+    volumes:
+    - .:/usr/src/app
+    ports:
+    - 8000:8000
+    environment:
+    - DATABASE_URL
+    - LOG_FILE=/tmp/langlink.json
