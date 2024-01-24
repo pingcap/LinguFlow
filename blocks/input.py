@@ -1,4 +1,5 @@
 from typing import List
+
 from resolver import block
 
 from .base import InputBlock

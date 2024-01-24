@@ -1,7 +1,10 @@
 import inspect
+
 import langchain
-from .secret import Secret
+
 from resolver import pattern
+
+from .secret import Secret
 
 # register builtin types
 pattern(name="text", builtin=True)(str)

@@ -1,1 +1,1 @@
-from .resolver import block, pattern, Resolver
+from .resolver import Resolver, block, pattern

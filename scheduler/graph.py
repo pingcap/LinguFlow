@@ -1,15 +1,17 @@
-import networkx as nx
-from blocks import BaseBlock
-from typing import Dict, List
 from collections import namedtuple
+from typing import Dict, List
+
+import networkx as nx
+
+from blocks import BaseBlock
 
 Edge = namedtuple("Edge", ["source", "sink", "port", "case"])
 
 
 class Graph:
     """
-    The primary class of the scheduler module, which represents a DAG graph. 
-    
+    The primary class of the scheduler module, which represents a DAG graph.
+
     When executed, it will run each node of the DAG until the last node (OutputBlock).
     """
 

@@ -1,6 +1,7 @@
-import inspect
 import functools
+import inspect
 from typing import Dict, List, Union
+
 from exceptions import UnregisteredError
 
 
@@ -49,7 +50,9 @@ class Resolver:
                     raise UnregisteredError(name, t)
 
     def names(self) -> List[str]:
-        return [b["name"] for b in self._block_list] + [p["name"] for p in self._pattern_list]
+        return [b["name"] for b in self._block_list] + [
+            p["name"] for p in self._pattern_list
+        ]
 
     @functools.lru_cache
     def lookup(self, name: str, key: str = "class") -> Union[str, type]:
@@ -117,25 +120,33 @@ class Resolver:
         signature = inspect.signature(cls.__call__)
         return signature.return_annotation
 
+
 def block(name: str, kind: str, alias: str = None):
     def decorator(cls):
-        Resolver._block_list.append({
-            "name": name,
-            "alias": alias or name,
-            "category": "block",
-            "dir": kind,
-            "class": cls,
-        })
+        Resolver._block_list.append(
+            {
+                "name": name,
+                "alias": alias or name,
+                "category": "block",
+                "dir": kind,
+                "class": cls,
+            }
+        )
         return cls
+
     return decorator
+
 
 def pattern(name: str, builtin: bool = False, alias: str = None):
     def decorator(cls):
-        Resolver._pattern_list.append({
-            "name": name,
-            "alias": alias or name,
-            "category": "builtin" if builtin else "type",
-            "class": cls,
-        })
+        Resolver._pattern_list.append(
+            {
+                "name": name,
+                "alias": alias or name,
+                "category": "builtin" if builtin else "type",
+                "class": cls,
+            }
+        )
         return cls
+
     return decorator

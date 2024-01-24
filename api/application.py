@@ -1,17 +1,22 @@
-import blocks
 import inspect
-import patterns
-from resolver import Resolver
+from typing import Dict
+
 from fastapi_utils.cbv import cbv
 from fastapi_utils.inferring_router import InferringRouter
-from typing import Dict
+
+import blocks
+import patterns
 from api.api_schemas import (
+    ApplicationBlocksResponse,
+    ApplicationPatternsResponse,
+    BlockInfo,
     Parameter,
     PatternInfo,
-    ApplicationPatternsResponse,
 )
+from resolver import Resolver
 
 router = InferringRouter()
+
 
 @cbv(router)
 class ApplicationView:
@@ -57,3 +62,29 @@ class ApplicationView:
                     pi.slots = self.resolve_params(self.resolver.slots(name))
                 patterns.append(pi)
         return ApplicationPatternsResponse(patterns=patterns)
+
+    @router.get("/applications/blocks")
+    def blocks(self) -> ApplicationBlocksResponse:
+        names = self.resolver.names()
+        blocks = []
+        for name in names:
+            if self.resolver.lookup(name, "category") == "block":
+                blocks.append(
+                    BlockInfo(
+                        name=name,
+                        alias=self.resolver.lookup(name, "alias"),
+                        dir=self.resolver.lookup(name, "dir"),
+                        slots=self.resolve_params(self.resolver.slots(name)),
+                        inports=self.resolve_params(self.resolver.inports(name)),
+                        outports=[
+                            Parameter(
+                                name="output",
+                                class_name=self.resolver.relookup(
+                                    self.resolver.outport(name)
+                                ),
+                            )
+                        ],
+                    )
+                )
+
+        return ApplicationBlocksResponse(blocks=blocks)
