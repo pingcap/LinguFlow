@@ -1,4 +1,4 @@
-:construction: This Repo is under construction. It's coming soon!
+:construction: This repository is currently under construction. Stay tuned – it's coming soon!
 
 # LinguFlow
 
