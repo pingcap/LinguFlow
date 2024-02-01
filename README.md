@@ -1,10 +1,10 @@
+:construction: This Repo is under construction. It's coming soon!
+
 # LinguFlow
 
 ## What is LinguFlow
 
 LinguFlow, a low-code tool designed for LLM application development, simplifies the building, debugging, and deployment process for developers. It utilizes a DAG-based message flow for business logic, requiring only minimal familiarity with LinguFlow blocks to effectively use.
-
-![LinguFlow Overview]()
 
 ### Why we need LinguFlow?
 
@@ -28,35 +28,3 @@ Thus, the features of applications developed with LinguFlow include:
   - LinguFlow is suitable for those with a clear understanding of how to solve their business problems using LLM, particularly when supporting more complex logic and requiring higher accuracy. As LinguFlow is based on the construction of DAG, similar to traditional application development, it is also well-suited for diving into complex business scenarios.
 
 In essence, LinguFlow's design and implementation method offer a structured and logical framework for integrating LLMs into complex business processes, emphasizing the accuracy and logic-specific solutions of LLM interactions.
-
-## Quickstart
-
-WIP (Codespaces?)
-
-## Installation
-
-WIP
-
-## DAG Framework
-
-WIP
-
-## Documentation
-
-WIP
-
-## Related Papers
-
-WIP
-
-## Contributing
-
-WIP
-
-## Contributors Wall
-
-WIP
-
-# Legal Notices
-
-WIP
