@@ -59,6 +59,22 @@ class ApplicationNotFound(Exception):
         return f"application {self.application_id} not found"
 
 
+class NoActiveVersion(Exception):
+    def __init__(self, application_id: str):
+        self.application_id = application_id
+
+    def __str__(self):
+        return f"application {self.application_id} has no active version"
+
+
+class VersionnNotFound(Exception):
+    def __init__(self, version_id: str):
+        self.version_id = version_id
+
+    def __str__(self):
+        return f"version {self.version_id} not found"
+
+
 class InteractionNotFound(Exception):
     def __init__(self, interaction_id: str):
         self.interaction_id = interaction_id
