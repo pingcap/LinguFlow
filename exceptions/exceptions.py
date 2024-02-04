@@ -2,56 +2,54 @@ from typing import Set
 
 
 class NodeException(Exception):
+    """
+    Exceptions raised from a DAG node.
+
+    Usage:
+
+    ```
+    try:
+        node.run(...)
+    except Exception as e:
+        raise NodeException(node.id) from e
+    ```
+    """
     def __init__(self, node_id: str):
         self.node_id = node_id
 
 
 class DuplicatedNameError(Exception):
+    """
+    DuplicatedNameError indicates that two different blocks have the same name.
+    """
     def __init__(self, name: str):
         super(DuplicatedNameError, self).__init__(f"name {name} is duplicated")
 
 
 class DuplicatedTypeError(Exception):
+    """
+    DuplicatedTypeError indicates that the same block class has been registered 
+    multiple times with different names.
+    """
     def __init__(self, typ: type):
         super(DuplicatedTypeError, self).__init__(f"type {typ} is duplicated")
 
 
 class UnregisteredError(Exception):
+    """
+    UnregisteredError indicates that a name (patterns) is required by other code (blocks/patterns), 
+    but no class is registered with that name.
+    """
     def __init__(self, ref_name: str, cls: type):
         super(UnregisteredError, self).__init__(
             f"type {cls} not registered, referenced by {ref_name}",
         )
 
 
-class InvalidCode(Exception):
-    def __init__(self, code):
-        super(InvalidCode, self).__init__()
-        self.code = code
-
-    def __str__(self):
-        return f"invalid code: {self.code}"
-
-
-class InvalidToken(Exception):
-    def __init__(self, token):
-        super(InvalidToken, self).__init__()
-        self.token = token
-
-    def __str__(self):
-        return f"invalid token: {self.token}"
-
-
-class InvalidCredentials(Exception):
-    def __init__(self, access_key: str, access_secret: str):
-        super(InvalidCredentials, self).__init__()
-        self.access_key = access_key
-        self.access_secret = access_secret
-
-    def __str__(self):
-        return f"invalid credentials, access_key: {self.access_key}"
-
-
 class ApplicationNotFound(Exception):
+    """
+    ApplicationNotFound indicates that the specified application is not found in database.
+    """
     def __init__(self, application_id: str):
         self.application_id = application_id
 
@@ -60,6 +58,9 @@ class ApplicationNotFound(Exception):
 
 
 class NoActiveVersion(Exception):
+    """
+    NoActiveVersion indicates that the specified application has no acitve version.
+    """
     def __init__(self, application_id: str):
         self.application_id = application_id
 
@@ -68,6 +69,9 @@ class NoActiveVersion(Exception):
 
 
 class VersionnNotFound(Exception):
+    """
+    VersionnNotFound indicates that the specified version not found in database.
+    """
     def __init__(self, version_id: str):
         self.version_id = version_id
 
@@ -76,6 +80,9 @@ class VersionnNotFound(Exception):
 
 
 class InteractionNotFound(Exception):
+    """
+    InteractionNotFound indicates that the specified iteraction not found in database.
+    """
     def __init__(self, interaction_id: str):
         self.interaction_id = interaction_id
 
@@ -83,40 +90,13 @@ class InteractionNotFound(Exception):
         return f"interaction {self.interaction_id} not found"
 
 
-class ApplicationInputTypeMismatch(Exception):
-    def __init__(self, exp: type, got: type):
-        self.exp = exp
-        self.got = got
-
-    def __str__(self):
-        return f"the application expect {self.exp} as input, got {self.got}"
-
-
-class InvalidParameters(Exception):
-    def __init__(self, parameters: Set[str]):
-        self.parameters = parameters
-
-    def __str__(self):
-        return f"invalid parameters: {', '.join(self.parameters)}"
-
-
-class TypeNameResolveError(Exception):
-    def __init__(self, name: str):
-        self.name = name
-
-    def __str__(self):
-        return f"type {self.name} is not supported"
-
-
-class PluginNotFoundError(Exception):
-    def __init__(self, plugin: str):
-        self.plugin = plugin
-
-    def __str__(self):
-        return f"plugin {self.plugin} not found"
-
-
 class InvokeError(Exception):
+    """
+    InvokeError is used in invoke blocks.
+
+    Invoke blocks try to invoke other apps and return the result, when there is
+    any error, raise InvokeError.
+    """
     def __init__(
         self, application_id: str, code: str, message: str, node_id: str = None
     ):
@@ -129,29 +109,20 @@ class InvokeError(Exception):
         return f"invoke encounter error on application {self.application_id}: {self.message}"
 
 
-class ParameterMissing(Exception):
-    def __init__(parameter: str):
-        self.parameter = parameter
-
-    def __str__(self):
-        return f"missing parameter `{self.parameter}`"
-
-
 class GraphCheckError(Exception):
+    """
+    An abstract class for graph validation.
+
+    When a new graph is submitted, a list of checks will be performed. If any check fails,
+    an exception inherited from GraphCheckError will be raised.
+    """
     ...
 
 
-class EmbeddingError(Exception):
-    ...
-
-
-class EmbeddingServiceError(Exception):
-    ...
 
 
 class NodeConstructError(Exception):
-    ...
-
-
-class LoggerNotAvailable(Exception):
+    """
+    When DAG node construction fails, NodeConstructError will be raised.
+    """
     ...

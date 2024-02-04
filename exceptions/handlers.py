@@ -41,24 +41,6 @@ def graph_node_exception_handler(request, exc):
                 "message": str(exc.__cause__),
             },
         )
-    elif isinstance(exc.__cause__, EmbeddingError):
-        return JSONResponse(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            content={
-                "node_id": exc.node_id,
-                "code": "embedding_error",
-                "message": str(exc.__cause__),
-            },
-        )
-    elif isinstance(exc.__cause__, EmbeddingServiceError):
-        return JSONResponse(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            content={
-                "node_id": exc.node_id,
-                "code": "call_embedding_service_error",
-                "message": str(exc.__cause__),
-            },
-        )
     elif isinstance(exc.__cause__, InvokeError):
         return JSONResponse(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -89,15 +71,6 @@ def graph_node_exception_handler(request, exc):
             content={
                 "node_id": exc.node_id,
                 "code": "db_query_error",
-                "message": str(exc.__cause__),
-            },
-        )
-    elif isinstance(type(exc.__cause__), ParameterMissing):
-        return JSONResponse(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            content={
-                "node_id": exc.node_id,
-                "code": "parameter missing",
                 "message": str(exc.__cause__),
             },
         )
@@ -143,16 +116,6 @@ def node_construct_exception_handler(request, exc):
     )
 
 
-def logger_not_available_handler(request, exc):
-    return JSONResponse(
-        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-        content={
-            "code": "logger_not_available",
-            "message": str(exc),
-        },
-    )
-
-
 def application_not_found_handler(request, exc):
     return JSONResponse(
         status_code=status.HTTP_404_NOT_FOUND,
@@ -173,51 +136,11 @@ def interaction_not_found_handler(request, exc):
     )
 
 
-def application_input_mismatch_handler(request, exc):
-    return JSONResponse(
-        status_code=status.HTTP_400_BAD_REQUEST,
-        content={
-            "code": "app_input_type_mismatch",
-            "message": str(exc),
-        },
-    )
-
-
-def invalid_parameters_handler(request, exc):
-    return JSONResponse(
-        status_code=status.HTTP_400_BAD_REQUEST,
-        content={
-            "code": "invalid_parameters",
-            "message": str(exc),
-        },
-    )
-
-
-def type_name_resolve_exception_handler(request, exc):
-    return JSONResponse(
-        status_code=status.HTTP_400_BAD_REQUEST,
-        content={
-            "code": "type_name_resolve_error",
-            "message": str(exc),
-        },
-    )
-
-
 def not_implemented_exception_handler(request, exc):
     return JSONResponse(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         content={
             "code": "not_implemented",
-            "message": str(exc),
-        },
-    )
-
-
-def plugin_not_found_exception_handler(request, exc):
-    return JSONResponse(
-        status_code=status.HTTP_404_NOT_FOUND,
-        content={
-            "code": "plugin_not_found",
             "message": str(exc),
         },
     )
@@ -244,6 +167,14 @@ def exception_handler(request, exc):
 
 
 class AsyncExceptionHandler:
+    """
+    AsyncExceptionHandler is used to handle exceptions in async thread.
+
+    Handlers is registered with AsyncExceptionHandler, so when an exception
+    is catched, the render method can render the exception as a serializable
+    object and we can persistent it and return it to user in the interaction
+    api in the future.
+    """
     def __init__(self):
         self.exception_handlers = {}
 
@@ -266,14 +197,8 @@ def register_exception_handlers(app):
     app.exception_handler(GraphCheckError)(graph_check_exception_handler)
     app.exception_handler(SQLAlchemyError)(database_exception_handler)
     app.exception_handler(NodeConstructError)(node_construct_exception_handler)
-    app.exception_handler(LoggerNotAvailable)(logger_not_available_handler)
     app.exception_handler(ApplicationNotFound)(application_not_found_handler)
     app.exception_handler(InteractionNotFound)(interaction_not_found_handler)
-    app.exception_handler(ApplicationInputTypeMismatch)(
-        application_input_mismatch_handler
-    )
-    app.exception_handler(InvalidParameters)(invalid_parameters_handler)
-    app.exception_handler(TypeNameResolveError)(type_name_resolve_exception_handler)
     app.exception_handler(NotImplementedError)(not_implemented_exception_handler)
     app.exception_handler(PluginNotFoundError)(plugin_not_found_exception_handler)
     app.exception_handler(Exception)(exception_handler)

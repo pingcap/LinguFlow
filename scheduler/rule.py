@@ -10,16 +10,26 @@ from exceptions import GraphCheckError
 
 
 class NotDAGError(GraphCheckError):
+    """
+    NotDAGError indicates that the graph is not a DAG (has cycle, has orphaned node .etc.)
+    """
     def __init__(self):
         super(NotDAGError, self).__init__("graph is not a valid DAG")
 
 
 class PortMismatchError(GraphCheckError):
+    """
+    PortMismatchError indicates that the in port at the downstream node can not accept the data
+    produced by the out port at the upstream node since the data types are incompatible.
+    """
     def __init__(self, source: str, sink: str, port: str):
         super(PortMismatchError, self).__init__(f"port type mismatch on {sink}.{port}")
 
 
 class EndpointNotExistError(GraphCheckError):
+    """
+    EndpointNotExistError indicates that an edge connected to a node that is not in the graph.
+    """
     def __init__(self, node: str, port: str = None):
         if port is not None:
             node += "." + port
@@ -27,11 +37,19 @@ class EndpointNotExistError(GraphCheckError):
 
 
 class PortNotConnectedError(GraphCheckError):
+    """
+    PortNotConnectedError indicates that the in port at the downstream node requires a
+    value to fill, but no edges connect to that port.
+    """
     def __init__(self, node: str, port: str):
         super(PortNotConnectedError, self).__init__(f"port {node}.{port} not connected")
 
 
 class InputOutputCountError(GraphCheckError):
+    """
+    InputOutputCountError indicates that the graph breaks the rule that there should
+    be exactly one input and output node in the DAG.
+    """
     def __init__(self, input_count: int, output_count: int):
         super(InputOutputCountError, self).__init__(
             "expect exactly one input and output block, "
@@ -39,12 +57,24 @@ class InputOutputCountError(GraphCheckError):
         )
 
 
-class TypeNoStrMethodError(GraphCheckError):
+class PatternNoStrMethodError(GraphCheckError):
+    """
+    PatternNoStrMethodError indicates that a Pattern type does not have a __str__ method
+    but has been passed between nodes. 
+    
+    The __str__ method is required if a type is to be passed between nodes.
+    """
     def __init__(self, _type: type) -> None:
-        super(TypeNoStrMethodError, self).__init__(f'{_type} has no "__str__" method')
+        super(PatternNoStrMethodError, self).__init__(f'{_type} does not have a "__str__" method')
+
 
 
 class Rule(ABC):
+    """
+    An abstract class for graph checking rules.
+
+    Rules are used for checking the validity of a graph.
+    """
     @abstractmethod
     def check(self, g: nx.DiGraph, nodes: Dict[str, BaseBlock]):
         ...
@@ -54,7 +84,6 @@ class EndpointExist(Rule):
     """
     EndpointExist ensure that the ports at both ends of an edge must exist
     """
-
     def check(self, g: nx.DiGraph, nodes: Dict[str, BaseBlock]):
         for e in g.edges(data=True):
             if e[0] not in nodes:
@@ -80,7 +109,6 @@ class RequiredInPortIsFit(Rule):
     RequiredPortIsFit ensure that the in ports without a default
     value in sink nodes must be connected by edge.
     """
-
     def check(self, g: nx.DiGraph, nodes: Dict[str, BaseBlock]):
         for node_id, node in nodes.items():
             required_ports = set()
@@ -105,9 +133,8 @@ class RequiredInPortIsFit(Rule):
 
 class GraphIsDAG(Rule):
     """
-    GraphIsDAG ensure that the graph must be a DAG graph
+    GraphIsDAG ensure that the graph must be a DAG graph.
     """
-
     def check(self, g: nx.DiGraph, nodes: Dict[str, BaseBlock]):
         if not nx.is_directed_acyclic_graph(g):
             raise NotDAGError()
@@ -115,9 +142,8 @@ class GraphIsDAG(Rule):
 
 class ExactlyOneInputAndOutput(Rule):
     """
-    ExactlyOneInputAndOutput ensures that there is exactly one input and one output
+    ExactlyOneInputAndOutput ensures that there is exactly one input and one output.
     """
-
     def check(self, g: nx.DiGraph, nodes: Dict[str, BaseBlock]):
         input_count = 0
         output_count = 0
@@ -134,9 +160,8 @@ class ExactlyOneInputAndOutput(Rule):
 
 class PortTypeMatch(Rule):
     """
-    PortTypeMatch ensure that the ports at both sides of a edge should be compatible
+    PortTypeMatch ensure that the ports at both sides of a edge should be compatible.
     """
-
     def check(self, g: nx.DiGraph, nodes: Dict[str, BaseBlock]):
         for e in g.edges(data=True):
             if not self.is_port_type_match(nodes[e[0]], nodes[e[1]], e[2]["port"]):
@@ -165,6 +190,10 @@ class PortTypeMatch(Rule):
 
 
 class TypeHasStrMethod(Rule):
+    """
+    TypeHasStrMethod ensures that the types transferred between nodes 
+    must have a __str__ method.
+    """
     def check(self, g: nx.DiGraph, nodes: Dict[str, BaseBlock]):
         for e in g.edges(data=True):
             node = nodes[e[0]]
@@ -173,7 +202,7 @@ class TypeHasStrMethod(Rule):
             if self.is_builtin_type(output_type):
                 continue
             if not self.type_has_str_method(output_type):
-                raise TypeNoStrMethodError(output_type)
+                raise PatternNoStrMethodError(output_type)
         return True
 
     def type_has_str_method(self, _type: type) -> bool:

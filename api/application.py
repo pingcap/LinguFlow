@@ -3,7 +3,7 @@ import json
 import threading
 import uuid
 from datetime import datetime
-from typing import Dict
+from typing import Dict, List
 
 from environs import Env
 from fastapi_utils.cbv import cbv
@@ -49,6 +49,9 @@ router = InferringRouter()
 
 @cbv(router)
 class ApplicationView:
+    """
+    The router class for LinguFlow. Any new api should be added here.
+    """
     def __init__(self):
         env = Env()
         env.read_env()
@@ -56,7 +59,7 @@ class ApplicationView:
         self.resolver = Resolver()
         self.database = Database(engine)
 
-    def resolve_params(self, params: Dict[str, inspect.Parameter]):
+    def resolve_params(self, params: Dict[str, inspect.Parameter]) -> List[Parameter]:
         ss = []
         for sname, param in params.items():
             x = {
@@ -124,7 +127,7 @@ class ApplicationView:
             nodes[node.get("id")] = self.construct_graph_node(node)
         return Graph(nodes, edges, skip_validation)
 
-    @router.get("/applications/patterns")
+    @router.get("/patterns")
     def patterns(self) -> ApplicationPatternsResponse:
         names = self.resolver.names()
         patterns = []
@@ -146,7 +149,7 @@ class ApplicationView:
                 patterns.append(pi)
         return ApplicationPatternsResponse(patterns=patterns)
 
-    @router.get("/applications/blocks")
+    @router.get("/blocks")
     def blocks(self) -> ApplicationBlocksResponse:
         names = self.resolver.names()
         blocks = []
@@ -159,14 +162,7 @@ class ApplicationView:
                         dir=self.resolver.lookup(name, "dir"),
                         slots=self.resolve_params(self.resolver.slots(name)),
                         inports=self.resolve_params(self.resolver.inports(name)),
-                        outports=[
-                            Parameter(
-                                name="output",
-                                class_name=self.resolver.relookup(
-                                    self.resolver.outport(name)
-                                ),
-                            )
-                        ],
+                        outport=self.resolver.relookup(self.resolver.outport(name)),
                     )
                 )
 
@@ -345,6 +341,7 @@ class ApplicationView:
                     app_id=version.app_id,
                     created_at=int(version.created_at.timestamp()),
                     updated_at=int(version.updated_at.timestamp()),
+                    configuration=version.configuration,
                 )
                 for version in versions
             ]

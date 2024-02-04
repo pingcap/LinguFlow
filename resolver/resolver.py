@@ -6,6 +6,21 @@ from exceptions import UnregisteredError
 
 
 class Resolver:
+    """
+    The name resolver, used to register/resolve blocks and patterns.
+
+    Example:
+
+    ```
+    @block(name='test_block')
+    class TestBlock(BaseBlock):
+        ...
+
+    r = Resolver()
+    
+    assert type(r.lookup('test_block')) == type(TestBlock)
+    ```
+    """
     _block_list = []
     _pattern_list = []
 

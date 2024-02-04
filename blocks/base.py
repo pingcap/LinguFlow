@@ -3,6 +3,11 @@ from typing import Any, Callable
 
 
 class BaseBlock(Callable):
+    """
+    An abstract class for DAG block.
+
+    A block defines the code template of DAG nodes.
+    """
     def __init__(self):
         ...
 
@@ -19,6 +24,11 @@ class BaseBlock(Callable):
 
 
 class InputBlock(BaseBlock):
+    """
+    An abstract class for input block. Input block is a special block for the DAG:
+    there should be exactly one input block in the DAG. It's the entry point of the
+    graph.
+    """
     @property
     def is_input(self) -> bool:
         return True
@@ -29,6 +39,11 @@ class InputBlock(BaseBlock):
 
 
 class OutputBlock(BaseBlock):
+    """
+    An abstract class for output block. Output block is a special block for the DAG:
+    there should be exactly one output block in the DAG. It's the exit point of the
+    graph.
+    """
     @property
     def is_output(self):
         return True
