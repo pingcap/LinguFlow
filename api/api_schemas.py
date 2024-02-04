@@ -31,6 +31,7 @@ class Parameter(BaseModel):
     }
     ```
     """
+
     name: str
     class_name: str
     default: Optional[Any]
@@ -64,6 +65,7 @@ class PatternInfo(BaseModel):
     }
     ```
     """
+
     name: str
     alias: str
     candidates: List[str]
@@ -74,6 +76,7 @@ class ApplicationPatternsResponse(APIModel):
     """
     The response model for /patterns.
     """
+
     patterns: List[PatternInfo]
 
 
@@ -86,18 +89,20 @@ class BlockInfo(BaseModel):
     - what the node produce (outport property)
     - how to construct the node (slots property)
     """
+
     name: str
     alias: str
     dir: str
     slots: List[Parameter]
     inports: List[Parameter]
-    outport: str    # the output class name
+    outport: str  # the output class name
 
 
 class ApplicationBlocksResponse(APIModel):
     """
     The response model for /blocks.
     """
+
     blocks: List[BlockInfo]
 
 
@@ -105,6 +110,7 @@ class ApplicationInfo(BaseModel):
     """
     ApplicationInfo models the app object.
     """
+
     id: str
     name: str
     active_version: Optional[str]
@@ -117,6 +123,7 @@ class ApplicationVersionInfo(BaseModel):
     ApplicationVersionInfo models the app version object.
     An app can have multiple versions (but at most one active).
     """
+
     id: str
     app_id: str
     created_at: int
@@ -129,6 +136,7 @@ class GraphNode(BaseModel):
     GraphNode describes nodes in DAG.
     It defines the id and fills construction parameters for blocks.
     """
+
     id: str
     name: str
     alias: Optional[str] = None
@@ -139,6 +147,7 @@ class GraphEdge(BaseModel):
     """
     GraphEdge defines the dataflow direction between nodes in the DAG.
     """
+
     src_block: Optional[str] = None
     dst_block: Optional[str] = None
     dst_port: Optional[str] = None
@@ -152,6 +161,7 @@ class GraphConfiguration(BaseModel):
     It contains a node list which defines how to construct each node.
     And a edige list which defines how data flows.
     """
+
     nodes: List[GraphNode]
     edges: List[GraphEdge]
 
@@ -160,6 +170,7 @@ class Metadata(APIModel):
     """
     The request model for updating app data.
     """
+
     name: str
 
 
@@ -167,6 +178,7 @@ class InteractionInfoResponse(APIModel):
     """
     The response model for /interactions/{interaction_id}.
     """
+
     id: str
     version_id: str
     created_at: int
@@ -179,6 +191,7 @@ class ApplicationListResponse(APIModel):
     """
     The response model for /applications, which returns a list of app info.
     """
+
     applications: List[ApplicationInfo]
 
 
@@ -188,6 +201,7 @@ class ApplicationInfoResponse(APIModel):
     of specific app. If the specifed app not found, the application property will be
     None.
     """
+
     application: Optional[ApplicationInfo]
 
 
@@ -195,6 +209,7 @@ class ApplicationCreateResponse(APIModel):
     """
     The response model for creating app.
     """
+
     id: ApplicationID
 
 
@@ -202,6 +217,7 @@ class ApplicationCreate(APIModel):
     """
     The request model for creating app.
     """
+
     name: str
 
 
@@ -209,6 +225,7 @@ class ItemDeleteResponse(APIModel):
     """
     The response model for app/version deletion.
     """
+
     success: bool
     message: str
 
@@ -217,6 +234,7 @@ class ItemUpdateResponse(APIModel):
     """
     The response model for app/version update.
     """
+
     success: bool
     message: str
 
@@ -228,20 +246,24 @@ class VersionListResponse(APIModel):
 
 class VersionCreateResponse(APIModel):
     """The reaponse model for app version creation api."""
+
     id: VersionID
 
 
 class ApplicationVersionCreate(APIModel):
     """The request model for app version creation api."""
+
     parent_id: Optional[str]
     configuration: GraphConfiguration
 
 
 class ApplicationRun(APIModel):
     """The request model for trigger an app."""
+
     input: Union[str, List[str], Dict[str, str]]
 
 
 class ApplicationRunResponse(APIModel):
     """The response model for trigger an app."""
+
     id: InteractionID

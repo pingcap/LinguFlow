@@ -52,6 +52,7 @@ class ApplicationView:
     """
     The router class for LinguFlow. Any new api should be added here.
     """
+
     def __init__(self):
         env = Env()
         env.read_env()

@@ -17,10 +17,11 @@ class Resolver:
         ...
 
     r = Resolver()
-    
+
     assert type(r.lookup('test_block')) == type(TestBlock)
     ```
     """
+
     _block_list = []
     _pattern_list = []
 

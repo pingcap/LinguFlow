@@ -10,6 +10,7 @@ class TextInput(InputBlock):
     """
     A input block that accepts a text as the DAG input.
     """
+
     def input(self, text: str):
         self.text = text
 
@@ -22,6 +23,7 @@ class ListInput(InputBlock):
     """
     A input block that accpets a list of texts as the DAG input.
     """
+
     def input(self, messages: list):
         self.messages = messages
 
@@ -35,6 +37,7 @@ class DictInput(InputBlock):
     A input block that accept a dict of texts (both key and values are texts)
     as the DAG input.
     """
+
     def input(self, messages: dict):
         self.messages = messages
 

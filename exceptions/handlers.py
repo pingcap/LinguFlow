@@ -175,6 +175,7 @@ class AsyncExceptionHandler:
     object and we can persistent it and return it to user in the interaction
     api in the future.
     """
+
     def __init__(self):
         self.exception_handlers = {}
 

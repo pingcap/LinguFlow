@@ -8,6 +8,7 @@ class BaseBlock(Callable):
 
     A block defines the code template of DAG nodes.
     """
+
     def __init__(self):
         ...
 
@@ -29,6 +30,7 @@ class InputBlock(BaseBlock):
     there should be exactly one input block in the DAG. It's the entry point of the
     graph.
     """
+
     @property
     def is_input(self) -> bool:
         return True
@@ -44,6 +46,7 @@ class OutputBlock(BaseBlock):
     there should be exactly one output block in the DAG. It's the exit point of the
     graph.
     """
+
     @property
     def is_output(self):
         return True

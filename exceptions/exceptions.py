@@ -14,6 +14,7 @@ class NodeException(Exception):
         raise NodeException(node.id) from e
     ```
     """
+
     def __init__(self, node_id: str):
         self.node_id = node_id
 
@@ -22,24 +23,27 @@ class DuplicatedNameError(Exception):
     """
     DuplicatedNameError indicates that two different blocks have the same name.
     """
+
     def __init__(self, name: str):
         super(DuplicatedNameError, self).__init__(f"name {name} is duplicated")
 
 
 class DuplicatedTypeError(Exception):
     """
-    DuplicatedTypeError indicates that the same block class has been registered 
+    DuplicatedTypeError indicates that the same block class has been registered
     multiple times with different names.
     """
+
     def __init__(self, typ: type):
         super(DuplicatedTypeError, self).__init__(f"type {typ} is duplicated")
 
 
 class UnregisteredError(Exception):
     """
-    UnregisteredError indicates that a name (patterns) is required by other code (blocks/patterns), 
+    UnregisteredError indicates that a name (patterns) is required by other code (blocks/patterns),
     but no class is registered with that name.
     """
+
     def __init__(self, ref_name: str, cls: type):
         super(UnregisteredError, self).__init__(
             f"type {cls} not registered, referenced by {ref_name}",
@@ -50,6 +54,7 @@ class ApplicationNotFound(Exception):
     """
     ApplicationNotFound indicates that the specified application is not found in database.
     """
+
     def __init__(self, application_id: str):
         self.application_id = application_id
 
@@ -61,6 +66,7 @@ class NoActiveVersion(Exception):
     """
     NoActiveVersion indicates that the specified application has no acitve version.
     """
+
     def __init__(self, application_id: str):
         self.application_id = application_id
 
@@ -72,6 +78,7 @@ class VersionnNotFound(Exception):
     """
     VersionnNotFound indicates that the specified version not found in database.
     """
+
     def __init__(self, version_id: str):
         self.version_id = version_id
 
@@ -83,6 +90,7 @@ class InteractionNotFound(Exception):
     """
     InteractionNotFound indicates that the specified iteraction not found in database.
     """
+
     def __init__(self, interaction_id: str):
         self.interaction_id = interaction_id
 
@@ -97,6 +105,7 @@ class InvokeError(Exception):
     Invoke blocks try to invoke other apps and return the result, when there is
     any error, raise InvokeError.
     """
+
     def __init__(
         self, application_id: str, code: str, message: str, node_id: str = None
     ):
@@ -116,13 +125,13 @@ class GraphCheckError(Exception):
     When a new graph is submitted, a list of checks will be performed. If any check fails,
     an exception inherited from GraphCheckError will be raised.
     """
+
     ...
-
-
 
 
 class NodeConstructError(Exception):
     """
     When DAG node construction fails, NodeConstructError will be raised.
     """
+
     ...
