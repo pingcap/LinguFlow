@@ -84,8 +84,7 @@ class Rule(ABC):
     """
 
     @abstractmethod
-    def check(self, g: nx.DiGraph, nodes: Dict[str, BaseBlock]):
-        ...
+    def check(self, g: nx.DiGraph, nodes: Dict[str, BaseBlock]): ...
 
 
 class EndpointExist(Rule):

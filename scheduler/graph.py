@@ -1,6 +1,6 @@
 import inspect
 from collections import namedtuple
-from typing import Any, Callable, Dict, List
+from typing import Any, Callable, Dict, List, Union
 
 import networkx as nx
 
@@ -136,7 +136,11 @@ class Graph:
         signature = inspect.signature(input_nodes[0].input)
         return list(signature.parameters.values())[0].annotation
 
-    def run(self, input: Any, node_callback: Callable[[str, Any], None] = None) -> str:
+    def run(
+        self,
+        input: Union[str, dict, list],
+        node_callback: Callable[[str, Any], None] = None,
+    ) -> str:
         self._reset()
 
         input_nodes = [node for node in self.nodes.values() if node.is_input]

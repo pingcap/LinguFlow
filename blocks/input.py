@@ -5,7 +5,7 @@ from resolver import block
 from .base import InputBlock
 
 
-@block(name="TextInput", kind="input")
+@block(name="Text_Input", kind="input & output")
 class TextInput(InputBlock):
     """
     A input block that accepts a text as the DAG input.
@@ -18,7 +18,7 @@ class TextInput(InputBlock):
         return self.text
 
 
-@block(name="ListInput", kind="input")
+@block(name="List_Input", kind="input & output")
 class ListInput(InputBlock):
     """
     A input block that accpets a list of texts as the DAG input.
@@ -31,7 +31,7 @@ class ListInput(InputBlock):
         return self.messages
 
 
-@block(name="DictInput", kind="input")
+@block(name="Dict_Input", kind="input & output")
 class DictInput(InputBlock):
     """
     A input block that accept a dict of texts (both key and values are texts)

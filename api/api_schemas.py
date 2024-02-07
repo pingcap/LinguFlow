@@ -185,6 +185,7 @@ class InteractionInfoResponse(APIModel):
     updated_at: int
     output: Optional[str] = None
     data: Optional[Dict[str, str]] = None
+    error: Optional[dict] = None
 
 
 class ApplicationListResponse(APIModel):

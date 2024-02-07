@@ -1,30 +1,27 @@
 from datetime import datetime
 
 from sqlalchemy import BOOLEAN, JSON, TEXT, TIMESTAMP, Column, Index, String
-from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy.ext.declarative import declarative_base
 
+"""
+A base class is required to define models:
 
-class Base(DeclarativeBase):
-    """
-    A base class is required to define models:
+https://docs.sqlalchemy.org/en/20/orm/declarative_tables.html
 
-    https://docs.sqlalchemy.org/en/20/orm/declarative_tables.html
+We build three models in the module:
 
-    We build three models in the module:
+    ------                     ---------                     ------------
+| app  | --- has many ---> | version | --- has many ---> | iteraction |
+    ------                     ---------                     ------------
 
-     ------                     ---------                     ------------
-    | app  | --- has many ---> | version | --- has many ---> | iteraction |
-     ------                     ---------                     ------------
-
-    App is the container of versions. But only one version can be active.
-    Each version (except the first one of every app) contains a parent version, which
-    means the versions construct a tree instead of a list. The version has a configuration
-    which stores the DAG. The DAG defines how to interact with LLM and how to deal with
-    input data. Each time the DAG is executed, a new iteraction is produced. The iteraction
-    stores all data the DAG nodes produced.
-    """
-
-    pass
+App is the container of versions. But only one version can be active.
+Each version (except the first one of every app) contains a parent version, which
+means the versions construct a tree instead of a list. The version has a configuration
+which stores the DAG. The DAG defines how to interact with LLM and how to deal with
+input data. Each time the DAG is executed, a new iteraction is produced. The iteraction
+stores all data the DAG nodes produced.
+"""
+Base = declarative_base()
 
 
 class Application(Base):
@@ -74,6 +71,7 @@ class Interaction(Base):
     __tablename__ = "interactions"
 
     id = Column(String(36), primary_key=True, nullable=False)
+    app_id = Column(String(36), nullable=False)
     version_id = Column(String(36), nullable=False)
     created_at = Column(TIMESTAMP, nullable=False)
     updated_at = Column(TIMESTAMP, nullable=False)

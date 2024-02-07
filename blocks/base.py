@@ -9,11 +9,9 @@ class BaseBlock(Callable):
     A block defines the code template of DAG nodes.
     """
 
-    def __init__(self):
-        ...
+    def __init__(self): ...
 
-    def __str__(self) -> str:
-        ...
+    def __str__(self) -> str: ...
 
     @property
     def is_input(self) -> bool:
@@ -36,8 +34,7 @@ class InputBlock(BaseBlock):
         return True
 
     @abstractmethod
-    def input(self, inputs: Any) -> None:
-        ...
+    def input(self, inputs: Any) -> None: ...
 
 
 class OutputBlock(BaseBlock):

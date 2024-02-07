@@ -1,3 +1,4 @@
+import json
 from typing import Set
 
 
@@ -98,24 +99,19 @@ class InteractionNotFound(Exception):
         return f"interaction {self.interaction_id} not found"
 
 
-class InvokeError(Exception):
+class InteractionError(Exception):
     """
-    InvokeError is used in invoke blocks.
+    InteractionError is used in invoke blocks.
 
     Invoke blocks try to invoke other apps and return the result, when there is
-    any error, raise InvokeError.
+    any error, raise InteractionError.
     """
 
-    def __init__(
-        self, application_id: str, code: str, message: str, node_id: str = None
-    ):
-        self.application_id = application_id
-        self.code = code
-        self.message = message
-        self.node_id = node_id
+    def __init__(self, error: dict):
+        self.error = error
 
     def __str__(self):
-        return f"invoke encounter error on application {self.application_id}: {self.message}"
+        return f"invoke encounter error: {json.dumps(self.error)}"
 
 
 class GraphCheckError(Exception):

@@ -41,21 +41,8 @@ def graph_node_exception_handler(request, exc):
                 "message": str(exc.__cause__),
             },
         )
-    elif isinstance(exc.__cause__, InvokeError):
-        return JSONResponse(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            content={
-                "node_id": exc.node_id,
-                "code": "invoke_error",
-                "message": str(exc.__cause__),
-                "error": {
-                    "application_id": exc.__cause__.application_id,
-                    "code": exc.__cause__.code,
-                    "message": exc.__cause__.message,
-                    "node_id": exc.__cause__.node_id,
-                },
-            },
-        )
+    elif isinstance(exc.__cause__, InteractionError):
+        return JSONResponse(**exc.__cause__.error)
     elif isinstance(exc.__cause__, TimeoutError):
         return JSONResponse(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -201,5 +188,4 @@ def register_exception_handlers(app):
     app.exception_handler(ApplicationNotFound)(application_not_found_handler)
     app.exception_handler(InteractionNotFound)(interaction_not_found_handler)
     app.exception_handler(NotImplementedError)(not_implemented_exception_handler)
-    app.exception_handler(PluginNotFoundError)(plugin_not_found_exception_handler)
     app.exception_handler(Exception)(exception_handler)
