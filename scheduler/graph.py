@@ -57,10 +57,19 @@ class Graph:
             )
 
     def _validate(self, rules: List[Rule]):
+        """
+        Validates the DAG graph against a list of rules.
+
+        Args:
+            rules (list): List of rules to validate against.
+        """
         for r in rules:
             r.check(self.g, self.nodes)
 
     def _reset(self):
+        """
+        Resets the data attribute of each node in the graph.
+        """
         for n in self.g.nodes:
             if "data" in self.g.nodes[n]:
                 del self.g.nodes[n]["data"]
@@ -68,6 +77,16 @@ class Graph:
     def run_node(
         self, node_id, node_callback: Callable[[str, Any], None] = None
     ) -> Any:
+        """
+        Runs a node in the graph and returns its output.
+
+        Args:
+            node_id (str): The id of the node to run.
+            node_callback (callable): Optional callback function to be called after running the node.
+
+        Returns:
+            Any: The output of the node.
+        """
         node = self.nodes[node_id]
         in_edges = self.g.in_edges(node_id, data=True)
         if len(in_edges) == 0:
@@ -130,6 +149,12 @@ class Graph:
             raise NodeException(node_id) from e
 
     def input_type(self) -> type:
+        """
+        Returns the type of the input expected by the graph.
+
+        Returns:
+            type: The type of the input expected by the graph.
+        """
         input_nodes = [node for node in self.nodes.values() if node.is_input]
         assert len(input_nodes) == 1, "exactly one input node is required"
 
@@ -141,6 +166,16 @@ class Graph:
         input: Union[str, dict, list],
         node_callback: Callable[[str, Any], None] = None,
     ) -> str:
+        """
+        Runs the graph with the given input and returns the output.
+
+        Args:
+            input (Union[str, dict, list]): The input data for the graph.
+            node_callback (callable): Optional callback function to be called after running each node.
+
+        Returns:
+            str: The output of the graph.
+        """
         self._reset()
 
         input_nodes = [node for node in self.nodes.values() if node.is_input]
@@ -163,6 +198,12 @@ class Graph:
 
     @property
     def data(self):
+        """
+        Returns a dictionary mapping node ids to their corresponding data values in the graph.
+
+        Returns:
+            dict: A dictionary mapping node ids to their corresponding data values in the graph.
+        """
         return dict(
             (node_id, node.get("data")) for node_id, node in self.g.nodes.items()
         )

@@ -54,6 +54,27 @@ class ApplicationView:
         self.resolver = Resolver()
 
     def resolve_params(self, params: Dict[str, inspect.Parameter]) -> List[Parameter]:
+        """
+        Resolves the parameters of a function.
+
+        Args:
+            params (Dict[str, inspect.Parameter]): A dictionary
+                mapping parameter names to inspect.Parameter objects.
+
+        Returns:
+            List[Parameter]: A list of Parameter objects representing the resolved parameters.
+
+        Example:
+        ```
+        def foo(x: int, y: bool) -> bool:
+            ...
+
+        signature = inspect.signature(foo)
+        params = dict(signature.parameters)
+
+        parameters = self.resolve_params(params)
+        ```
+        """
         ss = []
         for sname, param in params.items():
             x = {
@@ -73,6 +94,12 @@ class ApplicationView:
 
     @router.get("/patterns")
     def patterns(self) -> ApplicationPatternsResponse:
+        """
+        Retrieves application patterns based on resolver information.
+
+        Returns:
+            ApplicationPatternsResponse: A response containing a list of PatternInfo objects.
+        """
         names = self.resolver.names()
         patterns = []
         for name in names:
@@ -95,6 +122,12 @@ class ApplicationView:
 
     @router.get("/blocks")
     def blocks(self) -> ApplicationBlocksResponse:
+        """
+        Retrieves application blocks based on resolver information.
+
+        Returns:
+            ApplicationBlocksResponse: A response containing a list of BlockInfo objects.
+        """
         names = self.resolver.names()
         blocks = []
         for name in names:
@@ -114,6 +147,16 @@ class ApplicationView:
 
     @router.get("/applications/{application_id}")
     def get_app(self, application_id: str) -> ApplicationInfoResponse:
+        """
+        Get information about a specific application.
+
+        Args:
+            application_id (str): The ID of the application to retrieve.
+
+        Returns:
+            ApplicationInfoResponse: Information about the application, including its ID, name,
+                active version, creation timestamp, and last update timestamp.
+        """
         app = self.database.get_application(application_id)
 
         return ApplicationInfoResponse(
@@ -132,6 +175,12 @@ class ApplicationView:
 
     @router.get("/applications")
     def list_app(self) -> ApplicationListResponse:
+        """
+        Retrieve a list of applications.
+
+        Returns:
+            ApplicationListResponse: The response containing a list of applications.
+        """
         apps = self.database.list_applications()
         return ApplicationListResponse(
             applications=[
@@ -148,6 +197,15 @@ class ApplicationView:
 
     @router.post("/applications")
     def create_app(self, application: ApplicationCreate) -> ApplicationCreateResponse:
+        """
+        Endpoint to create a new application.
+
+        Args:
+            application (ApplicationCreate): The application data to create.
+
+        Returns:
+            ApplicationCreateResponse: The response containing the ID of the created application.
+        """
         created_at = datetime.utcnow()
         _id = str(uuid.uuid4())
         self.database.create_application(
@@ -164,12 +222,35 @@ class ApplicationView:
     def async_run_app(
         self, application_id: str, config: ApplicationRun
     ) -> ApplicationRunResponse:
+        """
+        Asynchronously runs an application with the specified ID and configuration.
+
+        Args:
+            application_id (str): The ID of the application to run.
+            config (ApplicationRun): The configuration for running the application.
+
+        Returns:
+            ApplicationRunResponse: The response containing the interacion ID which is
+                used for polling running result latter.
+        """
         return ApplicationRunResponse(
             id=self.invoker.invoke(application_id, config.input)
         )
 
     @router.get("/interactions/{interaction_id}")
     def get_interaction(self, interaction_id: str) -> InteractionInfoResponse:
+        """
+        Retrieves information about a specific interaction by its ID.
+
+        Args:
+            interaction_id (str): The ID of the interaction to retrieve.
+
+        Returns:
+            InteractionInfoResponse: An object containing information about the interaction.
+
+        Raises:
+            InteractionNotFound: If the specified interaction ID is not found.
+        """
         interaction = self.invoker.poll(interaction_id)
         if not interaction:
             raise InteractionNotFound(interaction_id)
@@ -188,6 +269,16 @@ class ApplicationView:
     def update_app_meta(
         self, application_id: str, metadata: Metadata
     ) -> ItemUpdateResponse:
+        """
+        Update the metadata of an application.
+
+        Args:
+            application_id (str): The ID of the application to update.
+            metadata (Metadata): The new metadata for the application.
+
+        Returns:
+            ItemUpdateResponse: An object indicating the success or failure of the update operation.
+        """
         try:
             updated_at = datetime.utcnow()
             self.database.update_application(
@@ -209,6 +300,15 @@ class ApplicationView:
 
     @router.delete("/applications/{application_id}")
     def delete_app(self, application_id: str) -> ItemDeleteResponse:
+        """
+        Delete an application by its ID.
+
+        Args:
+            application_id (str): The ID of the application to be deleted.
+
+        Returns:
+            ItemDeleteResponse: A response indicating the success or failure of the deletion.
+        """
         try:
             deleted_at = datetime.utcnow()
             self.database.update_application(
@@ -230,6 +330,16 @@ class ApplicationView:
 
     @router.get("/applications/{application_id}/versions")
     def list_app_versions(self, application_id: str) -> VersionListResponse:
+        """
+        Get a list of application versions for the specified application_id.
+
+        Args:
+            application_id (str): The ID of the application.
+
+        Returns:
+            VersionListResponse: A response containing a list of ApplicationVersionInfo objects
+                representing the versions of the specified application.
+        """
         versions = self.database.list_versions(application_id)
         return VersionListResponse(
             versions=[
@@ -250,6 +360,16 @@ class ApplicationView:
         application_id: str,
         version: ApplicationVersionCreate,
     ) -> VersionCreateResponse:
+        """
+        Create a new application version.
+
+        Args:
+            application_id (str): The ID of the application.
+            version (ApplicationVersionCreate): The details of the new application version.
+
+        Returns:
+            VersionCreateResponse: The response containing the ID of the created version.
+        """
         created_at = datetime.utcnow()
         _id = str(uuid.uuid4())
         self.database.create_application(
@@ -268,6 +388,16 @@ class ApplicationView:
     def delete_app_version(
         self, application_id: str, version_id: str
     ) -> ItemDeleteResponse:
+        """
+        Delete a specific version of an application.
+
+        Args:
+            application_id (str): The ID of the application.
+            version_id (str): The ID of the version to be deleted.
+
+        Returns:
+            ItemDeleteResponse: An object indicating whether the deletion was successful.
+        """
         try:
             deleted_at = datetime.utcnow()
             self.database.update_version(
@@ -289,6 +419,16 @@ class ApplicationView:
 
     @router.put("/applications/{application_id}/versions/{version_id}/active")
     def active_app_version(self, application_id: str, version_id: str):
+        """
+        Update the active version of an application in the database.
+
+        Args:
+            application_id (str): The ID of the application to update.
+            version_id (str): The ID of the version to set as active.
+
+        Returns:
+            ItemUpdateResponse: An ItemUpdateResponse indicating the success or failure of the update.
+        """
         try:
             updated_at = datetime.utcnow()
             self.database.update_application(

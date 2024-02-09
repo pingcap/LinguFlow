@@ -26,9 +26,14 @@ class Resolver:
     _pattern_list = []
 
     def __init__(self):
+        # check _block_list and _pattern_list
         self.consistent_assert()
 
     def consistent_assert(self):
+        """
+        Checks if block and pattern definitions are valid.
+        Raises errors any definition is not valid.
+        """
         nameset = set()
         typeset = set()
 
@@ -66,12 +71,24 @@ class Resolver:
                     raise UnregisteredError(name, t)
 
     def names(self) -> List[str]:
+        """
+        Returns a list of names of registered blocks and patterns.
+        """
         return [b["name"] for b in self._block_list] + [
             p["name"] for p in self._pattern_list
         ]
 
     @functools.lru_cache
     def lookup(self, name: str, key: str = "class") -> Union[str, type]:
+        """
+        Looks up a block or pattern by its name.
+        Args:
+            name: The name of the block or pattern.
+            key: The key to extract from lookup result.
+        Returns:
+            The class (or other property the `key` specified) corresponding to the name,
+                or None if the name is not found.
+        """
         for n in self._block_list + self._pattern_list:
             if n["name"] == name:
                 return n.get(key)
@@ -79,6 +96,13 @@ class Resolver:
 
     @functools.lru_cache
     def relookup(self, cls: type) -> str:
+        """
+        Looks up a name by it's class (opposite with lookup).
+        Args:
+            cls: The class type to look up.
+        Returns:
+            The name of the class, or None if not found.
+        """
         for n in self._block_list + self._pattern_list:
             if n["class"] == cls:
                 return n["name"]
@@ -86,6 +110,13 @@ class Resolver:
 
     @functools.lru_cache
     def is_abstract(self, cls: type) -> bool:
+        """
+        Checks if a class has abstract methods.
+        Args:
+            cls: The class to check.
+        Returns:
+            True if the class has abstract methods, False otherwise.
+        """
         for _, m in inspect.getmembers(cls):
             if getattr(m, "__isabstractmethod__", False):
                 return True
@@ -93,6 +124,13 @@ class Resolver:
 
     @functools.lru_cache
     def candidates(self, name: str) -> List[str]:
+        """
+        Returns a list of candidate names for a given block or pattern name.
+        Args:
+            name: The name of the block or pattern.
+        Returns:
+            A list of candidate names.
+        """
         cls = self.lookup(name)
         if cls is None:
             return []
@@ -107,6 +145,13 @@ class Resolver:
 
     @functools.lru_cache
     def slots(self, name: str) -> Dict[str, inspect.Parameter]:
+        """
+        Returns a dictionary of parameters for a given block or pattern name.
+        Args:
+            name: The name of the block or pattern.
+        Returns:
+            A dictionary mapping parameters to their __init__ annotations.
+        """
         cls = self.lookup(name)
         if cls is None:
             return None
@@ -118,6 +163,13 @@ class Resolver:
 
     @functools.lru_cache
     def inports(self, name: str) -> Dict[str, inspect.Parameter]:
+        """
+        Returns a dictionary of parameters for a given block name.
+        Args:
+            name: The name of the block.
+        Returns:
+            A dictionary mapping parameters to their __call__ annotations.
+        """
         cls = self.lookup(name)
         if cls is None:
             return None
@@ -129,6 +181,13 @@ class Resolver:
 
     @functools.lru_cache
     def outport(self, name: str) -> type:
+        """
+        Returns the outport type for a given block name.
+        Args:
+            name: The name of the block.
+        Returns:
+            The annotation of the __call__ output type.
+        """
         cls = self.lookup(name)
         if cls is None:
             return None
@@ -138,6 +197,16 @@ class Resolver:
 
 
 def block(name: str, kind: str, alias: str = None):
+    """
+    Decorator for registering a block class.
+    Args:
+        name: The name of the block.
+        kind: The kind of the block (e.g., 'input', 'output').
+        alias: An optional alias for the block name.
+    Returns:
+        The decorated class.
+    """
+
     def decorator(cls):
         Resolver._block_list.append(
             {
@@ -154,6 +223,16 @@ def block(name: str, kind: str, alias: str = None):
 
 
 def pattern(name: str, builtin: bool = False, alias: str = None):
+    """
+    Decorator for registering a pattern class.
+    Args:
+        name: The name of the pattern.
+        builtin: Whether the pattern is built-in or not.
+        alias: An optional alias for the pattern name.
+    Returns:
+        The decorated class.
+    """
+
     def decorator(cls):
         Resolver._pattern_list.append(
             {

@@ -42,11 +42,24 @@ class AsyncInvoker:
         # sleep some time here
     ```
     """
+
     def __init__(self, database: Database):
         self.resolver = Resolver()
         self.database = database
 
     def construct_graph_node(self, config: dict) -> BaseBlock:
+        """
+        Construct a graph node based on the given configuration.
+
+        Args:
+            config (dict): The configuration dictionary containing information about the node.
+
+        Returns:
+            BaseBlock: An instance of the constructed graph node.
+
+        Raises:
+            NodeConstructError: If there is an error during node construction.
+        """
         name = config["name"]
         cls = self.resolver.lookup(name)
         if cls is None:
@@ -81,6 +94,16 @@ class AsyncInvoker:
     def initialize_graph(
         self, configuration: dict, skip_validation: bool = False
     ) -> Graph:
+        """
+        Initialize a graph based on the given configuration.
+
+        Args:
+            configuration (dict): The configuration for the graph, including nodes and edges.
+            skip_validation (bool, optional): Whether to skip validation of the graph. Defaults to False.
+
+        Returns:
+            Graph: The initialized graph.
+        """
         edges = []
         for edge in configuration["edges"]:
             edges.append(
@@ -97,6 +120,17 @@ class AsyncInvoker:
         return Graph(nodes, edges, skip_validation)
 
     def invoke(self, app_id: str, input: Union[str, dict, list]) -> str:
+        """
+        Invoke the specified application with the given input.
+
+        Args:
+            app_id (str): The ID of the application to invoke.
+            input (Union[str, dict, list]): The input data for the application,
+                which can be a string, dictionary, or list.
+
+        Returns:
+            str: The ID of the interaction created for this invocation.
+        """
         app = self.database.get_application(app_id)
         if not app:
             raise ApplicationNotFound(app_id)
@@ -153,6 +187,15 @@ class AsyncInvoker:
         return _id
 
     def poll(self, interaction_id: str) -> Interaction:
+        """
+        Retrieve invoke result by the interaction id the invoke method returned.
+
+        Args:
+            interaction_id (str): The ID of the interaction to retrieve.
+
+        Returns:
+            Interaction: The retrieved interaction object.
+        """
         return self.database.get_interaction(interaction_id)
 
 
@@ -160,6 +203,7 @@ class HashableDict(dict):
     """
     HashableDict is a dict, but makes it hashable.
     """
+
     def __hash__(self):
         return hash(tuple(sorted(self.items())))
 
@@ -168,6 +212,7 @@ class HashableList(list):
     """
     HashableList is a list, but makes it hashable.
     """
+
     def __hash__(self):
         return hash(tuple(sorted(self)))
 
@@ -201,6 +246,7 @@ class Invoke(BaseBlock):
     """
     Invoke invokes application with str input.
     """
+
     def __init__(self, app_id: str, timeout: int = 300):
         self.app_id = app_id
 
@@ -213,6 +259,7 @@ class InvokeWithList(BaseBlock):
     """
     InvokeWithList invokes application with list input.
     """
+
     def __init__(self, app_id: str, timeout: int = 300):
         self.app_id = app_id
 
@@ -225,6 +272,7 @@ class InvokeWithDict(BaseBlock):
     """
     Invoke invokes application with dict input.
     """
+
     def __init__(self, app_id: str, timeout: int = 300):
         self.app_id = app_id
 

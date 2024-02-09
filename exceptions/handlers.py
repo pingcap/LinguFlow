@@ -2,7 +2,7 @@ import functools
 import traceback
 from typing import Callable, Type
 
-from fastapi import status
+from fastapi import Request, status
 from fastapi.responses import JSONResponse
 from openai import (
     AuthenticationError,
@@ -19,7 +19,19 @@ from sqlalchemy.exc import DatabaseError, SQLAlchemyError
 from .exceptions import *
 
 
-def graph_node_exception_handler(request, exc):
+def graph_node_exception_handler(request: Request, exc: Exception) -> JSONResponse:
+    """
+    Custom exception handler for FastAPI to handle different types of errors and
+        return appropriate JSON responses.
+
+    Args:
+        request (Request): The incoming request object.
+        exc (Exception): The exception raised.
+
+    Returns:
+        JSONResponse: A JSON response with the appropriate status code and content
+            based on the type of exception.
+    """
     if isinstance(
         exc.__cause__,
         (
@@ -73,7 +85,17 @@ def graph_node_exception_handler(request, exc):
         )
 
 
-def graph_check_exception_handler(request, exc):
+def graph_check_exception_handler(request: Request, exc: Exception) -> JSONResponse:
+    """
+    Custom exception handler for handling graph-related exceptions.
+
+    Args:
+        request (Request): The FastAPI request object.
+        exc (Exception): The exception object or error message.
+
+    Returns:
+        JSONResponse: A JSON response with status code 400 and error details.
+    """
     return JSONResponse(
         status_code=status.HTTP_400_BAD_REQUEST,
         content={
@@ -83,7 +105,17 @@ def graph_check_exception_handler(request, exc):
     )
 
 
-def database_exception_handler(request, exc):
+def database_exception_handler(request: Request, exc: Exception) -> JSONResponse:
+    """
+    Custom exception handler for database errors.
+
+    Args:
+        request (Request): The request object.
+        exc (Exception): The exception that occurred.
+
+    Returns:
+        JSONResponse: A JSON response with a 500 status code and an error message.
+    """
     return JSONResponse(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         content={
@@ -93,7 +125,17 @@ def database_exception_handler(request, exc):
     )
 
 
-def node_construct_exception_handler(request, exc):
+def node_construct_exception_handler(request: Request, exc: Exception) -> JSONResponse:
+    """
+    Exception handler for node construction errors.
+
+    Args:
+        request (Request): The request object.
+        exc (Exception): The exception that occurred.
+
+    Returns:
+        JSONResponse: A JSON response with status code 400 and an error message.
+    """
     return JSONResponse(
         status_code=status.HTTP_400_BAD_REQUEST,
         content={
@@ -103,7 +145,17 @@ def node_construct_exception_handler(request, exc):
     )
 
 
-def application_not_found_handler(request, exc):
+def application_not_found_handler(request: Request, exc: Exception) -> JSONResponse:
+    """
+    Custom handler for application not found.
+
+    Args:
+        request (Request): The request object.
+        exc (Exception): The exception raised.
+
+    Returns:
+        JSONResponse: JSON response with status code 404 and error message.
+    """
     return JSONResponse(
         status_code=status.HTTP_404_NOT_FOUND,
         content={
@@ -113,7 +165,17 @@ def application_not_found_handler(request, exc):
     )
 
 
-def interaction_not_found_handler(request, exc):
+def interaction_not_found_handler(request: Request, exc: Exception) -> JSONResponse:
+    """
+    Custom exception handler for interaction not found.
+
+    Args:
+        request (Request): The incoming request object.
+        exc (Exception): The exception raised.
+
+    Returns:
+        JSONResponse: A JSON response with status code 404 and error details.
+    """
     return JSONResponse(
         status_code=status.HTTP_404_NOT_FOUND,
         content={
@@ -123,7 +185,17 @@ def interaction_not_found_handler(request, exc):
     )
 
 
-def not_implemented_exception_handler(request, exc):
+def not_implemented_exception_handler(request: Request, exc: Exception) -> JSONResponse:
+    """
+    Custom exception handler for handling not implemented exceptions.
+
+    Args:
+        request (Request): The request object.
+        exc (Exception): The exception object.
+
+    Returns:
+        JSONResponse: A JSON response with status code 500 and error details.
+    """
     return JSONResponse(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         content={
@@ -133,7 +205,17 @@ def not_implemented_exception_handler(request, exc):
     )
 
 
-def timeout_exception_handler(request, exc):
+def timeout_exception_handler(request: Request, exc: Exception) -> JSONResponse:
+    """
+    Custom exception handler for handling TimeoutError.
+
+    Args:
+        request (Request): The incoming request object.
+        exc (Exception): The raised TimeoutError exception.
+
+    Returns:
+        JSONResponse: JSON response with status code 500 and error details.
+    """
     return JSONResponse(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         content={
@@ -143,7 +225,17 @@ def timeout_exception_handler(request, exc):
     )
 
 
-def exception_handler(request, exc):
+def exception_handler(request: Request, exc: Exception) -> JSONResponse:
+    """
+    Custom exception handler for general exceptions.
+
+    Args:
+    - request (Request): The incoming request.
+    - exc (Exception): The exception raised.
+
+    Returns:
+    - JSONResponse: A JSON response with status code 500 and an error message.
+    """
     return JSONResponse(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         content={
@@ -172,7 +264,7 @@ class AsyncExceptionHandler:
     def exception_handler(self, exc_class: Type[Exception]):
         return functools.partial(self.add_exception_handler, exc_class)
 
-    def render(self, exc) -> JSONResponse:
+    def render(self, exc: Exception) -> JSONResponse:
         exc_class = type(exc)
 
         if exc_class in self.exception_handlers:
