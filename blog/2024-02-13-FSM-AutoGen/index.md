@@ -27,7 +27,7 @@ Among a lot of Multi-Agents frameworks, AutoGen caught my attention for the foll
 
 This coincides with our previous idea, which is to use a relatively unified and simple paradigm (using multiple agents as a group similar to https://lilianweng.github.io/posts/2023-06-23-agent/) to solve a large class of tasks. The simple concept means strong universality (possibly accompanied by difficulty in handling). The awesome examples can indirectly prove that it has a high ceiling, a large imagination, so we decided to use AutoGen to do some experiments and evaluate how complex real business scenarios it can handle.
 
-![Agent](agent_concept.png)
+![Agent](/img/agent_concept.png)
 
 ### Motivation
 
@@ -45,7 +45,7 @@ In previous experiments, I noticed that not every GroupChat response was in the 
 
 I designed a task as shown in the figure: each agent counts according to the transfer conditions. The current GPT-3.5 has no problem determining whether integers up to 30 are divisible by 3 or 5. Moreover, the context of this task is short enough, so it can be assumed that apart from the order of speech, the entire task should not pose any difficulties for GPT-4.
 
-![FSM](FSM_logic.png)
+![FSM](/img/FSM_logic.png)
 
 But the experimental results were astonishing. GPT-4 or GPT-4-turbo surprisingly failed to complete the task as expected, which I never expected. Controlling the order of speech seems to be the only job for `GroupChatManager`. This also means that in many scenarios, it may not be able to effectively complete tasks.
 
@@ -216,7 +216,7 @@ Actually, I believe that in most of use cases, besides brainstorming, FSM can be
     1. **The graph here and the transition conditions mentioned above together form a complete FSM. Both are essential and cannot be missing.**
     2. You can visualize it as you wish, which is shown as follow
 
-    ![visualization](FSM_of_multi-agents.png)
+    ![visualization](/img/FSM_of_multi-agents.png)
 
 6. Define a `GroupChat` and a `GroupChatManager`
 
