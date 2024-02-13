@@ -2,7 +2,6 @@
 title: "How I Contributed to a 20k+ Stars Open Source Project for the First Time: Assist in the Amazing Graph Feature for GroupChat in MicroSoft/AutoGen"
 authors:
   - freedeaths
-  - lilyjazz
 tags: [Agent, AutoGen]
 ---
 
