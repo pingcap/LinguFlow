@@ -95,7 +95,7 @@ class Resolver:
         return None
 
     @functools.lru_cache
-    def relookup(self, cls: type) -> str:
+    def relookup(self, cls: type) -> Optional[str]:
         """
         Looks up a name by it's class (opposite with lookup).
         Args:
@@ -144,7 +144,7 @@ class Resolver:
         return names
 
     @functools.lru_cache
-    def slots(self, name: str) -> Dict[str, inspect.Parameter]:
+    def slots(self, name: str) -> Optional[Dict[str, inspect.Parameter]]:
         """
         Returns a dictionary of parameters for a given block or pattern name.
         Args:
@@ -162,7 +162,7 @@ class Resolver:
         return parameters
 
     @functools.lru_cache
-    def inports(self, name: str) -> Dict[str, inspect.Parameter]:
+    def inports(self, name: str) -> Optional[Dict[str, inspect.Parameter]]:
         """
         Returns a dictionary of parameters for a given block name.
         Args:
@@ -180,7 +180,7 @@ class Resolver:
         return parameters
 
     @functools.lru_cache
-    def outport(self, name: str) -> type:
+    def outport(self, name: str) -> Optional[type]:
         """
         Returns the outport type for a given block name.
         Args:
