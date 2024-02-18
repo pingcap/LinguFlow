@@ -1,6 +1,7 @@
 import functools
 import json
 import threading
+import time
 import uuid
 from datetime import datetime
 from typing import Dict, List, Tuple, Union
@@ -11,10 +12,13 @@ from sqlalchemy import create_engine
 from database import Database
 from exceptions import (
     ApplicationInputTypeMismatch,
+    ApplicationNotFound,
     AsyncExceptionHandler,
     InteractionError,
     InteractionNotFound,
+    NoActiveVersion,
     NodeConstructError,
+    VersionnNotFound,
     register_exception_handlers,
 )
 from model import Interaction
@@ -225,6 +229,7 @@ def invoke(
     app_id: str,
     input: Union[str, HashableDict, HashableList],
     timeout: int = 300,
+    interval: int = 10,
 ) -> str:
     env = Env()
     env.read_env()
@@ -241,6 +246,8 @@ def invoke(
             raise InteractionError(interaction.error)
         if interaction.output:
             return interaction.output
+        time.sleep(interval)
+        timeout -= interval
     raise TimeoutError(f"timeout on polling interaction {interaction_id}")
 
 
