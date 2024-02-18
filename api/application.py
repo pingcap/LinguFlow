@@ -77,10 +77,6 @@ class ApplicationView:
         """
         ss = []
         for sname, param in params.items():
-            x = {
-                "name": sname,
-                "class": self.resolver.relookup(param.annotation),
-            }
             p = Parameter(
                 name=sname,
                 class_name=self.resolver.relookup(param.annotation),
@@ -400,6 +396,13 @@ class ApplicationView:
         """
         try:
             deleted_at = datetime.utcnow()
+            app = self.database.get_application(application_id)
+            if app.active_version == version_id:
+                return ItemDeleteResponse(
+                    success=False,
+                    message=f"Active version can not be deleted.",
+                )
+
             self.database.update_version(
                 version_id,
                 {

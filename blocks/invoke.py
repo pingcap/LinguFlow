@@ -10,6 +10,7 @@ from sqlalchemy import create_engine
 
 from database import Database
 from exceptions import (
+    ApplicationInputTypeMismatch,
     AsyncExceptionHandler,
     InteractionError,
     InteractionNotFound,
@@ -140,6 +141,8 @@ class AsyncInvoker:
         if not version:
             raise VersionnNotFound(app.active_version)
         graph = self.initialize_graph(version.configuration)
+        if type(input) != graph.input_type():
+            raise ApplicationInputTypeMismatch(graph.input_type(), type(input))
 
         _id = str(uuid.uuid4())
         created_at = datetime.utcnow()
@@ -229,7 +232,7 @@ def invoke(
     db = Database(create_engine(env.str("DATABASE_URL")))
     invoker = AsyncInvoker(db)
 
-    interaction_id = invoker.invoke(input)
+    interaction_id = invoker.invoke(app_id, input)
     while timeout > 0:
         interaction = invoker.poll(interaction_id)
         if not interaction:

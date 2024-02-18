@@ -1,8 +1,8 @@
 import functools
 import inspect
-from typing import Dict, List, Union
+from typing import Dict, List, Optional, Union
 
-from exceptions import UnregisteredError
+from exceptions import DuplicatedNameError, DuplicatedTypeError, UnregisteredError
 
 
 class Resolver:
@@ -79,7 +79,7 @@ class Resolver:
         ]
 
     @functools.lru_cache
-    def lookup(self, name: str, key: str = "class") -> Union[str, type]:
+    def lookup(self, name: str, key: str = "class") -> Optional[Union[str, type]]:
         """
         Looks up a block or pattern by its name.
         Args:

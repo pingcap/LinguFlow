@@ -25,7 +25,9 @@ class PortMismatchError(GraphCheckError):
     """
 
     def __init__(self, source: str, sink: str, port: str):
-        super(PortMismatchError, self).__init__(f"port type mismatch on {sink}.{port}")
+        super(PortMismatchError, self).__init__(
+            f"port type mismatch on {sink}.{port} with {source}"
+        )
 
 
 class EndpointNotExistError(GraphCheckError):

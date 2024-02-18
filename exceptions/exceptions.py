@@ -114,6 +114,23 @@ class InteractionError(Exception):
         return f"invoke encounter error: {json.dumps(self.error)}"
 
 
+class ApplicationInputTypeMismatch(Exception):
+    """
+    Exception raised when the application receives an input of unexpected type.
+
+    Attributes:
+    exp -- the expected type of the input
+    got -- the actual type of the input
+    """
+
+    def __init__(self, exp: type, got: type):
+        self.exp = exp
+        self.got = got
+
+    def __str__(self):
+        return f"the application expect {self.exp} as input, got {self.got}"
+
+
 class GraphCheckError(Exception):
     """
     An abstract class for graph validation.

@@ -185,6 +185,26 @@ def interaction_not_found_handler(request: Request, exc: Exception) -> JSONRespo
     )
 
 
+def application_input_mismatch_handler(request, exc):
+    """
+    Custom exception handler for invalid application input type.
+
+    Args:
+        request (Request): The incoming request object.
+        exc (Exception): The exception raised.
+
+    Returns:
+        JSONResponse: A JSON response with status code 400 and error details.
+    """
+    return JSONResponse(
+        status_code=status.HTTP_400_BAD_REQUEST,
+        content={
+            "code": "app_input_type_mismatch",
+            "message": str(exc),
+        },
+    )
+
+
 def not_implemented_exception_handler(request: Request, exc: Exception) -> JSONResponse:
     """
     Custom exception handler for handling not implemented exceptions.
@@ -279,5 +299,8 @@ def register_exception_handlers(app):
     app.exception_handler(NodeConstructError)(node_construct_exception_handler)
     app.exception_handler(ApplicationNotFound)(application_not_found_handler)
     app.exception_handler(InteractionNotFound)(interaction_not_found_handler)
+    app.exception_handler(ApplicationInputTypeMismatch)(
+        application_input_mismatch_handler
+    )
     app.exception_handler(NotImplementedError)(not_implemented_exception_handler)
     app.exception_handler(Exception)(exception_handler)
