@@ -8,3 +8,4 @@ openai==1.2.4
 PyMySQL==1.1.0
 SQLAlchemy==1.4.49
 qdrant-client==1.7.0
+pinecone-client==2.2.2
