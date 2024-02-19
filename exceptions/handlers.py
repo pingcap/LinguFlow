@@ -4,9 +4,16 @@ from typing import Callable, Type
 
 from fastapi import Request, status
 from fastapi.responses import JSONResponse
-from openai import (AuthenticationError, BadRequestError, ConflictError,
-                    InternalServerError, NotFoundError, PermissionDeniedError,
-                    RateLimitError, UnprocessableEntityError)
+from openai import (
+    AuthenticationError,
+    BadRequestError,
+    ConflictError,
+    InternalServerError,
+    NotFoundError,
+    PermissionDeniedError,
+    RateLimitError,
+    UnprocessableEntityError,
+)
 from sqlalchemy.exc import DatabaseError, SQLAlchemyError
 
 from .exceptions import *

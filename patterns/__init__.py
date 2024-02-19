@@ -7,8 +7,7 @@ from resolver import pattern
 from .comparator import ListComparator, NumberComparator, TextComparator
 from .llm import ChatOpenAIWrapper, OpneAIWrapper
 from .secret import Secret
-from .template import (ChatMessagePrompt, FewShotPromptTemplate,
-                       ZeroShotPromptTemplate)
+from .template import ChatMessagePrompt, FewShotPromptTemplate, ZeroShotPromptTemplate
 
 # register builtin types
 pattern(name="text", builtin=True)(str)

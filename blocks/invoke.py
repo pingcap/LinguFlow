@@ -10,11 +10,17 @@ from environs import Env
 from sqlalchemy import create_engine
 
 from database import Database
-from exceptions import (ApplicationInputTypeMismatch, ApplicationNotFound,
-                        AsyncExceptionHandler, InteractionError,
-                        InteractionNotFound, NoActiveVersion,
-                        NodeConstructError, VersionnNotFound,
-                        register_exception_handlers)
+from exceptions import (
+    ApplicationInputTypeMismatch,
+    ApplicationNotFound,
+    AsyncExceptionHandler,
+    InteractionError,
+    InteractionNotFound,
+    NoActiveVersion,
+    NodeConstructError,
+    VersionnNotFound,
+    register_exception_handlers,
+)
 from model import Interaction
 from resolver import Resolver, block
 from scheduler import Edge, Graph

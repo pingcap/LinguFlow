@@ -19,7 +19,7 @@ class VectorDB(ABC):
 
         Args:
             index (List[str]): The list of str which represents an unique data.
-        
+
         Returns:
             T: implemented by sub classes.
         """
