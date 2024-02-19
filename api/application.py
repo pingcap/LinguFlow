@@ -10,28 +10,16 @@ from fastapi_utils.inferring_router import InferringRouter
 from sqlalchemy import create_engine
 
 import patterns
-from api.api_schemas import (
-    ApplicationBlocksResponse,
-    ApplicationCreate,
-    ApplicationCreateResponse,
-    ApplicationInfo,
-    ApplicationInfoResponse,
-    ApplicationListResponse,
-    ApplicationPatternsResponse,
-    ApplicationRun,
-    ApplicationRunResponse,
-    ApplicationVersionCreate,
-    ApplicationVersionInfo,
-    BlockInfo,
-    InteractionInfoResponse,
-    ItemDeleteResponse,
-    ItemUpdateResponse,
-    Metadata,
-    Parameter,
-    PatternInfo,
-    VersionCreateResponse,
-    VersionListResponse,
-)
+from api.api_schemas import (ApplicationBlocksResponse, ApplicationCreate,
+                             ApplicationCreateResponse, ApplicationInfo,
+                             ApplicationInfoResponse, ApplicationListResponse,
+                             ApplicationPatternsResponse, ApplicationRun,
+                             ApplicationRunResponse, ApplicationVersionCreate,
+                             ApplicationVersionInfo, BlockInfo,
+                             InteractionInfoResponse, ItemDeleteResponse,
+                             ItemUpdateResponse, Metadata, Parameter,
+                             PatternInfo, VersionCreateResponse,
+                             VersionListResponse)
 from blocks import AsyncInvoker
 from database import Database
 from model import Application, ApplicationVersion

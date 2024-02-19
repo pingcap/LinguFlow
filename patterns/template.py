@@ -1,5 +1,7 @@
-from langchain.prompts import MessagesPlaceholder, PromptTemplate, StringPromptTemplate
-from langchain.prompts.chat import ChatPromptTemplate, SystemMessagePromptTemplate
+from langchain.prompts import (MessagesPlaceholder, PromptTemplate,
+                               StringPromptTemplate)
+from langchain.prompts.chat import (ChatPromptTemplate,
+                                    SystemMessagePromptTemplate)
 
 from resolver import pattern
 

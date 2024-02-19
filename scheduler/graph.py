@@ -6,15 +6,8 @@ import networkx as nx
 
 from blocks import BaseBlock
 
-from .rule import (
-    EndpointExist,
-    ExactlyOneInputAndOutput,
-    GraphIsDAG,
-    PortTypeMatch,
-    RequiredInPortIsFit,
-    Rule,
-    TypeHasStrMethod,
-)
+from .rule import (EndpointExist, ExactlyOneInputAndOutput, GraphIsDAG,
+                   PortTypeMatch, RequiredInPortIsFit, Rule, TypeHasStrMethod)
 
 Edge = namedtuple("Edge", ["source", "sink", "port", "case"])
 
