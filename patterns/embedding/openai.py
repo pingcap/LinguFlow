@@ -1,7 +1,9 @@
 from typing import List
 
 import requests
+from openai import OpenAI
 
+from exceptions import EmbeddingError
 from resolver import pattern
 
 from ..secret import Secret
@@ -14,14 +16,15 @@ class OpenAIEmbedding(EmbeddingModel):
     Embedding model using OpenAI API.
     """
 
-    def __init__(self, api_key: Secret):
+    def __init__(self, api_key: Secret, model_name: str = "text-embedding-ada-002"):
         """
         Initialize an OpenAIEmbedding instance.
 
         Args:
             api_key (Secret): The API key for accessing OpenAI services.
         """
-        self.api_key = api_key
+        self.client = OpenAI(api_key=api_key)
+        self.model_name = model_name
 
     def embedding(self, text: str) -> List[float]:
         """
@@ -33,14 +36,15 @@ class OpenAIEmbedding(EmbeddingModel):
         Returns:
             List[float]: The embedding vector for the input text.
         """
-        response = requests.post(
-            "https://api.openai.com/v1/embeddings",
-            json={
-                "input": text,
-                "model": "text-embedding-ada-002",
-            },
-            headers={
-                "Authorization": f"Bearer {self.api_key}",
-            },
-        )
-        return response.json()["data"][0]["embedding"]
+
+        try:
+            return (
+                self.client.embeddings.create(
+                    input=[text],
+                    model=self.model_name,
+                )
+                .data[0]
+                .embedding
+            )
+        except Exception as e:
+            raise EmbeddingError(self.model_name, text, str(e))

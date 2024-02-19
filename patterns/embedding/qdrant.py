@@ -1,3 +1,4 @@
+import hashlib
 from typing import List
 
 from qdrant_client import QdrantClient

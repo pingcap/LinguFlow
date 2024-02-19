@@ -14,15 +14,15 @@ class VectorDB(ABC):
 
     @abstractmethod
     def vec_id(self, index: List[str]) -> T:
-    """
-    Generate an identity from a list of str.
+        """
+        Generate an identity from a list of str.
 
-    Args:
-        index (List[str]): The list of str which represents an unique data.
-    
-    Returns:
-        T: implemented by sub classes.
-    """
+        Args:
+            index (List[str]): The list of str which represents an unique data.
+        
+        Returns:
+            T: implemented by sub classes.
+        """
         pass
 
     @abstractmethod

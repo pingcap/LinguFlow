@@ -36,15 +36,6 @@ class Namespace:
         self._index_keys = [k for k in index_key.split(",") if k]
         self._embedding_model = embedding_model
 
-    def name(self) -> str:
-        """
-        Get the name of the namespace.
-
-        Returns:
-            str: The name of the namespace.
-        """
-        return self._name
-
     def text(self, metadata: dict) -> str:
         """
         Get the text to be embeded from the metadata dict.
@@ -81,7 +72,7 @@ class Namespace:
             List[dict]: The retrieved data.
         """
         vec = self._embedding_model.embedding(text)
-        return self._db.retrieve(self.name(), vec, limit)
+        return self._db.retrieve(self._name, vec, limit)
 
     def upsert(self, metadata: dict):
         """
@@ -94,7 +85,7 @@ class Namespace:
         vec_id = self._db.vec_id(idx)
         text = self.text(metadata)
         vec = self._embedding_model.embedding(text)
-        self._db.upsert(self.name(), vec_id, vec, metadata)
+        self._db.upsert(self._name, vec_id, vec, metadata)
 
     def delete(self, vec_id: str):
         """
@@ -103,4 +94,4 @@ class Namespace:
         Args:
             vec_id (str): The vector id to delete.
         """
-        self._db.delete(self.name(), vec_id)
+        self._db.delete(self._name, vec_id)

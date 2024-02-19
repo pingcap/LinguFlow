@@ -17,7 +17,7 @@ class OpneAIWrapper(OpenAI):
         openai_api_key: Secret,
         temperature: float = 0,
         max_tokens: int = 2048,
-        model_name: str = "text-davinci-003",
+        model_name: str = "gpt-3.5-turbo-instruct",
     ):
         """
         Initializes an instance of the OpenAI API wrapper.
@@ -26,7 +26,7 @@ class OpneAIWrapper(OpenAI):
             openai_api_key (Secret): The API key for accessing the OpenAI API.
             temperature (float): The temperature parameter for generating responses (default is 0).
             max_tokens (int): The maximum number of tokens to generate in a single request (default is 2048).
-            model_name (str): The name of the model to use (default is "text-davinci-003").
+            model_name (str): The name of the model to use (default is "gpt-3.5-turbo-instruct").
         """
         if max_tokens == 0:
             super(OpneAIWrapper, self).__init__(
