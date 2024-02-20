@@ -3,6 +3,7 @@ import urllib
 
 import requests
 
+from patterns import Secret
 from resolver import block
 
 from .base import BaseBlock
@@ -36,7 +37,7 @@ class GoogleSearch(BaseBlock):
         list: A list of snippets related to the search query.
     """
 
-    def __init__(self, cx: str, key: str, top_k=5):
+    def __init__(self, cx: str, key: Secret, top_k=5):
         self.cx = cx
         self.key = key
         self.top_k = 5

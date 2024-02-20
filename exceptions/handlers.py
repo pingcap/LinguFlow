@@ -64,6 +64,15 @@ def graph_node_exception_handler(request: Request, exc: Exception) -> JSONRespon
                 "message": str(exc.__cause__),
             },
         )
+    elif isinstance(exc.__cause__, EmbeddingError):
+        return JSONResponse(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            content={
+                "node_id": exc.node_id,
+                "code": "embedding_error",
+                "message": str(exc.__cause__),
+            },
+        )
     elif issubclass(type(exc.__cause__), DatabaseError):
         return JSONResponse(
             status_code=status.HTTP_400_BAD_REQUEST,
