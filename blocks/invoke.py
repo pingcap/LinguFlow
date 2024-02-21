@@ -37,7 +37,7 @@ class AsyncInvoker:
 
     ```
     invoker = AsyncInvoker(Database(...))
-    interaction_id = invoker.invoke("<app_id>", "the input")
+    interaction_id = invoker.invoke("the input", "<app_id>")
 
     result = None
     while not result:
@@ -124,14 +124,21 @@ class AsyncInvoker:
             nodes[node.get("id")] = self.construct_graph_node(node)
         return Graph(nodes, edges, skip_validation)
 
-    def invoke(self, app_id: str, input: Union[str, dict, list]) -> str:
+    def invoke(
+        self,
+        input: Union[str, dict, list],
+        app_id: str,
+        version_id: str = None,
+    ) -> str:
         """
         Invoke the specified application with the given input.
 
         Args:
-            app_id (str): The ID of the application to invoke.
             input (Union[str, dict, list]): The input data for the application,
                 which can be a string, dictionary, or list.
+            app_id (str): The ID of the application to invoke.
+            version_id (str): The version to invoke, by default the active_version of
+                the application will be used.
 
         Returns:
             str: The ID of the interaction created for this invocation.
@@ -139,11 +146,13 @@ class AsyncInvoker:
         app = self.database.get_application(app_id)
         if not app:
             raise ApplicationNotFound(app_id)
-        if not app.active_version:
-            NoActiveVersion(app_id)
-        version = self.database.get_version(app.active_version)
+        if not version_id:
+            if not app.active_version:
+                raise NoActiveVersion(app_id)
+            version_id = app.active_version
+        version = self.database.get_version(version_id)
         if not version:
-            raise VersionnNotFound(app.active_version)
+            raise VersionnNotFound(version_id)
         graph = self.initialize_graph(version.configuration)
         if type(input) != graph.input_type():
             raise ApplicationInputTypeMismatch(graph.input_type(), type(input))
@@ -154,7 +163,7 @@ class AsyncInvoker:
             Interaction(
                 id=_id,
                 app_id=app_id,
-                version_id=app.active_version,
+                version_id=version_id,
                 created_at=created_at,
                 updated_at=created_at,
                 output=None,
@@ -237,7 +246,7 @@ def invoke(
     db = Database(create_engine(env.str("DATABASE_URL")))
     invoker = AsyncInvoker(db)
 
-    interaction_id = invoker.invoke(app_id, input)
+    interaction_id = invoker.invoke(input, app_id)
     while timeout > 0:
         interaction = invoker.poll(interaction_id)
         if not interaction:
