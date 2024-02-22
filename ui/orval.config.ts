@@ -1,7 +1,7 @@
 const config = {
   linguflow: {
     input: {
-      target: 'http://localhost:8000/openapi.json'
+      target: './openapi.json'
     },
     output: {
       mode: 'split',
