@@ -6,8 +6,4 @@ COPY yarn.lock .
 RUN yarn
 VOLUME [ "/app/node_modules" ]
 
-RUN echo "#!/bin/sh" >> /entry_point.sh
-RUN echo "yarn dev --host" >> /entry_point.sh
-RUN chmod +x /entry_point.sh
-
-CMD ["/entry_point.sh"]
+CMD ["yarn", "dev", "--host"]
