@@ -1,12 +1,26 @@
 services:
   api:
-    build: 
+    build:
       context: .
       dockerfile: dev.Dockerfile
     volumes:
-    - .:/usr/src/app
+      - .:/usr/src/app
     ports:
-    - 8000:8000
+      - 8000:8000
     environment:
-    - DATABASE_URL
-    - LOG_FILE=/tmp/langlink.json
+      - DATABASE_URL
+      - LOG_FILE=/tmp/langlink.json
+  ui:
+    build:
+      context: ui
+      dockerfile: dev.Dockerfile
+    volumes:
+      - ./ui:/app
+    ports:
+      - 5173:5173
+    environment:
+      - VITE_ENDPOINT_BASE_URL=/linguflow-api
+    links:
+      - api:linguflow-api
+    depends_on:
+      - api
