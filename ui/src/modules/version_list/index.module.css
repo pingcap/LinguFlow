@@ -1,0 +1,7 @@
+.search_input {
+	width: 400px;
+
+	@media (max-width: $mantine-breakpoint-sm) {
+		width: 240px;
+	}
+}
