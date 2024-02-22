@@ -230,7 +230,7 @@ class ApplicationView:
                 used for polling running result latter.
         """
         return ApplicationRunResponse(
-            id=self.invoker.invoke(application_id, config.input)
+            id=self.invoker.invoke(config.input, application_id)
         )
 
     @router.get("/interactions/{interaction_id}")
@@ -323,6 +323,26 @@ class ApplicationView:
                 success=False,
                 message=str(e),
             )
+
+    @router.post("/applications/{application_id}/versions/{version_id}/async_run")
+    def async_run_app_version(
+        self, application_id: str, version_id: str, config: ApplicationRun
+    ) -> ApplicationRunResponse:
+        """
+        Asynchronously runs an application with the specified app ID, version ID and configuration.
+
+        Args:
+            application_id (str): The ID of the application to run.
+            version_id (str): The version of the application to run.
+            config (ApplicationRun): The configuration for running the application.
+
+        Returns:
+            ApplicationRunResponse: The response containing the interacion ID which is
+                used for polling running result latter.
+        """
+        return ApplicationRunResponse(
+            id=self.invoker.invoke(config.input, application_id, version_id)
+        )
 
     @router.get("/applications/{application_id}/versions")
     def list_app_versions(self, application_id: str) -> VersionListResponse:
