@@ -98,7 +98,7 @@ const AppCard: React.FC<{ app: ApplicationInfo }> = ({ app }) => {
 
   const openDeleteModal = () =>
     modals.openConfirmModal({
-      title: <Title order={5}>Delete App Name</Title>,
+      title: <Title order={5}>Delete {app.name}</Title>,
       labels: { confirm: 'I understand, delete it.', cancel: 'Cancel' },
       confirmProps: {
         color: 'dark'
@@ -113,7 +113,7 @@ const AppCard: React.FC<{ app: ApplicationInfo }> = ({ app }) => {
     })
 
   return (
-    <Card onClick={() => console.log(123)}>
+    <Card>
       <Stack>
         <Group justify="space-between">
           <Stack gap={0} maw="80%">
@@ -148,7 +148,7 @@ const AppCard: React.FC<{ app: ApplicationInfo }> = ({ app }) => {
 
         <Stack gap={0}>
           <Text c="gray.6" fz="sm" truncate>
-            Owned by Anonymous
+            Owned by Default User
           </Text>
           <Text c="gray.6" fz="sm" truncate>
             Created at {createdAt} ({timeFromNow})

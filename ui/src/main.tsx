@@ -15,7 +15,13 @@ dayjs.extend(relativeTime)
 
 import '@mantine/core/styles.css'
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnMount: false
+    }
+  }
+})
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
