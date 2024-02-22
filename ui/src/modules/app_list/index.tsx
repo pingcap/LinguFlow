@@ -6,7 +6,6 @@ import {
   Container,
   FocusTrap,
   Group,
-  Input,
   Loader,
   Menu,
   Modal,
@@ -34,32 +33,46 @@ import { Pagination } from '../../components/Pagination'
 
 import classes from './index.module.css'
 
+const PAGE_SIZE = 12
+
 export const AppList: React.FC = () => {
   const { data, isLoading } = useListAppApplicationsGet()
+  const [search, setSearch] = useState('')
+  const [page, setPage] = useState(1)
+  const totalPage = Math.ceil((data?.applications.length || 0) / PAGE_SIZE)
+  const searchedData = useMemo(
+    () => (search ? data?.applications.filter((a) => a.name.includes(search)) : data?.applications),
+    [data, search]
+  )
+  const displayedData = useMemo(() => searchedData?.slice((page - 1) * 12, page * 12), [searchedData, page])
 
   return (
     <>
       <Container size="lg" py="lg">
         <Stack mih="100vh" gap="lg">
           <Group justify="space-between">
-            <Input
+            <TextInput
               className={classes.search_input}
               leftSection={isLoading ? <Loader color="gray" size={14} /> : <IconSearch size={16} />}
               placeholder="Search applications"
               disabled={isLoading}
+              value={search}
+              onChange={(e) => setSearch(e.currentTarget.value)}
             />
             <NewAppButton />
           </Group>
 
           <SimpleGrid cols={{ lg: 3, md: 2, sm: 1 }} spacing={{ lg: 'lg', md: 'md', sm: 'sm' }}>
             {isLoading
-              ? Array(12)
+              ? Array(PAGE_SIZE)
                   .fill(0)
                   .map(() => <LoadingCard />)
-              : data?.applications.map((app) => <AppCard app={app} />)}
+              : displayedData?.map((app) => <AppCard app={app} />)}
           </SimpleGrid>
 
-          {!isLoading && (data?.applications.length || 0) > 12 && <Pagination />}
+          {!isLoading && (searchedData?.length || 0) > 12 && (
+            <Pagination page={page} onChange={setPage} total={totalPage} />
+          )}
         </Stack>
       </Container>
       <Footer />
@@ -105,6 +118,7 @@ const NewAppButton: React.FC = () => {
             label="Name"
             placeholder="Please input the application name"
             value={name}
+            disabled={isLoading}
             onChange={(event) => {
               setName(event.currentTarget.value)
             }}
