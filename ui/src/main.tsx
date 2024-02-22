@@ -18,7 +18,7 @@ import '@mantine/core/styles.css'
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      refetchOnMount: false
+      refetchOnWindowFocus: false
     }
   }
 })
