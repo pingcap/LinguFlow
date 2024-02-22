@@ -121,7 +121,7 @@ const AppCard: React.FC<{ app: ApplicationInfo }> = ({ app }) => {
               {app.name}
             </Title>
             <Text c="gray.7" fz="sm" truncate>
-              {app.active_version ? app.active_version : 'No published version'}
+              {app.active_version ? `Published ver. ${app.active_version}` : 'No published version'}
             </Text>
           </Stack>
 

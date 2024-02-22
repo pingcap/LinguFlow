@@ -8,7 +8,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/linguflow-api': {
-        target: 'http://localhost:8000/',
+        target: 'http://linguflow-api:8000/',
         changeOrigin: true,
         secure: false,
         rewrite: (path) => path.replace(/^\/linguflow-api/, '')
