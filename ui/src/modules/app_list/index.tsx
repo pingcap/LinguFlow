@@ -2,7 +2,9 @@ import {
   ActionIcon,
   Box,
   Button,
+  Code,
   Container,
+  FocusTrap,
   Group,
   Input,
   Loader,
@@ -15,12 +17,17 @@ import {
   Title
 } from '@mantine/core'
 import { IconDots, IconHistory, IconPlus, IconSearch, IconTrash } from '@tabler/icons-react'
-import { useDisclosure } from '@mantine/hooks'
-import { modals } from '@mantine/modals'
-import { useListAppApplicationsGet } from '@api/linguflow'
+import { getHotkeyHandler, useDisclosure } from '@mantine/hooks'
+import {
+  getListAppApplicationsGetQueryKey,
+  useCreateAppApplicationsPost,
+  useDeleteAppApplicationsApplicationIdDelete,
+  useListAppApplicationsGet
+} from '@api/linguflow'
 import { ApplicationInfo } from '@api/linguflow.schemas'
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import dayjs from 'dayjs'
+import { useQueryClient } from 'react-query'
 import { Card, LoadingCard } from '../../components/Card'
 import { Footer } from '../../components/Layout/Footer'
 import { Pagination } from '../../components/Pagination'
@@ -61,16 +68,57 @@ export const AppList: React.FC = () => {
 }
 
 const NewAppButton: React.FC = () => {
+  const queryClient = useQueryClient()
+  const { mutateAsync, isLoading } = useCreateAppApplicationsPost({
+    mutation: {
+      onSuccess: () => queryClient.fetchQuery({ queryKey: getListAppApplicationsGetQueryKey() })
+    }
+  })
   const [opened, { open, close }] = useDisclosure(false)
+  const [name, setName] = useState('')
+  const onClose = () => {
+    setName('')
+    close()
+  }
+  const handleCreate = async () => {
+    if (isLoading || !opened || !name) {
+      return
+    }
+    await mutateAsync({ data: { name } })
+    onClose()
+  }
 
   return (
     <>
-      <Modal opened={opened} onClose={close} title={<Title order={5}>New Application</Title>} centered>
-        <TextInput label="Name" placeholder="Please input the application name" />
+      <Modal
+        closeOnClickOutside={!isLoading}
+        closeOnEscape={!isLoading}
+        withCloseButton={!isLoading}
+        opened={opened}
+        onClose={onClose}
+        title={<Title order={5}>New Application</Title>}
+        centered
+        trapFocus={false}
+      >
+        <FocusTrap active={opened}>
+          <TextInput
+            label="Name"
+            placeholder="Please input the application name"
+            value={name}
+            onChange={(event) => {
+              setName(event.currentTarget.value)
+            }}
+            onKeyDown={getHotkeyHandler([['Enter', handleCreate]])}
+          />
+        </FocusTrap>
 
         <Group mt="xl" justify="end">
-          <Button variant="default">Cancel</Button>
-          <Button color="dark">Confirm</Button>
+          <Button variant="default" onClick={onClose} disabled={isLoading}>
+            Cancel
+          </Button>
+          <Button color="dark" loading={isLoading} disabled={!name} onClick={handleCreate}>
+            Confirm
+          </Button>
         </Group>
       </Modal>
 
@@ -93,24 +141,13 @@ const NewAppButton: React.FC = () => {
 }
 
 const AppCard: React.FC<{ app: ApplicationInfo }> = ({ app }) => {
-  const createdAt = useMemo(() => dayjs.unix(app.created_at).format('MMM D, YYYY'), [app])
-  const timeFromNow = useMemo(() => dayjs.unix(app.created_at).fromNow(), [app])
-
-  const openDeleteModal = () =>
-    modals.openConfirmModal({
-      title: <Title order={5}>Delete {app.name}</Title>,
-      labels: { confirm: 'I understand, delete it.', cancel: 'Cancel' },
-      confirmProps: {
-        color: 'dark'
-      },
-      children: (
-        <Text size="sm">
-          Deleting the application may cause online malfunctions. Confirm to delete the application?
-        </Text>
-      ),
-      centered: true,
-      size: 'lg'
-    })
+  const createdAt = useMemo(() => {
+    const isLargeThan22h = dayjs().diff(dayjs.unix(app.created_at), 'hour') > 22
+    const timeFromNow = dayjs.unix(app.created_at).fromNow()
+    return isLargeThan22h
+      ? `Created at ${dayjs.unix(app.created_at).format('MMM D, YYYY')} (${timeFromNow})`
+      : `Created ${timeFromNow}`
+  }, [app])
 
   return (
     <Card>
@@ -125,7 +162,7 @@ const AppCard: React.FC<{ app: ApplicationInfo }> = ({ app }) => {
             </Text>
           </Stack>
 
-          <Menu shadow="md" width={140} withinPortal position="bottom-start">
+          <Menu shadow="md" width={140} withinPortal position="bottom-start" keepMounted>
             <Menu.Target>
               <ActionIcon variant="subtle" color="gray" size="sm" onClick={(e) => e.stopPropagation()}>
                 <IconDots size={16} />
@@ -134,14 +171,12 @@ const AppCard: React.FC<{ app: ApplicationInfo }> = ({ app }) => {
 
             <Menu.Dropdown onClick={(e) => e.stopPropagation()}>
               <Menu.Label>Application</Menu.Label>
-              <Menu.Item leftSection={<IconHistory size={14} />}>Version list</Menu.Item>
+              <Menu.Item leftSection={<IconHistory size={14} />}>Edit Name</Menu.Item>
 
               <Menu.Divider />
 
               <Menu.Label>Danger zone</Menu.Label>
-              <Menu.Item color="red" leftSection={<IconTrash size={14} />} onClick={openDeleteModal}>
-                Delete
-              </Menu.Item>
+              <DeleteAppButton app={app} />
             </Menu.Dropdown>
           </Menu>
         </Group>
@@ -151,10 +186,62 @@ const AppCard: React.FC<{ app: ApplicationInfo }> = ({ app }) => {
             Owned by Default User
           </Text>
           <Text c="gray.6" fz="sm" truncate>
-            Created at {createdAt} ({timeFromNow})
+            {createdAt}
           </Text>
         </Stack>
       </Stack>
     </Card>
+  )
+}
+
+const DeleteAppButton: React.FC<{ app: ApplicationInfo }> = ({ app }) => {
+  const queryClient = useQueryClient()
+  const { mutateAsync, isLoading } = useDeleteAppApplicationsApplicationIdDelete({
+    mutation: {
+      onSuccess: () => queryClient.fetchQuery({ queryKey: getListAppApplicationsGetQueryKey() })
+    }
+  })
+  const [opened, { open, close }] = useDisclosure(false)
+
+  return (
+    <>
+      <Modal
+        closeOnClickOutside={!isLoading}
+        closeOnEscape={!isLoading}
+        withCloseButton={!isLoading}
+        opened={opened}
+        onClose={close}
+        title={
+          <Title order={5}>
+            Delete <Code fz="md">{app.name}</Code>
+          </Title>
+        }
+        centered
+      >
+        <Text size="sm">
+          Deleting the application may cause online malfunctions. Confirm to delete the application?
+        </Text>
+
+        <Group mt="xl" justify="end">
+          <Button variant="default" onClick={close}>
+            Cancel
+          </Button>
+          <Button
+            color="dark"
+            loading={isLoading}
+            onClick={async () => {
+              await mutateAsync({ applicationId: app.id })
+              close()
+            }}
+          >
+            I understand, delete it.
+          </Button>
+        </Group>
+      </Modal>
+
+      <Menu.Item color="red" leftSection={<IconTrash size={14} />} onClick={open}>
+        Delete
+      </Menu.Item>
+    </>
   )
 }
