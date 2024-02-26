@@ -257,7 +257,9 @@ class ApplicationView:
                     data=interaction.data,
                     error=interaction.error,
                     output=interaction.output,
-                ) if interaction else None
+                )
+                if interaction
+                else None
             )
         )
 

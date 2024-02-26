@@ -175,6 +175,10 @@ class Metadata(APIModel):
 
 
 class InteractionInfo(BaseModel):
+    """
+    InteractionInfo models the interaction object.
+    """
+
     id: str
     version_id: str
     created_at: int
@@ -182,6 +186,7 @@ class InteractionInfo(BaseModel):
     output: Optional[str] = None
     data: Optional[Dict[str, str]] = None
     error: Optional[dict] = None
+
 
 class InteractionInfoResponse(APIModel):
     """
