@@ -23,6 +23,7 @@ from api.api_schemas import (
     ApplicationVersionCreate,
     ApplicationVersionInfo,
     BlockInfo,
+    InteractionInfo,
     InteractionInfoResponse,
     ItemDeleteResponse,
     ItemUpdateResponse,
@@ -226,7 +227,7 @@ class ApplicationView:
             config (ApplicationRun): The configuration for running the application.
 
         Returns:
-            ApplicationRunResponse: The response containing the interacion ID which is
+            ApplicationRunResponse: The response containing the interaction ID which is
                 used for polling running result latter.
         """
         return ApplicationRunResponse(
@@ -243,22 +244,21 @@ class ApplicationView:
 
         Returns:
             InteractionInfoResponse: An object containing information about the interaction.
-
-        Raises:
-            InteractionNotFound: If the specified interaction ID is not found.
         """
         interaction = self.invoker.poll(interaction_id)
-        if not interaction:
-            raise InteractionNotFound(interaction_id)
 
         return InteractionInfoResponse(
-            id=interaction.id,
-            version_id=interaction.version_id,
-            created_at=int(interaction.created_at.timestamp()),
-            updated_at=int(interaction.updated_at.timestamp()),
-            data=interaction.data,
-            error=interaction.error,
-            output=interaction.output,
+            interaction=(
+                InteractionInfo(
+                    id=interaction.id,
+                    version_id=interaction.version_id,
+                    created_at=int(interaction.created_at.timestamp()),
+                    updated_at=int(interaction.updated_at.timestamp()),
+                    data=interaction.data,
+                    error=interaction.error,
+                    output=interaction.output,
+                ) if interaction else None
+            )
         )
 
     @router.put("/applications/{application_id}")
@@ -337,7 +337,7 @@ class ApplicationView:
             config (ApplicationRun): The configuration for running the application.
 
         Returns:
-            ApplicationRunResponse: The response containing the interacion ID which is
+            ApplicationRunResponse: The response containing the interaction ID which is
                 used for polling running result latter.
         """
         return ApplicationRunResponse(
