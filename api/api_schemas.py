@@ -174,9 +174,9 @@ class Metadata(APIModel):
     name: str
 
 
-class InteractionInfoResponse(APIModel):
+class InteractionInfo(BaseModel):
     """
-    The response model for /interactions/{interaction_id}.
+    InteractionInfo models the interaction object.
     """
 
     id: str
@@ -186,6 +186,14 @@ class InteractionInfoResponse(APIModel):
     output: Optional[str] = None
     data: Optional[Dict[str, str]] = None
     error: Optional[dict] = None
+
+
+class InteractionInfoResponse(APIModel):
+    """
+    The response model for /interactions/{interaction_id}.
+    """
+
+    interaction: Optional[InteractionInfo]
 
 
 class ApplicationListResponse(APIModel):
