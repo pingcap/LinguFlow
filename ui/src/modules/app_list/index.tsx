@@ -1,5 +1,6 @@
 import {
   ActionIcon,
+  Avatar,
   Box,
   Button,
   Code,
@@ -27,10 +28,12 @@ import { ApplicationInfo } from '@api/linguflow.schemas'
 import { useMemo, useState } from 'react'
 import dayjs from 'dayjs'
 import { useQueryClient } from 'react-query'
+import { useNavigate } from 'react-router-dom'
 import { Card, LoadingCard } from '../../components/Card'
 import { Footer } from '../../components/Layout/Footer'
 import { Pagination } from '../../components/Pagination'
 
+import { NoResult } from '../../components/NoResult'
 import classes from './index.module.css'
 
 const PAGE_SIZE = 12
@@ -45,6 +48,7 @@ export const AppList: React.FC = () => {
     [data, search]
   )
   const displayedData = useMemo(() => searchedData?.slice((page - 1) * 12, page * 12), [searchedData, page])
+  const [opened, { open, close }] = useDisclosure(false)
 
   return (
     <>
@@ -59,18 +63,22 @@ export const AppList: React.FC = () => {
               value={search}
               onChange={(e) => setSearch(e.currentTarget.value)}
             />
-            <NewAppButton />
+            <NewAppModel opened={opened} onClose={close} />
+            <NewAppButton onClick={open} />
           </Group>
 
           <SimpleGrid cols={{ lg: 3, md: 2, sm: 1 }} spacing={{ lg: 'lg', md: 'md', sm: 'sm' }}>
-            {isLoading
-              ? Array(PAGE_SIZE)
-                  .fill(0)
-                  .map(() => <LoadingCard />)
-              : displayedData?.map((app) => <AppCard app={app} />)}
+            {isLoading &&
+              Array(PAGE_SIZE)
+                .fill(0)
+                .map(() => <LoadingCard />)}
+            {!isLoading && !!displayedData?.length && displayedData.map((app) => <AppCard app={app} />)}
+            {!isLoading && !displayedData?.length && !data?.applications.length && <NewAppCard onClick={open} />}
           </SimpleGrid>
 
-          {!isLoading && (searchedData?.length || 0) > 12 && (
+          {!isLoading && !displayedData?.length && !!data?.applications.length && <NoResult />}
+
+          {!isLoading && (searchedData?.length || 0) > PAGE_SIZE && (
             <Pagination page={page} onChange={setPage} total={totalPage} />
           )}
         </Stack>
@@ -80,81 +88,107 @@ export const AppList: React.FC = () => {
   )
 }
 
-const NewAppButton: React.FC = () => {
+interface NewAppModelProps {
+  opened: boolean
+  onClose: () => void
+}
+
+const NewAppModel: React.FC<NewAppModelProps> = ({ opened, onClose: _onClose }) => {
   const queryClient = useQueryClient()
-  const { mutateAsync, isLoading } = useCreateAppApplicationsPost({
-    mutation: {
-      onSuccess: () => queryClient.fetchQuery({ queryKey: getListAppApplicationsGetQueryKey() })
-    }
-  })
-  const [opened, { open, close }] = useDisclosure(false)
+  const navigate = useNavigate()
   const [name, setName] = useState('')
   const onClose = () => {
     setName('')
-    close()
+    _onClose()
   }
+  const { mutateAsync, isLoading } = useCreateAppApplicationsPost({
+    mutation: {
+      onSuccess: async (data) => {
+        await queryClient.fetchQuery({ queryKey: getListAppApplicationsGetQueryKey() })
+        navigate(`/app/${data.id}`)
+        onClose()
+      }
+    }
+  })
   const handleCreate = async () => {
     if (isLoading || !opened || !name) {
       return
     }
     await mutateAsync({ data: { name } })
-    onClose()
   }
 
   return (
-    <>
-      <Modal
-        closeOnClickOutside={!isLoading}
-        closeOnEscape={!isLoading}
-        withCloseButton={!isLoading}
-        opened={opened}
-        onClose={onClose}
-        title={<Title order={5}>New Application</Title>}
-        centered
-        trapFocus={false}
-      >
-        <FocusTrap active={opened}>
-          <TextInput
-            label="Name"
-            placeholder="Please input the application name"
-            value={name}
-            disabled={isLoading}
-            onChange={(event) => {
-              setName(event.currentTarget.value)
-            }}
-            onKeyDown={getHotkeyHandler([['Enter', handleCreate]])}
-          />
-        </FocusTrap>
+    <Modal
+      closeOnClickOutside={!isLoading}
+      closeOnEscape={!isLoading}
+      withCloseButton={!isLoading}
+      opened={opened}
+      onClose={onClose}
+      title={<Title order={5}>New Application</Title>}
+      centered
+      trapFocus={false}
+    >
+      <FocusTrap active={opened}>
+        <TextInput
+          label="Name"
+          placeholder="Please input the application name"
+          value={name}
+          disabled={isLoading}
+          onChange={(event) => {
+            setName(event.currentTarget.value)
+          }}
+          onKeyDown={getHotkeyHandler([['Enter', handleCreate]])}
+        />
+      </FocusTrap>
 
-        <Group mt="xl" justify="end">
-          <Button variant="default" onClick={onClose} disabled={isLoading}>
-            Cancel
-          </Button>
-          <Button color="dark" loading={isLoading} disabled={!name} onClick={handleCreate}>
-            Confirm
-          </Button>
-        </Group>
-      </Modal>
+      <Group mt="xl" justify="end">
+        <Button variant="default" onClick={onClose} disabled={isLoading}>
+          Cancel
+        </Button>
+        <Button color="dark" loading={isLoading} disabled={!name} onClick={handleCreate}>
+          Confirm
+        </Button>
+      </Group>
+    </Modal>
+  )
+}
 
-      <Button
-        leftSection={
-          <Box visibleFrom="sm">
-            <IconPlus size={16} />
-          </Box>
-        }
-        color="dark"
-        onClick={open}
-      >
-        <Text visibleFrom="sm">Add New App</Text>
-        <Box hiddenFrom="sm">
+const NewAppButton: React.FC<{ onClick: () => void }> = ({ onClick }) => {
+  return (
+    <Button
+      leftSection={
+        <Box visibleFrom="sm">
           <IconPlus size={16} />
         </Box>
-      </Button>
-    </>
+      }
+      color="dark"
+      onClick={onClick}
+    >
+      <Text visibleFrom="sm">New App</Text>
+      <Box hiddenFrom="sm">
+        <IconPlus size={16} />
+      </Box>
+    </Button>
+  )
+}
+
+const NewAppCard: React.FC<{ onClick: () => void }> = ({ onClick }) => {
+  return (
+    <Card onClick={onClick}>
+      <Stack align="center">
+        <Avatar size="lg" radius="sm">
+          <IconPlus size="1.5rem" />
+        </Avatar>
+        <Text c="gray.7" fz="sm">
+          Create your first application
+        </Text>
+      </Stack>
+    </Card>
   )
 }
 
 const AppCard: React.FC<{ app: ApplicationInfo }> = ({ app }) => {
+  const navigate = useNavigate()
   const createdAt = useMemo(() => {
     const isLargeThan22h = dayjs().diff(dayjs.unix(app.created_at), 'hour') > 22
     const timeFromNow = dayjs.unix(app.created_at).fromNow()
@@ -164,7 +198,7 @@ const AppCard: React.FC<{ app: ApplicationInfo }> = ({ app }) => {
   }, [app])
 
   return (
-    <Card>
+    <Card onClick={() => navigate(`/app/${app.id}`)}>
       <Stack>
         <Group justify="space-between">
           <Stack gap={0} maw="80%">
