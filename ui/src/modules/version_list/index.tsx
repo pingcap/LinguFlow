@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import dayjs from 'dayjs'
 import {
   ActionIcon,
+  Anchor,
   Avatar,
   Badge,
   Box,
@@ -9,6 +10,7 @@ import {
   Card,
   Code,
   Container,
+  CopyButton,
   Divider,
   Group,
   Input,
@@ -19,10 +21,12 @@ import {
   Stack,
   Text,
   Title,
+  Tooltip,
+  rem,
   useMantineTheme
 } from '@mantine/core'
-import { IconApps, IconDots, IconEdit, IconSearch, IconTrash } from '@tabler/icons-react'
-import { useParams } from 'react-router-dom'
+import { IconApps, IconCheck, IconCopy, IconDots, IconEdit, IconSearch, IconTrash } from '@tabler/icons-react'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import {
   getListAppVersionsApplicationsApplicationIdVersionsGetQueryKey,
   useDeleteAppVersionApplicationsApplicationIdVersionsVersionIdDelete,
@@ -42,6 +46,7 @@ const PAGE_SIZE = 12
 
 export const VersionList: React.FC = () => {
   const theme = useMantineTheme()
+  const navigate = useNavigate()
   const { appId } = useParams()
   const { data: appData, isLoading: appLoading } = useGetAppApplicationsApplicationIdGet(appId!)
   const { data: versionData, isLoading: versionLoading } = useListAppVersionsApplicationsApplicationIdVersionsGet(
@@ -66,12 +71,27 @@ export const VersionList: React.FC = () => {
           <Stack>
             <Group justify="space-between">
               <Skeleton w="80%" component="span" visible={appLoading}>
-                <Title order={2} lineClamp={1}>
-                  {app?.name || 'Default App'}
-                </Title>
+                <Group gap="xs" wrap="nowrap">
+                  <Title maw="80%" order={2} lineClamp={1}>
+                    {app?.name || 'Default App'}
+                  </Title>
+                  <CopyButton value={app?.id || ''} timeout={2000}>
+                    {({ copied, copy }) => (
+                      <Tooltip label={copied ? 'Copied' : 'Copy App ID'} withArrow position="right">
+                        <ActionIcon color={copied ? 'teal' : 'gray'} variant="subtle" onClick={copy}>
+                          {copied ? <IconCheck style={{ width: rem(16) }} /> : <IconCopy style={{ width: rem(16) }} />}
+                        </ActionIcon>
+                      </Tooltip>
+                    )}
+                  </CopyButton>
+                </Group>
               </Skeleton>
 
-              <Button color="dark" disabled={appLoading}>
+              <Button
+                color="dark"
+                disabled={appLoading}
+                onClick={() => navigate(!versions?.length ? './ver' : `./ver/${versions[0].id}`)}
+              >
                 <Text visibleFrom="sm">{!versions?.length ? 'Create' : 'Edit the latest'}</Text>
                 <Box hiddenFrom="sm">
                   <IconEdit size={16} />
@@ -79,18 +99,29 @@ export const VersionList: React.FC = () => {
               </Button>
             </Group>
 
-            <Stack gap={0}>
-              <Skeleton w="60%" component="span" visible={appLoading}>
+            <Skeleton w="60%" component="span" visible={appLoading}>
+              <Stack gap={4}>
                 <Text c="gray.7" fz="sm" truncate>
-                  {app?.active_version ? `Published ver. ${app.active_version}` : 'No published version'}
+                  {app?.active_version ? (
+                    <Group gap="xs">
+                      Published ver.
+                      <Anchor component={Link} to={`./ver/${app.active_version}`}>
+                        <Badge color="blue" radius="sm" variant="light">
+                          {app.active_version}
+                        </Badge>
+                      </Anchor>
+                    </Group>
+                  ) : (
+                    'No published version'
+                  )}
                 </Text>
                 {app?.active_version && (
                   <Text c="gray.6" fz="sm" truncate>
-                    {updatedAt}
+                    Published at {updatedAt}
                   </Text>
                 )}
-              </Skeleton>
-            </Stack>
+              </Stack>
+            </Skeleton>
           </Stack>
         </Container>
 
@@ -143,7 +174,7 @@ const getDateTime = (unixTS?: number) => {
   }
 
   const timeFromNow = dayjs.unix(unixTS).fromNow()
-  return `${dayjs.unix(unixTS).format('MMM D, YYYY [at] HH:mm')} (${timeFromNow})`
+  return `${dayjs.unix(unixTS).format('MMM D, YYYY HH:mm')} (${timeFromNow})`
 }
 
 const LIST_ITEM_HEIGHT = 86
@@ -157,12 +188,12 @@ const List: React.FC<{ app: ApplicationInfo; versions: ApplicationVersionInfo[] 
           <>
             <Group p="md" justify="space-between" h={LIST_ITEM_HEIGHT}>
               <Stack gap={4} w="60%">
-                <Group>
-                  <Title order={5} style={{ cursor: 'pointer' }} maw="90%" lineClamp={1}>
-                    {v.id}
-                  </Title>
+                <Group gap="xs" wrap="nowrap">
+                  <Anchor component={Link} to={`./ver/${v.id}`} maw="80%" lineClamp={1} underline="never" c="dark">
+                    <Title order={5}>{v.id.toUpperCase()}</Title>
+                  </Anchor>
                   {isPublished && (
-                    <Badge color="green" radius="sm" variant="filled">
+                    <Badge color="blue" radius="sm" variant="light">
                       Published
                     </Badge>
                   )}

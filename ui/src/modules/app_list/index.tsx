@@ -28,7 +28,7 @@ import { ApplicationInfo } from '@api/linguflow.schemas'
 import { useMemo, useState } from 'react'
 import dayjs from 'dayjs'
 import { useQueryClient } from 'react-query'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Card, LoadingCard } from '../../components/Card'
 import { Footer } from '../../components/Layout/Footer'
 import { Pagination } from '../../components/Pagination'
@@ -188,7 +188,6 @@ const NewAppCard: React.FC<{ onClick: () => void }> = ({ onClick }) => {
 }
 
 const AppCard: React.FC<{ app: ApplicationInfo }> = ({ app }) => {
-  const navigate = useNavigate()
   const createdAt = useMemo(() => {
     const isLargeThan22h = dayjs().diff(dayjs.unix(app.created_at), 'hour') > 22
     const timeFromNow = dayjs.unix(app.created_at).fromNow()
@@ -198,7 +197,7 @@ const AppCard: React.FC<{ app: ApplicationInfo }> = ({ app }) => {
   }, [app])
 
   return (
-    <Card onClick={() => navigate(`/app/${app.id}`)}>
+    <Card component={Link} to={`/app/${app.id}`}>
       <Stack>
         <Group justify="space-between">
           <Stack gap={0} maw="80%">
