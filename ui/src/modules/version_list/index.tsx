@@ -1,16 +1,13 @@
 import { useMemo, useState } from 'react'
-import dayjs from 'dayjs'
 import {
   ActionIcon,
   Anchor,
   Avatar,
   Badge,
-  Box,
   Button,
   Card,
   Code,
   Container,
-  CopyButton,
   Divider,
   Group,
   Input,
@@ -21,12 +18,10 @@ import {
   Stack,
   Text,
   Title,
-  Tooltip,
-  rem,
   useMantineTheme
 } from '@mantine/core'
-import { IconApps, IconCheck, IconCopy, IconDots, IconEdit, IconSearch, IconTrash } from '@tabler/icons-react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { IconApps, IconDots, IconEdit, IconSearch, IconTrash } from '@tabler/icons-react'
+import { Link, useParams } from 'react-router-dom'
 import {
   getListAppVersionsApplicationsApplicationIdVersionsGetQueryKey,
   useDeleteAppVersionApplicationsApplicationIdVersionsVersionIdDelete,
@@ -36,17 +31,18 @@ import {
 import { ApplicationInfo, ApplicationVersionInfo } from '@api/linguflow.schemas'
 import { useQueryClient } from 'react-query'
 import { useDisclosure } from '@mantine/hooks'
-import { Footer } from '../../components/Layout/Footer'
 import { Pagination } from '../../components/Pagination'
 
 import { NoResult } from '../../components/NoResult'
+import { Layout } from '../../components/Layout/Layout'
 import classes from './index.module.css'
+import { getDateTime } from './utils'
+import { VersionListHeader } from './Header'
 
 const PAGE_SIZE = 12
 
 export const VersionList: React.FC = () => {
   const theme = useMantineTheme()
-  const navigate = useNavigate()
   const { appId } = useParams()
   const { data: appData, isLoading: appLoading } = useGetAppApplicationsApplicationIdGet(appId!)
   const { data: versionData, isLoading: versionLoading } = useListAppVersionsApplicationsApplicationIdVersionsGet(
@@ -54,7 +50,6 @@ export const VersionList: React.FC = () => {
   )
   const app = appData?.application
   const versions = versionData?.versions
-  const updatedAt = useMemo(() => getDateTime(app?.updated_at), [app])
   const [search, setSearch] = useState('')
   const [page, setPage] = useState(1)
   const totalPage = Math.ceil((versions?.length || 0) / PAGE_SIZE)
@@ -65,68 +60,14 @@ export const VersionList: React.FC = () => {
   const displayedVersions = useMemo(() => searchedVersions?.slice((page - 1) * 12, page * 12), [searchedVersions, page])
 
   return (
-    <>
+    <Layout
+      header={{
+        height: 215,
+        withBorder: false,
+        bottomSection: <VersionListHeader app={app} versions={versions} appLoading={appLoading} />
+      }}
+    >
       <Stack mih="100vh" gap={0} align="stretch">
-        <Container size="lg" py={30} w="100%">
-          <Stack>
-            <Group justify="space-between">
-              <Skeleton w="80%" component="span" visible={appLoading}>
-                <Group gap="xs" wrap="nowrap">
-                  <Title maw="80%" order={2} lineClamp={1}>
-                    {app?.name || 'Default App'}
-                  </Title>
-                  <CopyButton value={app?.id || ''} timeout={2000}>
-                    {({ copied, copy }) => (
-                      <Tooltip label={copied ? 'Copied' : 'Copy App ID'} withArrow position="right">
-                        <ActionIcon color={copied ? 'teal' : 'gray'} variant="subtle" onClick={copy}>
-                          {copied ? <IconCheck style={{ width: rem(16) }} /> : <IconCopy style={{ width: rem(16) }} />}
-                        </ActionIcon>
-                      </Tooltip>
-                    )}
-                  </CopyButton>
-                </Group>
-              </Skeleton>
-
-              <Button
-                color="dark"
-                disabled={appLoading}
-                onClick={() => navigate(!versions?.length ? './ver' : `./ver/${versions[0].id}`)}
-              >
-                <Text visibleFrom="sm">{!versions?.length ? 'Create' : 'Edit the latest'}</Text>
-                <Box hiddenFrom="sm">
-                  <IconEdit size={16} />
-                </Box>
-              </Button>
-            </Group>
-
-            <Skeleton w="60%" component="span" visible={appLoading}>
-              <Stack gap={4}>
-                <Text c="gray.7" fz="sm" truncate>
-                  {app?.active_version ? (
-                    <Group gap="xs">
-                      Published ver.
-                      <Anchor component={Link} to={`./ver/${app.active_version}`}>
-                        <Badge color="blue" radius="sm" variant="light">
-                          {app.active_version}
-                        </Badge>
-                      </Anchor>
-                    </Group>
-                  ) : (
-                    'No published version'
-                  )}
-                </Text>
-                {app?.active_version && (
-                  <Text c="gray.6" fz="sm" truncate>
-                    Published at {updatedAt}
-                  </Text>
-                )}
-              </Stack>
-            </Skeleton>
-          </Stack>
-        </Container>
-
-        <Divider color="gray.3" />
-
         <Container size="lg" py="xl" w="100%">
           <Stack>
             {(versionLoading || !!versions?.length) && (
@@ -162,19 +103,8 @@ export const VersionList: React.FC = () => {
           </Stack>
         </Container>
       </Stack>
-
-      <Footer />
-    </>
+    </Layout>
   )
-}
-
-const getDateTime = (unixTS?: number) => {
-  if (!unixTS) {
-    return ''
-  }
-
-  const timeFromNow = dayjs.unix(unixTS).fromNow()
-  return `${dayjs.unix(unixTS).format('MMM D, YYYY HH:mm')} (${timeFromNow})`
 }
 
 const LIST_ITEM_HEIGHT = 86
@@ -190,7 +120,7 @@ const List: React.FC<{ app: ApplicationInfo; versions: ApplicationVersionInfo[] 
               <Stack gap={4} w="60%">
                 <Group gap="xs" wrap="nowrap">
                   <Anchor component={Link} to={`./ver/${v.id}`} maw="80%" lineClamp={1} underline="never" c="dark">
-                    <Title order={5}>{v.id.toUpperCase()}</Title>
+                    <Title order={5}>Untitled</Title>
                   </Anchor>
                   {isPublished && (
                     <Badge color="blue" radius="sm" variant="light">
@@ -199,7 +129,7 @@ const List: React.FC<{ app: ApplicationInfo; versions: ApplicationVersionInfo[] 
                   )}
                 </Group>
                 <Text c="gray.7" fz="sm" truncate>
-                  No description.
+                  Ver. {v.id.toUpperCase()}
                 </Text>
               </Stack>
 

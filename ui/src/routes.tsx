@@ -9,9 +9,10 @@ export const AppRoutes: React.FC = () => {
     <Routes>
       <Route element={<Layout />}>
         <Route path="/" element={<AppList />} />
-        <Route path="/app/:appId" element={<VersionList />} />
-        <Route path="/app/:appId/ver/:verId?" element={<AppBuilder />} />
       </Route>
+
+      <Route path="/app/:appId" element={<VersionList />} />
+      <Route path="/app/:appId/ver/:verId?" element={<AppBuilder />} />
 
       <Route path="*" element={<Navigate replace to="/" />} />
     </Routes>

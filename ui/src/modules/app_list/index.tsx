@@ -30,7 +30,6 @@ import dayjs from 'dayjs'
 import { useQueryClient } from 'react-query'
 import { Link, useNavigate } from 'react-router-dom'
 import { Card, LoadingCard } from '../../components/Card'
-import { Footer } from '../../components/Layout/Footer'
 import { Pagination } from '../../components/Pagination'
 
 import { NoResult } from '../../components/NoResult'
@@ -51,40 +50,37 @@ export const AppList: React.FC = () => {
   const [opened, { open, close }] = useDisclosure(false)
 
   return (
-    <>
-      <Container size="lg" py="lg">
-        <Stack mih="100vh" gap="lg">
-          <Group justify="space-between">
-            <TextInput
-              className={classes.search_input}
-              leftSection={isLoading ? <Loader color="gray" size={14} /> : <IconSearch size={16} />}
-              placeholder="Search applications"
-              disabled={isLoading}
-              value={search}
-              onChange={(e) => setSearch(e.currentTarget.value)}
-            />
-            <NewAppModel opened={opened} onClose={close} />
-            <NewAppButton onClick={open} />
-          </Group>
+    <Container size="lg" py="lg">
+      <Stack mih="100vh" gap="lg">
+        <Group justify="space-between">
+          <TextInput
+            className={classes.search_input}
+            leftSection={isLoading ? <Loader color="gray" size={14} /> : <IconSearch size={16} />}
+            placeholder="Search applications"
+            disabled={isLoading}
+            value={search}
+            onChange={(e) => setSearch(e.currentTarget.value)}
+          />
+          <NewAppModel opened={opened} onClose={close} />
+          <NewAppButton onClick={open} />
+        </Group>
 
-          <SimpleGrid cols={{ lg: 3, md: 2, sm: 1 }} spacing={{ lg: 'lg', md: 'md', sm: 'sm' }}>
-            {isLoading &&
-              Array(PAGE_SIZE)
-                .fill(0)
-                .map(() => <LoadingCard />)}
-            {!isLoading && !!displayedData?.length && displayedData.map((app) => <AppCard app={app} />)}
-            {!isLoading && !displayedData?.length && !data?.applications.length && <NewAppCard onClick={open} />}
-          </SimpleGrid>
+        <SimpleGrid cols={{ lg: 3, md: 2, sm: 1 }} spacing={{ lg: 'lg', md: 'md', sm: 'sm' }}>
+          {isLoading &&
+            Array(PAGE_SIZE)
+              .fill(0)
+              .map(() => <LoadingCard />)}
+          {!isLoading && !!displayedData?.length && displayedData.map((app) => <AppCard app={app} />)}
+          {!isLoading && !displayedData?.length && !data?.applications.length && <NewAppCard onClick={open} />}
+        </SimpleGrid>
 
-          {!isLoading && !displayedData?.length && !!data?.applications.length && <NoResult />}
+        {!isLoading && !displayedData?.length && !!data?.applications.length && <NoResult />}
 
-          {!isLoading && (searchedData?.length || 0) > PAGE_SIZE && (
-            <Pagination page={page} onChange={setPage} total={totalPage} />
-          )}
-        </Stack>
-      </Container>
-      <Footer />
-    </>
+        {!isLoading && (searchedData?.length || 0) > PAGE_SIZE && (
+          <Pagination page={page} onChange={setPage} total={totalPage} />
+        )}
+      </Stack>
+    </Container>
   )
 }
 
