@@ -10,6 +10,7 @@ from fastapi_utils.inferring_router import InferringRouter
 from sqlalchemy import create_engine
 
 import patterns
+import plugins
 from api.api_schemas import (
     ApplicationBlocksResponse,
     ApplicationCreate,
