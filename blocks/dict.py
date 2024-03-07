@@ -19,7 +19,7 @@ class KeySelector(BaseBlock):
     """
 
     def __init__(self, key: str):
-        super(KeySelector).__init__()
+        super(KeySelector, self).__init__()
         self.key = key
 
     def __call__(self, messages: dict) -> str:

@@ -2,6 +2,7 @@ import langchain.chains
 from langchain.base_language import BaseLanguageModel
 from langchain.prompts.prompt import StringPromptTemplate
 
+from observability import span
 from resolver import block
 
 from .base import BaseBlock
@@ -16,5 +17,6 @@ class LLMChain(BaseBlock):
     def __init__(self, model: BaseLanguageModel, prompt_template: StringPromptTemplate):
         self.chain = langchain.chains.LLMChain(llm=model, prompt=prompt_template)
 
+    @span(name="LLM Chain")
     def __call__(self, text: str, **kwargs) -> str:
         return self.chain.run(text=text, **kwargs)

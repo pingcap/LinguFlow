@@ -3,6 +3,7 @@ import urllib
 
 import requests
 
+from observability import span
 from patterns import Secret
 from resolver import block
 
@@ -42,5 +43,6 @@ class GoogleSearch(BaseBlock):
         self.key = key
         self.top_k = 5
 
+    @span(name="search google")
     def __call__(self, text: str) -> list:
         return [item["snippet"] for item in r["items"][: self.top_k]]
