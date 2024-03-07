@@ -62,7 +62,7 @@ export const VersionList: React.FC = () => {
   return (
     <Layout
       header={{
-        height: 215,
+        height: app?.active_version ? 213 : 184,
         withBorder: false,
         bottomSection: <VersionListHeader app={app} versions={versions} appLoading={appLoading} />
       }}

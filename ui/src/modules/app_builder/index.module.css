@@ -1,0 +1,7 @@
+.toolbar_button {
+  cursor: pointer;
+  background-color: var(--mantine-color-gray-2);
+  &:hover {
+    background-color: var(--mantine-color-gray-1);
+  }
+}

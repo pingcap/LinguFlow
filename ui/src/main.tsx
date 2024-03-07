@@ -9,11 +9,11 @@ import { QueryClient, QueryClientProvider } from 'react-query'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { AppRoutes } from './routes.tsx'
-import { CustomError } from './modules/error_boundary/ErrorBoundary.tsx'
 
 dayjs.extend(relativeTime)
 
 import '@mantine/core/styles.css'
+import { CustomError } from './components/ErrorBoundary.tsx'
 
 const queryClient = new QueryClient({
   defaultOptions: {

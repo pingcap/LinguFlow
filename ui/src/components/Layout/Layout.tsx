@@ -25,7 +25,7 @@ export const Layout: React.FC<PropsWithChildren<LayoutProps>> = ({
 }) => {
   return (
     <AppShell padding={0} header={{ height: height || HEADER_HEIGHT }}>
-      <AppShell.Header zIndex={99} withBorder={withBorder}>
+      <AppShell.Header zIndex={99} withBorder={withBorder} style={{ animation: 'ease-in-out' }}>
         <Group h={HEADER_HEIGHT} justify="space-between" px={20}>
           <Box>{leftSection || <Title />}</Box>
           <Box>{centerSection}</Box>
