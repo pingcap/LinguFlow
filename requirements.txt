@@ -1,5 +1,5 @@
 networkx==3.1
-langchain==0.0.221
+langchain==0.1.11
 fastapi==0.100.0
 uvicorn==0.23.1
 fastapi-utils==0.2.1
