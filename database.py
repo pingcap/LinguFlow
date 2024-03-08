@@ -27,7 +27,10 @@ class Database:
         """
         with Session(self.engine) as session:
             return (
-                session.query(Application).filter(Application.deleted_at == None).all()
+                session.query(Application)
+                .filter(Application.deleted_at == None)
+                .order_by(Application.created_at.desc())
+                .all()
             )
 
     def create_application(self, app: Application):
@@ -149,6 +152,7 @@ class Database:
                 session.query(ApplicationVersion)
                 .filter(ApplicationVersion.app_id == app_id)
                 .filter(ApplicationVersion.deleted_at == None)
+                .order_by(ApplicationVersion.created_at.desc())
                 .all()
             )
 

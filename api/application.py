@@ -32,6 +32,7 @@ from api.api_schemas import (
     Parameter,
     PatternInfo,
     VersionCreateResponse,
+    VersionInfoResponse,
     VersionListResponse,
 )
 from blocks import AsyncInvoker
@@ -347,6 +348,26 @@ class ApplicationView:
             id=self.invoker.invoke(config.input, application_id, version_id)
         )
 
+    @router.get("/applications/{application_id}/versions/{version_id}")
+    def get_app_version(
+        self, application_id: str, version_id: str
+    ) -> VersionInfoResponse:
+        version = self.database.get_version(version_id)
+        if not version or version.app_id != application_id:
+            return VersionInfoResponse(version=None)
+
+        return VersionInfoResponse(
+            version=(
+                ApplicationVersionInfo(
+                    id=version.id,
+                    app_id=version.app_id,
+                    created_at=int(version.created_at.timestamp()),
+                    updated_at=int(version.updated_at.timestamp()),
+                    configuration=version.configuration,
+                )
+            )
+        )
+
     @router.get("/applications/{application_id}/versions")
     def list_app_versions(self, application_id: str) -> VersionListResponse:
         """
@@ -367,7 +388,7 @@ class ApplicationView:
                     app_id=version.app_id,
                     created_at=int(version.created_at.timestamp()),
                     updated_at=int(version.updated_at.timestamp()),
-                    configuration=version.configuration,
+                    configuration=None,
                 )
                 for version in versions
             ]
