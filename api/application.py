@@ -388,7 +388,7 @@ class ApplicationView:
                     app_id=version.app_id,
                     created_at=int(version.created_at.timestamp()),
                     updated_at=int(version.updated_at.timestamp()),
-                    configuration=version.configuration,
+                    configuration=None,
                 )
                 for version in versions
             ]

@@ -128,7 +128,7 @@ class ApplicationVersionInfo(BaseModel):
     app_id: str
     created_at: int
     updated_at: int
-    configuration: dict
+    configuration: Optional[dict]
 
 
 class GraphNode(BaseModel):
