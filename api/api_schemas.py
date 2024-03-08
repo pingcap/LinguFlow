@@ -248,8 +248,21 @@ class ItemUpdateResponse(APIModel):
     message: str
 
 
+class VersionInfoResponse(APIModel):
+    """
+    The response model for /applications/{application_id}/versions/{version_id},
+    which returns information of specific app version. If the specifed version not
+    found, the version property will be None.
+    """
+
+    version: Optional[ApplicationVersionInfo]
+
+
 class VersionListResponse(APIModel):
-    "The response model for application version list api."
+    """
+    The response model for application version list api.
+    """
+
     versions: List[ApplicationVersionInfo]
 
 
