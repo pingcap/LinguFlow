@@ -1,8 +1,9 @@
-import { AppShell, Box, Group } from '@mantine/core'
+import { ActionIcon, Anchor, AppShell, Box, Group } from '@mantine/core'
 import { Outlet } from 'react-router-dom'
 import { PropsWithChildren, ReactNode } from 'react'
 import { Title } from './Title'
 import { Footer } from './Footer'
+import { GithubLogo } from './GithubLogo'
 
 interface LayoutProps {
   header?: {
@@ -29,7 +30,15 @@ export const Layout: React.FC<PropsWithChildren<LayoutProps>> = ({
         <Group h={HEADER_HEIGHT} justify="space-between" px={20}>
           <Box>{leftSection || <Title />}</Box>
           <Box>{centerSection}</Box>
-          <Box>{rightSection}</Box>
+          <Box>
+            {rightSection || (
+              <Anchor href="https://github.com/pingcap/LinguFlow" target="_blank">
+                <ActionIcon variant="default" aria-label="GitHub" size="lg">
+                  <GithubLogo />
+                </ActionIcon>
+              </Anchor>
+            )}
+          </Box>
         </Group>
         {bottomSection}
       </AppShell.Header>
