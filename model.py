@@ -10,9 +10,9 @@ https://docs.sqlalchemy.org/en/20/orm/declarative_tables.html
 
 We build three models in the module:
 
-    ------                     ---------                     ------------
+ ------                     ---------                     ------------
 | app  | --- has many ---> | version | --- has many ---> | iteraction |
-    ------                     ---------                     ------------
+ ------                     ---------                     ------------
 
 App is the container of versions. But only one version can be active.
 Each version (except the first one of every app) contains a parent version, which
@@ -51,8 +51,10 @@ class ApplicationVersion(Base):
     __tablename__ = "versions"
 
     id = Column(String(36), primary_key=True, nullable=False)
+    name = Column(String(36), nullable=False)
     parent_id = Column(String(36), nullable=True)
     app_id = Column(String(36), nullable=False)
+    meta = Column(JSON, nullable=True)
     configuration = Column(JSON, nullable=False)
     created_at = Column(TIMESTAMP, nullable=False)
     updated_at = Column(TIMESTAMP, nullable=False)
