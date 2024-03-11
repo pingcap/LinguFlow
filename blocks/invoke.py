@@ -22,6 +22,7 @@ from exceptions import (
     register_exception_handlers,
 )
 from model import Interaction
+from observability import langfuse, span, trace
 from resolver import Resolver, block
 from scheduler import Edge, Graph
 
@@ -79,7 +80,7 @@ class AsyncInvoker:
             if slots is None:
                 slots = {}
         else:
-            slots = config.get("slots", {})
+            slots = config.get("slots") or {}
         for p, v in slots.items():
             if isinstance(v, dict):
                 properties[p] = self.construct_graph_node(v)
@@ -172,7 +173,8 @@ class AsyncInvoker:
             )
         )
 
-        def async_run():
+        @trace(id=_id, name=app.name)
+        def async_task(input: Union[str, dict, list]) -> str:
             h = AsyncExceptionHandler()
             register_exception_handlers(h)
             try:
@@ -186,6 +188,7 @@ class AsyncInvoker:
                     ),
                 )
                 self.database.update_interaction(_id, {"output": output})
+                return output
             except Exception as e:
                 r = h.render(e)
                 self.database.update_interaction(
@@ -198,7 +201,13 @@ class AsyncInvoker:
                     },
                 )
 
-        threading.Thread(target=async_run).start()
+        task = async_task
+        if app.langfuse_public_key and app.langfuse_secret_key:
+            task = langfuse(
+                public_key=app.langfuse_public_key,
+                secret_key=app.langfuse_secret_key,
+            )(async_task)
+        threading.Thread(target=task, kwargs={"input": input}).start()
 
         return _id
 
@@ -234,6 +243,7 @@ class HashableList(list):
 
 
 @functools.lru_cache
+@span(name="invoke")
 def invoke(
     app_id: str,
     input: Union[str, HashableDict, HashableList],

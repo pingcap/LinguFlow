@@ -211,6 +211,8 @@ class ApplicationView:
             Application(
                 id=_id,
                 name=application.name,
+                langfuse_public_key=application.langfuse_public_key,
+                langfuse_secret_key=application.langfuse_secret_key,
                 created_at=created_at,
                 updated_at=created_at,
             )
@@ -248,7 +250,6 @@ class ApplicationView:
             InteractionInfoResponse: An object containing information about the interaction.
         """
         interaction = self.invoker.poll(interaction_id)
-
         return InteractionInfoResponse(
             interaction=(
                 InteractionInfo(
