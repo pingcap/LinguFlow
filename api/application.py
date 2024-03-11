@@ -34,6 +34,7 @@ from api.api_schemas import (
     VersionCreateResponse,
     VersionInfoResponse,
     VersionListResponse,
+    VersionMetadata,
 )
 from blocks import AsyncInvoker
 from database import Database
@@ -361,9 +362,11 @@ class ApplicationView:
             version=(
                 ApplicationVersionInfo(
                     id=version.id,
+                    name=version.name,
                     app_id=version.app_id,
                     created_at=int(version.created_at.timestamp()),
                     updated_at=int(version.updated_at.timestamp()),
+                    metadata=version.meta,
                     configuration=version.configuration,
                 )
             )
@@ -386,9 +389,11 @@ class ApplicationView:
             versions=[
                 ApplicationVersionInfo(
                     id=version.id,
+                    name=version.name,
                     app_id=version.app_id,
                     created_at=int(version.created_at.timestamp()),
                     updated_at=int(version.updated_at.timestamp()),
+                    metadata=None,
                     configuration=None,
                 )
                 for version in versions
@@ -413,17 +418,54 @@ class ApplicationView:
         """
         created_at = datetime.utcnow()
         _id = str(uuid.uuid4())
-        self.database.create_application(
+        self.database.create_version(
             ApplicationVersion(
                 id=_id,
+                name=version.name,
                 app_id=application_id,
                 parent_id=version.parent_id,
                 created_at=created_at,
                 updated_at=created_at,
+                meta=version.metadata,
                 configuration=version.configuration.dict(),
             )
         )
         return VersionCreateResponse(id=_id)
+
+    @router.put("/applications/{application_id}/versions/{version_id}")
+    def update_app_version_meta(
+        self, application_id: str, version_id: str, metadata: VersionMetadata
+    ) -> ItemUpdateResponse:
+        """
+        Update the metadata of an application.
+
+        Args:
+            application_id (str): The ID of the application.
+            version_id (str): The ID of the version to be updated.
+            metadata (VersionMetadata): The new metadata for the version.
+
+        Returns:
+            ItemUpdateResponse: An object indicating the success or failure of the update operation.
+        """
+        try:
+            updated_at = datetime.utcnow()
+            self.database.update_version(
+                version_id,
+                {
+                    "name": metadata.name,
+                    "meta": metadata.metadata,
+                    "updated_at": updated_at,
+                },
+            )
+            return ItemUpdateResponse(
+                success=True,
+                message=f"Version {version_id}'s metadata updated.",
+            )
+        except Exception as e:
+            return ItemUpdateResponse(
+                success=False,
+                message=str(e),
+            )
 
     @router.delete("/applications/{application_id}/versions/{version_id}")
     def delete_app_version(
