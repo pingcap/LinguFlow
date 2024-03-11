@@ -39,3 +39,16 @@ export const useBlockSchema = () => {
 
   return { blocks, blockMap, blocksByDir }
 }
+
+export const usePatternSchema = () => {
+  const { patterns = [] } = useContext(SchemaContext)
+  const patternMap = useMemo(
+    () =>
+      patterns.reduce((prev, cur) => {
+        prev[cur.name] = cur
+        return prev
+      }, {} as { [k: string]: PatternInfo }),
+    [patterns]
+  )
+  return { patterns, patternMap }
+}

@@ -20,7 +20,7 @@ import {
   Title,
   useMantineTheme
 } from '@mantine/core'
-import { IconApps, IconDots, IconEdit, IconSearch, IconTrash } from '@tabler/icons-react'
+import { IconApps, IconDots, IconEdit, IconRocket, IconSearch, IconTrash } from '@tabler/icons-react'
 import { Link, useParams } from 'react-router-dom'
 import {
   getListAppVersionsApplicationsApplicationIdVersionsGetQueryKey,
@@ -147,6 +147,11 @@ const List: React.FC<{ app: ApplicationInfo; versions: ApplicationVersionInfo[] 
 
                   <Menu.Dropdown onClick={(e) => e.stopPropagation()}>
                     <Menu.Item leftSection={<IconEdit size={14} />}>Edit</Menu.Item>
+                    <Menu.Item leftSection={<IconRocket size={14} />} disabled={isPublished}>
+                      Publish
+                    </Menu.Item>
+                    <Menu.Divider />
+
                     <DeleteVersionButton ver={v} disabled={isPublished} />
                   </Menu.Dropdown>
                 </Menu>

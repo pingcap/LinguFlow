@@ -119,14 +119,9 @@ const DebugArea: React.FC<{
   // }
 
   return (
-    <Box style={(theme) => ({ position: 'relative', borderTop: `1px solid ${theme.colors.gray[2]}` })}>
-      <ActionIcon style={{ position: 'absolute', right: 10, top: 10 }}>
-        <IconX size="1rem" />
-      </ActionIcon>
-
-      <Group h={300} justify="space-between" align="start" grow>
-        <Stack h="100%" style={{ overflow: 'auto' }} p="xs">
-          <Title order={5}>Debug</Title>
+    <Grid h="100%" gutter={0}>
+      <Grid.Col h="100%" span={8}>
+        <Stack h="100%" style={{ overflow: 'auto' }}>
           <Grid h="calc(100% - 24px)" grow>
             <Grid.Col h="100%" span={10} style={{ overflow: 'auto' }}>
               <InteractionComponent.component
@@ -145,9 +140,12 @@ const DebugArea: React.FC<{
             </Grid.Col>
           </Grid>
         </Stack>
-        <Stack h="100%" style={{ overflow: 'auto' }} p="xs" align="flex-start">
+      </Grid.Col>
+
+      <Grid.Col h="100%" span={4}>
+        <Stack h="100%" style={{ overflow: 'auto' }} align="flex-start">
           <Group gap="xs">
-            <Title order={5}>Interactions(0)</Title>
+            <Title order={6}>Interactions(0)</Title>
             <FileButton
               onChange={async (f) => {
                 if (!f) {
@@ -162,7 +160,7 @@ const DebugArea: React.FC<{
             >
               {(props) => (
                 <Tooltip label="Import Interaction">
-                  <ActionIcon {...props} c="dark">
+                  <ActionIcon variant="subtle" {...props} c="dark">
                     <IconPackageImport size="1.2rem" />
                   </ActionIcon>
                 </Tooltip>
@@ -198,7 +196,7 @@ const DebugArea: React.FC<{
             ))} */}
           </Stack>
         </Stack>
-      </Group>
-    </Box>
+      </Grid.Col>
+    </Grid>
   )
 }

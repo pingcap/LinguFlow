@@ -1,30 +1,6 @@
-import {
-  ActionIcon,
-  Anchor,
-  Box,
-  DefaultMantineColor,
-  Group,
-  Loader,
-  LoadingOverlay,
-  Menu,
-  Skeleton,
-  StyleProp,
-  Text,
-  rem,
-  useMantineTheme
-} from '@mantine/core'
-import {
-  IconBrandGithub,
-  IconBug,
-  IconChevronLeft,
-  IconDeviceFloppy,
-  IconDownload,
-  IconInfoCircle,
-  IconMenu2,
-  IconRocket,
-  IconUpload
-} from '@tabler/icons-react'
-import React, { PropsWithChildren, useState } from 'react'
+import { ActionIcon, Anchor, Box, Group, Loader, LoadingOverlay, Menu, rem } from '@mantine/core'
+import { IconChevronLeft, IconDeviceFloppy, IconDownload, IconMenu2, IconRocket, IconUpload } from '@tabler/icons-react'
+import React, { useRef, useState } from 'react'
 
 import 'reactflow/dist/style.css'
 import {
@@ -35,13 +11,14 @@ import {
 } from '@api/linguflow'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useHotkeys } from '@mantine/hooks'
-import { ApplicationInfo, ApplicationVersionInfo } from '@api/linguflow.schemas'
+import { ReactFlowProvider } from 'reactflow'
+import { FormProvider, useForm } from 'react-hook-form'
 import { GithubLogo } from '../../components/Layout/GithubLogo'
-import classes from './index.module.css'
 import { BuilderCanvas } from './Canvas'
 import { SchemaProvider } from './useSchema'
-
-const TOOLBAR_HEIGHT = 30
+import { Config } from './linguflow.type'
+import { ContainerElemProvider } from './Canvas/useContainerElem'
+import { TOOLBAR_HEIGHT, TOOLBAR_PANE_HEIGHT, Toolbar } from './Toolbar'
 
 const AppBuilder: React.FC = () => {
   const { appId, verId } = useParams()
@@ -63,7 +40,11 @@ const AppBuilder: React.FC = () => {
   )
   const isInfoLoading = isBlocksLoading || isPatternsLoading || isAppLoading || isVerLoading
 
+  const containerElem = useRef<HTMLDivElement>(null)
   const [menuOpened, setMenuOpened] = useState(false)
+  const [toolbarPaneOpened, setToolbarPaneOpened] = useState(false)
+
+  const form = useForm()
 
   useHotkeys([
     [
@@ -76,31 +57,49 @@ const AppBuilder: React.FC = () => {
   ])
 
   return (
-    <SchemaProvider value={{ blocks: blocksData?.blocks, patterns: patternsData?.patterns }}>
-      <Box w="100vw" h="100vh">
-        <BuilderMenu opened={menuOpened} setOpened={setMenuOpened} loading={false} />
-        <Anchor
-          href="https://github.com/pingcap/LinguFlow"
-          style={{ position: 'absolute', top: '15px', right: '15px', zIndex: 999 }}
-          target="_blank"
-        >
-          <ActionIcon variant="default" aria-label="GitHub" size="lg">
-            <GithubLogo />
-          </ActionIcon>
-        </Anchor>
+    <ReactFlowProvider>
+      <FormProvider {...form}>
+        <SchemaProvider value={{ blocks: blocksData?.blocks, patterns: patternsData?.patterns }}>
+          <ContainerElemProvider value={containerElem.current}>
+            <Box w="100vw" h="100vh">
+              <BuilderMenu opened={menuOpened} setOpened={setMenuOpened} loading={false} />
+              <Anchor
+                href="https://github.com/pingcap/LinguFlow"
+                style={{ position: 'absolute', top: '15px', right: '15px', zIndex: 999 }}
+                target="_blank"
+              >
+                <ActionIcon variant="default" aria-label="GitHub" size="lg">
+                  <GithubLogo />
+                </ActionIcon>
+              </Anchor>
 
-        <Box w="100%" h={`calc(100% - ${TOOLBAR_HEIGHT}px)`}>
-          <LoadingOverlay
-            visible={isInfoLoading}
-            zIndex={1000}
-            overlayProps={{ radius: 'sm', blur: 2 }}
-            loaderProps={{ color: 'gray.3' }}
-          />
-          <BuilderCanvas onClick={() => setMenuOpened(false)} />
-        </Box>
-        <Toolbar app={appData?.application} ver={verData?.version} />
-      </Box>
-    </SchemaProvider>
+              <Box
+                w="100%"
+                h={`calc(100% - ${TOOLBAR_HEIGHT + (toolbarPaneOpened ? TOOLBAR_PANE_HEIGHT : 0)}px)`}
+                ref={containerElem}
+              >
+                <LoadingOverlay
+                  visible={isInfoLoading}
+                  zIndex={1000}
+                  overlayProps={{ radius: 'sm', blur: 2 }}
+                  loaderProps={{ color: 'gray.3' }}
+                />
+                <BuilderCanvas
+                  config={verData?.version?.configuration as Config}
+                  onClick={() => setMenuOpened(false)}
+                />
+              </Box>
+              <Toolbar
+                app={appData?.application}
+                ver={verData?.version}
+                toolbarPaneOpened={toolbarPaneOpened}
+                setToolbarPaneOpened={setToolbarPaneOpened}
+              />
+            </Box>
+          </ContainerElemProvider>
+        </SchemaProvider>
+      </FormProvider>
+    </ReactFlowProvider>
   )
 }
 
@@ -137,59 +136,6 @@ const BuilderMenu: React.FC<{
         </Menu>
       </ActionIcon.Group>
       {loading && <Loader color="gray.5" size="xs" />}
-    </Group>
-  )
-}
-
-const Toolbar: React.FC<{ app?: ApplicationInfo; ver?: ApplicationVersionInfo }> = ({ app, ver }) => {
-  const { colors } = useMantineTheme()
-
-  return (
-    <Group
-      justify="space-between"
-      h={TOOLBAR_HEIGHT}
-      style={(theme) => ({ borderTop: `1px solid ${theme.colors.gray[1]}` })}
-    >
-      <ToolbarButton bg="gray.2" w={TOOLBAR_HEIGHT}>
-        <IconBug style={{ width: '80%', height: '80%', color: colors.gray[9] }} stroke={1} />
-      </ToolbarButton>
-      <Group gap="xs" pr="sm">
-        {app && ver && (
-          <>
-            <Box>
-              <Text span fw="bold" c="gray.9" size="xs">
-                {app.name}
-              </Text>
-              /
-              <Text span c="gray.9" size="xs">
-                {ver.id}
-              </Text>
-            </Box>
-            <ToolbarButton w={TOOLBAR_HEIGHT * 1.3}>
-              <IconInfoCircle style={{ width: '80%', height: '80%', color: colors.gray[9] }} stroke={1} />
-            </ToolbarButton>
-          </>
-        )}
-      </Group>
-    </Group>
-  )
-}
-
-const ToolbarButton: React.FC<
-  PropsWithChildren<{ bg?: StyleProp<DefaultMantineColor>; w?: StyleProp<React.CSSProperties['width']> }>
-> = ({ children, bg, w }) => {
-  return (
-    <Group
-      justify="center"
-      align="center"
-      p={4}
-      w={w}
-      h={TOOLBAR_HEIGHT}
-      c="gray.9"
-      bg={bg || '#fff'}
-      className={classes.toolbar_button}
-    >
-      {children}
     </Group>
   )
 }
