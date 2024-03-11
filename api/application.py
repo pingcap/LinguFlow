@@ -418,7 +418,7 @@ class ApplicationView:
         """
         created_at = datetime.utcnow()
         _id = str(uuid.uuid4())
-        self.database.create_application(
+        self.database.create_version(
             ApplicationVersion(
                 id=_id,
                 name=version.name,
@@ -426,7 +426,7 @@ class ApplicationView:
                 parent_id=version.parent_id,
                 created_at=created_at,
                 updated_at=created_at,
-                metadata=version.meta,
+                meta=version.metadata,
                 configuration=version.configuration.dict(),
             )
         )
