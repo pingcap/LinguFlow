@@ -35,6 +35,8 @@ class Application(Base):
 
     id = Column(String(36), primary_key=True, nullable=False)
     name = Column(String(255), nullable=False)
+    langfuse_public_key = Column(String(64), nullable=True)
+    langfuse_secret_key = Column(String(64), nullable=True)
     active_version = Column(String(36), nullable=True)
     created_at = Column(TIMESTAMP, nullable=False)
     updated_at = Column(TIMESTAMP, nullable=False)

@@ -1,5 +1,6 @@
 from typing import List
 
+from observability import current_observation, span
 from resolver import pattern
 
 from .embedding import EmbeddingModel
@@ -60,6 +61,7 @@ class Namespace:
         """
         return [str(metadata[k]) for k in self._index_keys]
 
+    @span(name="retrieve")
     def retrieve(self, text: str, limit: int = 5) -> List[dict]:
         """
         Retrieve data based on the given text.
@@ -71,6 +73,9 @@ class Namespace:
         Returns:
             List[dict]: The retrieved data.
         """
+        obs = current_observation()
+        if obs:
+            obs.update(metadata={"namespace": self._name})
         vec = self._embedding_model.embedding(text)
         return self._db.retrieve(self._name, vec, limit)
 

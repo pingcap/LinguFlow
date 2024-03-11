@@ -194,9 +194,9 @@ class InteractionInfo(BaseModel):
     version_id: str
     created_at: int
     updated_at: int
-    output: Optional[str] = None
-    data: Optional[Dict[str, str]] = None
-    error: Optional[dict] = None
+    output: Optional[str]
+    data: Optional[Dict[str, Optional[str]]]
+    error: Optional[dict]
 
 
 class InteractionInfoResponse(APIModel):
@@ -239,6 +239,8 @@ class ApplicationCreate(APIModel):
     """
 
     name: str
+    langfuse_public_key: Optional[str]
+    langfuse_secret_key: Optional[str]
 
 
 class ItemDeleteResponse(APIModel):

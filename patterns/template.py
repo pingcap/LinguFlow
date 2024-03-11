@@ -1,6 +1,7 @@
 from langchain.prompts import MessagesPlaceholder, PromptTemplate, StringPromptTemplate
 from langchain.prompts.chat import ChatPromptTemplate, SystemMessagePromptTemplate
 
+from observability import event, span
 from resolver import pattern
 
 from .embedding import Namespace
@@ -46,6 +47,7 @@ class FewShotPromptTemplate(StringPromptTemplate):
         self.suffix = suffix
         self.example_prompt = example_prompt
 
+    @span(name="few shot prompt format")
     def format(self, text: str, **kwargs) -> str:
         """
         Format the text with examples retrieved from the namespace.
@@ -111,6 +113,7 @@ class ZeroShotPromptTemplate(StringPromptTemplate):
         )
         self.prompt_template = prompt_template
 
+    @event(name="zero shot prompt format")
     def format(self, text: str = "", **kwargs) -> str:
         """
         Format the text with the prompt template.
