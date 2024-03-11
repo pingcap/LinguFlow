@@ -125,9 +125,11 @@ class ApplicationVersionInfo(BaseModel):
     """
 
     id: str
+    name: str
     app_id: str
     created_at: int
     updated_at: int
+    metadata: Optional[dict]
     configuration: Optional[dict]
 
 
@@ -172,6 +174,15 @@ class Metadata(APIModel):
     """
 
     name: str
+
+
+class VersionMetadata(APIModel):
+    """
+    The request model for updating app version data.
+    """
+
+    name: str
+    metadata: Optional[dict]
 
 
 class InteractionInfo(BaseModel):
@@ -277,7 +288,9 @@ class VersionCreateResponse(APIModel):
 class ApplicationVersionCreate(APIModel):
     """The request model for app version creation api."""
 
+    name: str
     parent_id: Optional[str]
+    metadata: Optional[dict]
     configuration: GraphConfiguration
 
 

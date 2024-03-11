@@ -136,6 +136,23 @@ class Database:
             session.query(Application).filter(Application.id == app_id).update(attrs)
             session.commit()
 
+    def update_version(self, version_id: str, attrs: dict):
+        """
+        Update an version in the database with the specified attributes.
+
+        Args:
+            version_id (str): The ID of the version to update.
+            attrs (dict): A dictionary containing the attributes to update.
+
+        Returns:
+            None
+        """
+        with Session(self.engine) as session:
+            session.query(ApplicationVersion).filter(
+                ApplicationVersion.id == version_id
+            ).update(attrs)
+            session.commit()
+
     def list_versions(self, app_id: str) -> List[ApplicationVersion]:
         """
         Retrieve all non-deleted versions of an application by app_id.
