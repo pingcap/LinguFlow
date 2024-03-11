@@ -34,7 +34,6 @@ class OpneAIWrapper(OpenAI):
                 openai_api_key=openai_api_key,
                 temperature=temperature,
             )
-
         else:
             super(OpneAIWrapper, self).__init__(
                 model_name=model_name,
