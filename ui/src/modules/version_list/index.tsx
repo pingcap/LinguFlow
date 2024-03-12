@@ -120,7 +120,7 @@ const List: React.FC<{ app: ApplicationInfo; versions: ApplicationVersionInfo[] 
               <Stack gap={4} w="60%">
                 <Group gap="xs" wrap="nowrap">
                   <Anchor component={Link} to={`./ver/${v.id}`} maw="80%" lineClamp={1} underline="never" c="dark">
-                    <Title order={5}>Untitled</Title>
+                    <Title order={5}>{v.name}</Title>
                   </Anchor>
                   {isPublished && (
                     <Badge color="blue" radius="sm" variant="light">

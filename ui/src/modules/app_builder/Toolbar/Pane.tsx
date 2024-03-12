@@ -1,8 +1,8 @@
 import React from 'react'
-import { ActionIcon, Tabs } from '@mantine/core'
+import { ActionIcon, LoadingOverlay, Skeleton, Tabs } from '@mantine/core'
 import { IconX } from '@tabler/icons-react'
 import { ApplicationInfo, ApplicationVersionInfo } from '@api/linguflow.schemas'
-import { Debug } from '../Debug'
+import { Debug } from './Debug'
 import { AppInfo } from './AppInfo'
 import { TOOLBAR_HEIGHT } from '.'
 
@@ -19,7 +19,8 @@ export const Pane: React.FC<{
   setToolbarPaneOpened: React.Dispatch<React.SetStateAction<boolean>>
   app?: ApplicationInfo
   ver?: ApplicationVersionInfo
-}> = ({ tab, setTab, setToolbarPaneOpened, app, ver }) => {
+  isCreatingVersion: boolean
+}> = ({ tab, setTab, setToolbarPaneOpened, app, ver, isCreatingVersion }) => {
   return (
     <Tabs
       value={tab}
@@ -29,13 +30,20 @@ export const Pane: React.FC<{
       h={`calc(100% - ${TOOLBAR_HEIGHT}px)`}
       radius={0}
       style={(theme) => ({ borderTop: `1px solid ${theme.colors.gray[2]}` })}
+      pos="relative"
     >
+      <LoadingOverlay
+        visible={isCreatingVersion}
+        zIndex={1000}
+        overlayProps={{ radius: 'sm', blur: 2 }}
+        loaderProps={{ color: 'gray.3' }}
+      />
       <Tabs.List>
         <Tabs.Tab value={TabValue.DEBUG} style={{ borderTop: 'none' }}>
           Debug
         </Tabs.Tab>
         <Tabs.Tab value={TabValue.APP_INFO} style={{ borderTop: 'none' }}>
-          App Info
+          Information
         </Tabs.Tab>
 
         <ActionIcon
@@ -50,7 +58,7 @@ export const Pane: React.FC<{
       </Tabs.List>
 
       <Tabs.Panel value={TabValue.DEBUG} h={`calc(100% - ${TAB_HEIGHT}px)`} p="xs" style={{ overflowY: 'auto' }}>
-        <Debug />
+        <Debug app={app!} ver={ver!} />
       </Tabs.Panel>
 
       <Tabs.Panel value={TabValue.APP_INFO} h={`calc(100% - ${TAB_HEIGHT}px)`} p="xs" style={{ overflowY: 'auto' }}>

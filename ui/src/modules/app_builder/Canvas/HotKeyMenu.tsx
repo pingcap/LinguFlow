@@ -68,10 +68,16 @@ export const HotKeyMenu: React.FC<{
         />
         {(!search || !!searchedBlocks.length) && <Menu.Divider />}
 
-        {!!search && searchedBlocks.map((b) => <Menu.Item onClick={() => handleClickBlock(b)}>{b.alias}</Menu.Item>)}
+        {!!search &&
+          searchedBlocks.map((b) => (
+            <Menu.Item key={b.name} onClick={() => handleClickBlock(b)}>
+              {b.alias}
+            </Menu.Item>
+          ))}
         {!search &&
           dirAndBlocks.map(([dir, blocks]) => (
             <Menu
+              key={dir}
               width={200}
               trigger="click-hover"
               position="right-start"
@@ -86,7 +92,9 @@ export const HotKeyMenu: React.FC<{
               </Menu.Target>
               <Menu.Dropdown>
                 {blocks.map((b) => (
-                  <Menu.Item onClick={() => handleClickBlock(b)}>{b.alias}</Menu.Item>
+                  <Menu.Item key={b.name} onClick={() => handleClickBlock(b)}>
+                    {b.alias}
+                  </Menu.Item>
                 ))}
               </Menu.Dropdown>
             </Menu>

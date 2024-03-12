@@ -6,14 +6,17 @@ import ReactFlow, {
   Edge,
   MarkerType,
   Node,
+  NodeDragHandler,
+  OnNodesChange,
   XYPosition,
   useEdgesState,
   useNodesState,
   useReactFlow
 } from 'reactflow'
 import { nanoid } from 'nanoid'
-import { BlockInfo, InteractionInfo, Metadata } from '@api/linguflow.schemas'
-import { useEffect, useRef } from 'react'
+import { BlockInfo, InteractionInfo, Metadata, VersionMetadata, VersionMetadataMetadata } from '@api/linguflow.schemas'
+import { useCallback, useEffect, useRef } from 'react'
+import { useFormContext } from 'react-hook-form'
 import { BLOCK_NODE_NAME, BlockNode, BlockNodeProps } from '../Block'
 import { Config, MetadataUI } from '../linguflow.type'
 import { useBlockSchema } from '../useSchema'
@@ -22,60 +25,73 @@ import { useHotKeyMenu } from './useHotKeyMenu'
 
 export interface BuilderCanvasProps {
   config?: Config
+  metadata?: VersionMetadata
   onClick?: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void
+  onNodeDragStop: NodeDragHandler
 }
 
 const NODE_TYPES = {
   [BLOCK_NODE_NAME]: BlockNode
 }
 
-export const BuilderCanvas: React.FC<BuilderCanvasProps> = ({ config, onClick }) => {
+export const BuilderCanvas: React.FC<BuilderCanvasProps> = ({ config, metadata, onClick, onNodeDragStop }) => {
   const { blocks, blockMap } = useBlockSchema()
   const { getNodes, getEdges, fitView, project, getViewport } = useReactFlow()
   const [nodes, setNodes, onNodesChange] = useNodesState([])
   const [edges, setEdges, onEdgesChange] = useEdgesState([])
 
+  const { register, unregister, getValues } = useFormContext()
+
   // init app
   const initApp = useRef(
     ({
       config,
+      metadata,
       blockMap,
       interaction,
-      fitview = true
+      needFitview = true
     }: {
       config: Config
+      metadata: VersionMetadata
       blockMap: {
         [k: string]: BlockInfo
       }
       interaction?: InteractionInfo
-      fitview?: boolean
+      needFitview?: boolean
     }) => {
-      const { nodes, edges } = appConfigToReactflow(config, blockMap)
+      const { nodes, edges } = appConfigToReactflow(config, blockMap, metadata)
       setNodes(nodes)
       setEdges(edges)
 
-      // Object.keys(getValues()).forEach((k) => unregister(k))
-      // nodes.forEach((n) => register(n.data.props.id, { value: n.data.props }))
+      Object.keys(getValues()).forEach((k) => unregister(k))
+      nodes.forEach((n) => n.data && register(n.id, { value: n.data.node }))
 
-      if (!fitview) {
+      if (!needFitview) {
         return
       }
-      window.requestAnimationFrame(() => {
-        fitView()
-      })
+      fitView()
     }
   )
   useEffect(() => {
-    if (!config || !blocks.length) {
+    if (!config || !blocks.length || !metadata) {
       return
     }
-    initApp.current({ config, blockMap })
-  }, [config, blockMap, blocks])
+    initApp.current({ config, blockMap, metadata })
+  }, [config, blockMap, blocks, metadata])
 
-  // add node
+  // manipulate nodes
   const addNode = useRef((node: Node<BlockNodeProps>) => {
     setNodes((nds) => nds.concat(node))
+    register(node.data.node.id, { value: node.data.node })
   })
+  const onNodesDeleteFn = useCallback(
+    (n: Node[]) =>
+      n.forEach((node) => {
+        unregister(node.id)
+        setEdges((es) => es.filter((e) => e.target !== node.id || e.source !== node.id))
+      }),
+    [setEdges, unregister]
+  )
 
   // hot keys
   const { events: paneEvents, hotKeyMenuOpened, setHotKeyMenuOpened, menuPosition } = useHotKeyMenu()
@@ -112,6 +128,8 @@ export const BuilderCanvas: React.FC<BuilderCanvasProps> = ({ config, onClick })
           onClick?.(e)
         }}
         nodeTypes={NODE_TYPES}
+        onNodeDragStop={onNodeDragStop}
+        onNodesDelete={onNodesDeleteFn}
         {...paneEvents}
       >
         <Background />
@@ -137,9 +155,10 @@ export const BuilderCanvas: React.FC<BuilderCanvasProps> = ({ config, onClick })
 
 const appConfigToReactflow = (
   config: Config,
-  blockMap: { [k: string]: BlockInfo }
+  blockMap: { [k: string]: BlockInfo },
+  metadata: VersionMetadataMetadata
   // interaction?: InteractionDebugResponse
-): { nodes: Node[]; edges: Edge[] } => {
+): { nodes: Node<BlockNodeProps | null>[]; edges: Edge[] } => {
   const { nodes, edges } = config
   // const interactionMap =
   //   interaction?.debug.reduce((prev, current) => {
@@ -155,7 +174,7 @@ const appConfigToReactflow = (
           throw new Error(`Unknown block: ${n.name}`)
         }
         return toCustomNode({
-          // ...getMetadataUINode(n.id, metadata),
+          ...getMetadataUINode(n.id, metadata),
           id: n.id,
           data: { schema, node: n }
         })
@@ -196,8 +215,8 @@ export const toCustomEdge = (edge: Edge | Connection): Edge => {
   } as Edge
 }
 
-const getMetadataUINode = (id: string, metadata: Metadata) => {
-  const metadataUI = (metadata as any).custom_fields?.ui as MetadataUI
+const getMetadataUINode = (id: string, metadata: VersionMetadataMetadata) => {
+  const metadataUI = metadata.ui as MetadataUI
   if (!metadataUI) {
     return {}
   }

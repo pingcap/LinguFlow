@@ -15,14 +15,22 @@ export const Toolbar: React.FC<{
   ver?: ApplicationVersionInfo
   toolbarPaneOpened: boolean
   setToolbarPaneOpened: React.Dispatch<React.SetStateAction<boolean>>
-}> = ({ app, ver, toolbarPaneOpened, setToolbarPaneOpened }) => {
+  isCreatingVersion: boolean
+}> = ({ app, ver, toolbarPaneOpened, setToolbarPaneOpened, isCreatingVersion }) => {
   const { colors } = useMantineTheme()
   const [tab, setTab] = useState<TabValue>(TabValue.DEBUG)
 
   return (
     <Box h={TOOLBAR_HEIGHT + (toolbarPaneOpened ? TOOLBAR_PANE_HEIGHT : 0)}>
       {toolbarPaneOpened && (
-        <Pane tab={tab} setTab={setTab} setToolbarPaneOpened={setToolbarPaneOpened} app={app} ver={ver} />
+        <Pane
+          tab={tab}
+          setTab={setTab}
+          setToolbarPaneOpened={setToolbarPaneOpened}
+          app={app}
+          ver={ver}
+          isCreatingVersion={isCreatingVersion}
+        />
       )}
 
       <Group justify="space-between" style={(theme) => ({ borderTop: `1px solid ${theme.colors.gray[1]}` })}>
@@ -51,7 +59,7 @@ export const Toolbar: React.FC<{
                 </Text>
               </Box>
               <ToolbarButton
-                tooltip="App Information"
+                tooltip="Information"
                 onClick={() => {
                   setTab(TabValue.APP_INFO)
                   if (tab === TabValue.APP_INFO || !toolbarPaneOpened) {

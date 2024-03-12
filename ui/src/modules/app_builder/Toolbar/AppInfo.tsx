@@ -2,22 +2,33 @@ import { ApplicationInfo, ApplicationVersionInfo } from '@api/linguflow.schemas'
 import { ActionIcon, Group, Stack, Text, TextInput } from '@mantine/core'
 import { IconCheck, IconPencil, IconX } from '@tabler/icons-react'
 import { useState } from 'react'
+import {
+  getGetAppVersionApplicationsApplicationIdVersionsVersionIdGetQueryKey,
+  useGetAppVersionApplicationsApplicationIdVersionsVersionIdGet
+} from '@api/linguflow'
+import { useIsFetching } from 'react-query'
+import { useParams } from 'react-router-dom'
+import { useUpdateVersion } from '../useMutateVersion'
 
 export const AppInfo: React.FC<{
   app?: ApplicationInfo
   ver?: ApplicationVersionInfo
 }> = ({ app, ver }) => {
-  const [name, setName] = useState(app?.name)
-  const [isEditable, setIsEditable] = useState(false)
-  const [verName, setVerName] = useState('')
+  const { appId, verId } = useParams()
+  const [verName, setVerName] = useState(ver?.name)
   const [isVerEditable, setIsVerEditable] = useState(false)
+  const { updateVersion, isUpdatingVersion } = useUpdateVersion(ver)
+  const { refetch, isRefetching } = useGetAppVersionApplicationsApplicationIdVersionsVersionIdGet(appId!, verId!, {
+    query: {
+      enabled: false
+    }
+  })
 
-  const confirmUpdateName = () => {
-    // await updateName({ applicationId: app?.id, data: { ...app.metadata, name: name?.trim() } })
-    setIsEditable(false)
-  }
-  const confirmUpdateVerName = () => {
-    // await updateName({ applicationId: app?.id, data: { ...app.metadata, name: name?.trim() } })
+  const disabled = isUpdatingVersion || isRefetching
+
+  const confirmUpdateVerName = async () => {
+    await updateVersion(verName, true)
+    await refetch()
     setIsVerEditable(false)
   }
 
@@ -27,47 +38,9 @@ export const AppInfo: React.FC<{
         <Text w="90" fz="xs" style={{ display: 'inline-block' }}>
           App Name:{' '}
         </Text>
-
-        {isEditable ? (
-          <>
-            <TextInput
-              autoFocus
-              size="xs"
-              placeholder="App Name"
-              value={name}
-              // disabled={isUpdatingName}
-              onChange={(e) => setName(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Escape') {
-                  setName(app?.name)
-                  setIsEditable(false)
-                  return
-                }
-                if (e.key !== 'Enter') {
-                  return
-                }
-                confirmUpdateName()
-              }}
-              rightSection={
-                <ActionIcon variant="subtle" c="gray" size="sm" onClick={confirmUpdateName}>
-                  <IconCheck size="1rem" />
-                </ActionIcon>
-              }
-            />
-            <ActionIcon size="sm" variant="subtle" c="gray" onClick={() => setIsEditable(false)}>
-              <IconX size="1rem" />
-            </ActionIcon>
-          </>
-        ) : (
-          <>
-            <Text fw="bold" fz="xs" span>
-              {app?.name}
-            </Text>
-            <ActionIcon size="sm" variant="subtle" c="gray" onClick={() => setIsEditable(true)}>
-              <IconPencil size="1rem" />
-            </ActionIcon>
-          </>
-        )}
+        <Text fw="bold" fz="xs" span>
+          {app?.name}
+        </Text>
       </Group>
 
       <Group align="center" gap="xs" h="30">
@@ -90,12 +63,12 @@ export const AppInfo: React.FC<{
               autoFocus
               size="xs"
               placeholder="Version Name"
+              disabled={disabled}
               value={verName}
-              // disabled={isUpdatingName}
               onChange={(e) => setVerName(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === 'Escape') {
-                  setVerName('')
+                  setVerName(ver?.name)
                   setIsVerEditable(false)
                   return
                 }
@@ -105,21 +78,30 @@ export const AppInfo: React.FC<{
                 confirmUpdateVerName()
               }}
               rightSection={
-                <ActionIcon variant="subtle" c="gray" size="sm" onClick={confirmUpdateVerName}>
+                <ActionIcon variant="subtle" c="gray" size="sm" onClick={confirmUpdateVerName} disabled={disabled}>
                   <IconCheck size="1rem" />
                 </ActionIcon>
               }
             />
-            <ActionIcon size="sm" variant="subtle" c="gray" onClick={() => setIsVerEditable(false)}>
+            <ActionIcon
+              size="sm"
+              variant="subtle"
+              c="gray"
+              onClick={() => {
+                setVerName(ver?.name)
+                setIsVerEditable(false)
+              }}
+              disabled={disabled}
+            >
               <IconX size="1rem" />
             </ActionIcon>
           </>
         ) : (
           <>
             <Text fw="bold" fz="xs" span>
-              Ver name
+              {ver?.name}
             </Text>
-            <ActionIcon size="sm" variant="subtle" c="gray" onClick={() => setIsVerEditable(true)}>
+            <ActionIcon size="sm" variant="subtle" c="gray" onClick={() => setIsVerEditable(true)} disabled={disabled}>
               <IconPencil size="1rem" />
             </ActionIcon>
           </>

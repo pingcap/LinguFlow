@@ -57,6 +57,7 @@ const ExternalTypeSelect: React.FC<SlotTypeComponentProps> = ({ formPath, slot, 
           <Select
             placeholder="Pick candidates"
             size="xs"
+            allowDeselect={false}
             label={slot.name}
             data={candidates}
             value={value}
