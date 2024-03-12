@@ -113,6 +113,8 @@ class ApplicationInfo(BaseModel):
 
     id: str
     name: str
+    langfuse_public_key: Optional[str]
+    langfuse_secret_key: Optional[str]
     active_version: Optional[str]
     created_at: int
     updated_at: int
@@ -168,12 +170,14 @@ class GraphConfiguration(BaseModel):
     edges: List[GraphEdge]
 
 
-class Metadata(APIModel):
+class AppMetadata(APIModel):
     """
     The request model for updating app data.
     """
 
     name: str
+    langfuse_public_key: Optional[str]
+    langfuse_secret_key: Optional[str]
 
 
 class VersionMetadata(APIModel):
