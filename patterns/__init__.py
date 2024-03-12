@@ -1,6 +1,6 @@
 import inspect
 
-import langchain
+import langchain_core
 
 from resolver import pattern
 
@@ -19,7 +19,7 @@ pattern(name="boolean", builtin=True)(bool)
 pattern(name="any", builtin=True)(inspect._empty)
 
 # register third-party types
-pattern(name="LLM_Model")(langchain.base_language.BaseLanguageModel)
-pattern(name="Chat_LLM_Model")(langchain.chat_models.base.BaseChatModel)
-pattern(name="Prompt_Template")(langchain.prompts.prompt.StringPromptTemplate)
-pattern(name="Chat_Prompt_Template")(langchain.prompts.chat.BaseChatPromptTemplate)
+pattern(name="LLM_Model")(langchain_core.language_models.BaseLanguageModel)
+pattern(name="Chat_LLM_Model")(langchain_core.language_models.BaseChatModel)
+pattern(name="Prompt_Template")(langchain_core.prompts.StringPromptTemplate)
+pattern(name="Chat_Prompt_Template")(langchain_core.prompts.BaseChatPromptTemplate)

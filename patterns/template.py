@@ -1,5 +1,10 @@
-from langchain.prompts import MessagesPlaceholder, PromptTemplate, StringPromptTemplate
-from langchain.prompts.chat import ChatPromptTemplate, SystemMessagePromptTemplate
+from langchain_core.prompts import (
+    ChatPromptTemplate,
+    MessagesPlaceholder,
+    PromptTemplate,
+    StringPromptTemplate,
+    SystemMessagePromptTemplate,
+)
 
 from observability import event, span
 from resolver import pattern

@@ -1,6 +1,6 @@
 import langchain.chains
-from langchain.base_language import BaseLanguageModel
-from langchain.prompts.prompt import StringPromptTemplate
+from langchain_core.language_models import BaseLanguageModel
+from langchain_core.prompts import StringPromptTemplate
 
 from observability import span
 from resolver import block
@@ -19,4 +19,4 @@ class LLMChain(BaseBlock):
 
     @span(name="LLM Chain")
     def __call__(self, text: str, **kwargs) -> str:
-        return self.chain.run(text=text, **kwargs)
+        return self.chain.predict(text=text, **kwargs)
