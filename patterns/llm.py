@@ -1,5 +1,5 @@
-from langchain.chat_models import ChatOpenAI
-from langchain.llms import OpenAI
+from langchain_community.chat_models import ChatOpenAI
+from langchain_community.llms import OpenAI
 
 from resolver import pattern
 
