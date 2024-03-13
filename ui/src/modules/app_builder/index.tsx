@@ -16,7 +16,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { useDebouncedValue, useHotkeys } from '@mantine/hooks'
 import { ReactFlowProvider, useNodesInitialized } from 'reactflow'
 import { FormProvider, useForm, useFormContext } from 'react-hook-form'
-import { VersionMetadata } from '@api/linguflow.schemas'
+import { InteractionInfo, VersionMetadata } from '@api/linguflow.schemas'
 import { useIsFetching } from 'react-query'
 import { GithubLogo } from '../../components/Layout/GithubLogo'
 import { BuilderCanvas } from './Canvas'
@@ -66,6 +66,8 @@ const AppBuilder: React.FC = () => {
   const containerElem = useRef<HTMLDivElement>(null)
   const [menuOpened, setMenuOpened] = useState(false)
   const [toolbarPaneOpened, setToolbarPaneOpened] = useState(false)
+
+  const [currentInteraction, setCurrentInteraction] = useState<InteractionInfo>()
 
   const {
     formState: { isDirty }
@@ -151,6 +153,7 @@ const AppBuilder: React.FC = () => {
             onNodeDragStop={() => {
               setCanUpdate(true)
             }}
+            interaction={currentInteraction}
           />
         </Box>
         <Toolbar
@@ -159,6 +162,7 @@ const AppBuilder: React.FC = () => {
           toolbarPaneOpened={toolbarPaneOpened}
           setToolbarPaneOpened={setToolbarPaneOpened}
           isCreatingVersion={isCreatingVersion}
+          onUpdateCurrentInteraction={setCurrentInteraction}
         />
       </Box>
     </ContainerElemProvider>

@@ -1,7 +1,7 @@
 import React from 'react'
 import { ActionIcon, LoadingOverlay, Skeleton, Tabs } from '@mantine/core'
 import { IconX } from '@tabler/icons-react'
-import { ApplicationInfo, ApplicationVersionInfo } from '@api/linguflow.schemas'
+import { ApplicationInfo, ApplicationVersionInfo, InteractionInfo } from '@api/linguflow.schemas'
 import { Debug } from './Debug'
 import { AppInfo } from './AppInfo'
 import { TOOLBAR_HEIGHT } from '.'
@@ -20,7 +20,8 @@ export const Pane: React.FC<{
   app?: ApplicationInfo
   ver?: ApplicationVersionInfo
   isCreatingVersion: boolean
-}> = ({ tab, setTab, setToolbarPaneOpened, app, ver, isCreatingVersion }) => {
+  onUpdateCurrentInteraction: (interaction?: InteractionInfo) => void
+}> = ({ tab, setTab, setToolbarPaneOpened, app, ver, isCreatingVersion, onUpdateCurrentInteraction }) => {
   return (
     <Tabs
       value={tab}
@@ -58,7 +59,7 @@ export const Pane: React.FC<{
       </Tabs.List>
 
       <Tabs.Panel value={TabValue.DEBUG} h={`calc(100% - ${TAB_HEIGHT}px)`} p="xs" style={{ overflowY: 'auto' }}>
-        <Debug app={app!} ver={ver!} />
+        <Debug app={app!} ver={ver!} onUpdateCurrentInteraction={onUpdateCurrentInteraction} />
       </Tabs.Panel>
 
       <Tabs.Panel value={TabValue.APP_INFO} h={`calc(100% - ${TAB_HEIGHT}px)`} p="xs" style={{ overflowY: 'auto' }}>

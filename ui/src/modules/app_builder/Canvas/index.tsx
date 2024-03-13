@@ -8,7 +8,6 @@ import ReactFlow, {
   MarkerType,
   Node,
   NodeDragHandler,
-  OnNodesChange,
   XYPosition,
   addEdge,
   useEdgesState,
@@ -16,7 +15,7 @@ import ReactFlow, {
   useReactFlow
 } from 'reactflow'
 import { nanoid } from 'nanoid'
-import { BlockInfo, InteractionInfo, Metadata, VersionMetadata, VersionMetadataMetadata } from '@api/linguflow.schemas'
+import { BlockInfo, InteractionInfo, VersionMetadata, VersionMetadataMetadata } from '@api/linguflow.schemas'
 import { useCallback, useEffect, useRef } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { BLOCK_NODE_NAME, BlockNode, BlockNodeProps } from '../Block'
@@ -31,13 +30,20 @@ export interface BuilderCanvasProps {
   metadata?: VersionMetadata
   onClick?: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void
   onNodeDragStop: NodeDragHandler
+  interaction?: InteractionInfo
 }
 
 const NODE_TYPES = {
   [BLOCK_NODE_NAME]: BlockNode
 }
 
-export const BuilderCanvas: React.FC<BuilderCanvasProps> = ({ config, metadata, onClick, onNodeDragStop }) => {
+export const BuilderCanvas: React.FC<BuilderCanvasProps> = ({
+  config,
+  metadata,
+  onClick,
+  onNodeDragStop,
+  interaction
+}) => {
   const { blocks, blockMap } = useBlockSchema()
   const { getNodes, getEdges, fitView, project, getViewport } = useReactFlow()
   const [nodes, setNodes, onNodesChange] = useNodesState([])
@@ -62,7 +68,7 @@ export const BuilderCanvas: React.FC<BuilderCanvasProps> = ({ config, metadata, 
       interaction?: InteractionInfo
       needFitview?: boolean
     }) => {
-      const { nodes, edges } = appConfigToReactflow(config, blockMap, metadata)
+      const { nodes, edges } = appConfigToReactflow(config, blockMap, metadata, interaction)
       setNodes(nodes)
       setEdges(edges)
 
@@ -81,6 +87,12 @@ export const BuilderCanvas: React.FC<BuilderCanvasProps> = ({ config, metadata, 
     }
     initApp.current({ config, blockMap, metadata })
   }, [config, blockMap, blocks, metadata])
+  useEffect(() => {
+    if (!config || !blocks.length || !metadata) {
+      return
+    }
+    initApp.current({ config, blockMap, metadata, interaction, needFitview: false })
+  }, [interaction])
 
   // manipulate nodes
   const getNodeType = useNodeType()
@@ -171,15 +183,11 @@ export const BuilderCanvas: React.FC<BuilderCanvasProps> = ({ config, metadata, 
 const appConfigToReactflow = (
   config: Config,
   blockMap: { [k: string]: BlockInfo },
-  metadata: VersionMetadataMetadata
-  // interaction?: InteractionDebugResponse
+  metadata: VersionMetadataMetadata,
+  interaction?: InteractionInfo
 ): { nodes: Node<BlockNodeProps | null>[]; edges: Edge[] } => {
   const { nodes, edges } = config
-  // const interactionMap =
-  //   interaction?.debug.reduce((prev, current) => {
-  //     prev[current.block] = current
-  //     return prev
-  //   }, {} as { [k: string]: DebugInfo }) || {}
+
   return {
     nodes:
       // ui?.nodes ||
@@ -191,7 +199,7 @@ const appConfigToReactflow = (
         return toCustomNode({
           ...getMetadataUINode(n.id, metadata),
           id: n.id,
-          data: { schema, node: n }
+          data: { schema, node: n, interaction: interaction?.data?.[n.id] }
         })
       }) || [],
     edges: edges.map((e) => {

@@ -1,4 +1,4 @@
-import { BlockInfo, InteractionInfoData, Parameter } from '@api/linguflow.schemas'
+import { BlockInfo, Parameter } from '@api/linguflow.schemas'
 import {
   ActionIcon,
   Box,
@@ -17,7 +17,7 @@ import { IconSettings, IconX } from '@tabler/icons-react'
 import { Edge, Handle, NodeProps, Position, useEdges, useNodeId, useReactFlow, useUpdateNodeInternals } from 'reactflow'
 import { useState } from 'react'
 import { nanoid } from 'nanoid'
-import { useDisclosure, useHover } from '@mantine/hooks'
+import { useDisclosure } from '@mantine/hooks'
 import { useFormContext } from 'react-hook-form'
 import { Node } from '../linguflow.type'
 import { useContainerElem } from '../Canvas/useContainerElem'
@@ -25,6 +25,7 @@ import { Slot } from './Slot'
 import { useCloseAllDrawer, useRegisterCloseDrawer } from './useBlockDrawer'
 import { useValidConnection } from './useValidConnection'
 import { SlotReadonly } from './SlotReadonly'
+import { DebugInfo } from './DebugInfo'
 
 export const BLOCK_NODE_NAME = 'custom_block_node'
 
@@ -50,7 +51,7 @@ const usePortCustomStyle = () => {
 export interface BlockNodeProps {
   schema: BlockInfo
   node: Node
-  interaction?: InteractionInfoData
+  interaction?: string
 }
 
 export const BlockNode: React.FC<NodeProps<BlockNodeProps>> = ({ data, selected }) => {
@@ -184,7 +185,7 @@ export const BlockNode: React.FC<NodeProps<BlockNodeProps>> = ({ data, selected 
             </Box>
           )}
         </Stack>
-        {/* {!!debugInfo && <DebugInfoComponent data={debugInfo} />} */}
+        {!!interaction && <DebugInfo data={interaction} />}
       </Stack>
       {!!slots?.length && (
         <ConfigDrawer

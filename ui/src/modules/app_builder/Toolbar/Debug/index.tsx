@@ -40,8 +40,8 @@ export const Debug: React.FC<{
   app: ApplicationInfo
   ver: ApplicationVersionInfo
   // onClose: () => void
-  // onUpdateCurrentInteraction: (interaction?: InteractionDebugResponse) => void
-}> = ({ app, ver }) => {
+  onUpdateCurrentInteraction: (interaction?: InteractionInfo) => void
+}> = ({ app, ver, onUpdateCurrentInteraction }) => {
   // const appId = useAppId()
   // const { blocks, blockMap } = useBlockSchemas()
   // const inputBlock = ver.nodes.map((n) => blockMap[n.name]).find((n) => n.dir === 'input')!
@@ -52,7 +52,7 @@ export const Debug: React.FC<{
   const [currentInteraction, _setCurrentInteraction] = useState<InteractionInfo>()
   const setCurrentInteraction = (int?: InteractionInfo) => {
     _setCurrentInteraction(int)
-    // onUpdateCurrentInteraction(int)
+    onUpdateCurrentInteraction(int)
   }
   const { mutateAsync: runVersion } = useAsyncRunAppVersionApplicationsApplicationIdVersionsVersionIdAsyncRunPost()
   const [isError, setIsError] = useState(false)

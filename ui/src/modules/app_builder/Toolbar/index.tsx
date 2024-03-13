@@ -3,7 +3,7 @@ import { IconBug, IconInfoCircle } from '@tabler/icons-react'
 import React, { PropsWithChildren, useState } from 'react'
 
 import 'reactflow/dist/style.css'
-import { ApplicationInfo, ApplicationVersionInfo } from '@api/linguflow.schemas'
+import { ApplicationInfo, ApplicationVersionInfo, InteractionInfo } from '@api/linguflow.schemas'
 import classes from './index.module.css'
 import { Pane, TabValue } from './Pane'
 
@@ -16,7 +16,8 @@ export const Toolbar: React.FC<{
   toolbarPaneOpened: boolean
   setToolbarPaneOpened: React.Dispatch<React.SetStateAction<boolean>>
   isCreatingVersion: boolean
-}> = ({ app, ver, toolbarPaneOpened, setToolbarPaneOpened, isCreatingVersion }) => {
+  onUpdateCurrentInteraction: (interaction?: InteractionInfo) => void
+}> = ({ app, ver, toolbarPaneOpened, setToolbarPaneOpened, isCreatingVersion, onUpdateCurrentInteraction }) => {
   const { colors } = useMantineTheme()
   const [tab, setTab] = useState<TabValue>(TabValue.DEBUG)
 
@@ -30,6 +31,7 @@ export const Toolbar: React.FC<{
           app={app}
           ver={ver}
           isCreatingVersion={isCreatingVersion}
+          onUpdateCurrentInteraction={onUpdateCurrentInteraction}
         />
       )}
 
