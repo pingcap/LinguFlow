@@ -8,6 +8,7 @@ import ReactFlow, {
   MarkerType,
   Node,
   NodeDragHandler,
+  OnNodesDelete,
   XYPosition,
   addEdge,
   useEdgesState,
@@ -30,6 +31,7 @@ export interface BuilderCanvasProps {
   metadata?: VersionMetadata
   onClick?: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void
   onNodeDragStop: NodeDragHandler
+  onNodesDelete: OnNodesDelete
   interaction?: InteractionInfo
 }
 
@@ -42,7 +44,8 @@ export const BuilderCanvas: React.FC<BuilderCanvasProps> = ({
   metadata,
   onClick,
   onNodeDragStop,
-  interaction
+  interaction,
+  onNodesDelete
 }) => {
   const { blocks, blockMap } = useBlockSchema()
   const { getNodes, getEdges, fitView, project, getViewport } = useReactFlow()
@@ -101,12 +104,14 @@ export const BuilderCanvas: React.FC<BuilderCanvasProps> = ({
     register(node.data.node.id, { value: node.data.node })
   })
   const onNodesDeleteFn = useCallback(
-    (n: Node[]) =>
+    (n: Node[]) => {
       n.forEach((node) => {
         unregister(node.id)
         setEdges((es) => es.filter((e) => e.target !== node.id || e.source !== node.id))
-      }),
-    [setEdges, unregister]
+      })
+      onNodesDelete(n)
+    },
+    [setEdges, unregister, onNodesDelete]
   )
   const onConnectFn = useCallback(
     (params: Connection) => {

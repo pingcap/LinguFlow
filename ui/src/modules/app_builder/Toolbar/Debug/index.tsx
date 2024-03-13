@@ -1,22 +1,16 @@
-// import { ApplicationConfiguration, ApplicationRunInput, InteractionDebugResponse } from '@api/langlink.schemas'
 import { ActionIcon, Box, Button, Divider, FileButton, Group, Kbd, Stack, Title, Tooltip } from '@mantine/core'
 import { IconPackageExport, IconPackageImport } from '@tabler/icons-react'
 import { useState } from 'react'
-// import {
-//   debugInteractionApplicationsApplicationIdDebugInteractionIdGet,
-//   useDebugInteractionApplicationsApplicationIdDebugInteractionIdGet,
-//   useRunApplicationAsyncApplicationsApplicationIdAsyncPost
-// } from '@api/langlink'
 import download from 'downloadjs'
 import yaml from 'js-yaml'
-// import { useBlockSchemas } from '../hooks/useLangLinkSchema'
-// import { useAppId } from '../hooks/useAppId'
 import { ApplicationInfo, ApplicationVersionInfo, InteractionInfo } from '@api/linguflow.schemas'
 import {
   getInteractionInteractionsInteractionIdGet,
   useAsyncRunAppVersionApplicationsApplicationIdVersionsVersionIdAsyncRunPost,
   useGetInteractionInteractionsInteractionIdGet
 } from '@api/linguflow'
+import { useBlockSchema } from '../../useSchema'
+import { Config } from '../../linguflow.type'
 import { TextIntercation } from './TextInteraction'
 import { ObjectIntercation } from './ObjectInteraction'
 import { ListIntercation } from './ListInteraction'
@@ -30,22 +24,23 @@ export interface InteractionProps<V = any> {
 const interactionComponents: {
   [k: string]: { component: React.FC<InteractionProps>; defaultValue: () => any }
 } = {
-  TextInput: { component: TextIntercation, defaultValue: () => '' },
-  DictInput: { component: ObjectIntercation, defaultValue: () => ({}) },
-  ListInput: { component: ListIntercation, defaultValue: () => [] }
+  Text_Input: { component: TextIntercation, defaultValue: () => '' },
+  Dict_Input: { component: ObjectIntercation, defaultValue: () => ({}) },
+  List_Input: { component: ListIntercation, defaultValue: () => [] }
 }
+
+const INPUT_NAMES = ['Text_Input', 'Dict_Input', 'List_Input']
 
 export const Debug: React.FC<{
   app: ApplicationInfo
   ver: ApplicationVersionInfo
-  // onClose: () => void
   onUpdateCurrentInteraction: (interaction?: InteractionInfo) => void
 }> = ({ app, ver, onUpdateCurrentInteraction }) => {
-  // const appId = useAppId()
-  // const { blocks, blockMap } = useBlockSchemas()
-  // const inputBlock = ver.nodes.map((n) => blockMap[n.name]).find((n) => n.dir === 'input')!
-  // const InteractionComponent = interactionComponents[inputBlock.name]
-  const InteractionComponent = interactionComponents.TextInput
+  const { blockMap } = useBlockSchema()
+  const inputBlock = (ver.configuration as Config).nodes
+    .map((n) => blockMap[n.name])
+    .find((n) => INPUT_NAMES.includes(n.name))!
+  const InteractionComponent = interactionComponents[inputBlock.name]
   const [value, setValue] = useState<any>(InteractionComponent.defaultValue())
   const [interactions, setInteractions] = useState<InteractionInfo[]>([])
   const [currentInteraction, _setCurrentInteraction] = useState<InteractionInfo>()

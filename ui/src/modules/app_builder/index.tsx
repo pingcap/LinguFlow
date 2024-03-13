@@ -149,11 +149,12 @@ const AppBuilder: React.FC = () => {
           <BuilderCanvas
             config={verData?.version?.configuration as Config}
             metadata={verData?.version?.metadata as VersionMetadata}
+            interaction={currentInteraction}
             onClick={() => setMenuOpened(false)}
             onNodeDragStop={() => {
               setCanUpdate(true)
             }}
-            interaction={currentInteraction}
+            onNodesDelete={() => setCanSave(true)}
           />
         </Box>
         <Toolbar

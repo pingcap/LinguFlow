@@ -45,6 +45,8 @@ export const Toolbar: React.FC<{
               setToolbarPaneOpened((v) => !v)
             }
           }}
+          disabled={false}
+          disabledTooltip="Input & Output blocks are required."
         >
           <IconBug style={{ width: '80%', height: '80%', color: colors.gray[9] }} stroke={1} />
         </ToolbarButton>
@@ -85,10 +87,12 @@ const ToolbarButton: React.FC<
     bg?: StyleProp<DefaultMantineColor>
     w?: StyleProp<React.CSSProperties['width']>
     onClick?: () => void
+    disabled?: boolean
+    disabledTooltip?: string
   }>
-> = ({ children, tooltip, bg, w, onClick }) => {
+> = ({ children, tooltip, bg, w, onClick, disabled, disabledTooltip }) => {
   return (
-    <HoverCard disabled={!tooltip} withArrow position="top" openDelay={500} shadow="xs" offset={2}>
+    <HoverCard disabled={!tooltip || !disabled} withArrow position="top" openDelay={500} shadow="xs" offset={2}>
       <HoverCard.Target>
         <Group
           justify="center"
@@ -105,7 +109,7 @@ const ToolbarButton: React.FC<
         </Group>
       </HoverCard.Target>
       <HoverCard.Dropdown px={8} py={4}>
-        <Text size="xs">{tooltip}</Text>
+        <Text size="xs">{disabled ? disabledTooltip : tooltip}</Text>
       </HoverCard.Dropdown>
     </HoverCard>
   )

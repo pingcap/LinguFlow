@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import {
   ActionIcon,
   Anchor,
@@ -115,7 +115,7 @@ const List: React.FC<{ app: ApplicationInfo; versions: ApplicationVersionInfo[] 
       {versions.map((v, i) => {
         const isPublished = app?.active_version === v.id
         return (
-          <>
+          <React.Fragment key={v.id}>
             <Group p="md" justify="space-between" h={LIST_ITEM_HEIGHT}>
               <Stack gap={4} w="60%">
                 <Group gap="xs" wrap="nowrap">
@@ -159,7 +159,7 @@ const List: React.FC<{ app: ApplicationInfo; versions: ApplicationVersionInfo[] 
             </Group>
 
             {i !== versions.length - 1 && <Divider color="gray.3" />}
-          </>
+          </React.Fragment>
         )
       })}
     </Card>
@@ -172,7 +172,7 @@ const LoadingList: React.FC = () => {
       {Array(PAGE_SIZE)
         .fill(0)
         .map((_, i) => (
-          <>
+          <React.Fragment key={i}>
             <Group p="md" justify="space-between" h={LIST_ITEM_HEIGHT}>
               <Stack w="35%">
                 <Skeleton height={12} />
@@ -181,7 +181,7 @@ const LoadingList: React.FC = () => {
               <Skeleton height={12} width="25%" />
             </Group>
             {i !== PAGE_SIZE - 1 && <Divider color="gray.3" />}
-          </>
+          </React.Fragment>
         ))}
     </Card>
   )
