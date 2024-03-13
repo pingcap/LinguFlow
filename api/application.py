@@ -23,12 +23,12 @@ from api.api_schemas import (
     ApplicationRunResponse,
     ApplicationVersionCreate,
     ApplicationVersionInfo,
+    AppMetadata,
     BlockInfo,
     InteractionInfo,
     InteractionInfoResponse,
     ItemDeleteResponse,
     ItemUpdateResponse,
-    Metadata,
     Parameter,
     PatternInfo,
     VersionCreateResponse,
@@ -164,6 +164,8 @@ class ApplicationView:
                 ApplicationInfo(
                     id=app.id,
                     name=app.name,
+                    langfuse_public_key=app.langfuse_public_key,
+                    langfuse_secret_key=app.langfuse_secret_key,
                     active_version=app.active_version,
                     created_at=int(app.created_at.timestamp()),
                     updated_at=int(app.updated_at.timestamp()),
@@ -187,6 +189,8 @@ class ApplicationView:
                 ApplicationInfo(
                     id=app.id,
                     name=app.name,
+                    langfuse_public_key=app.langfuse_public_key,
+                    langfuse_secret_key=app.langfuse_secret_key,
                     active_version=app.active_version,
                     created_at=int(app.created_at.timestamp()),
                     updated_at=int(app.updated_at.timestamp()),
@@ -269,7 +273,7 @@ class ApplicationView:
 
     @router.put("/applications/{application_id}")
     def update_app_meta(
-        self, application_id: str, metadata: Metadata
+        self, application_id: str, metadata: AppMetadata
     ) -> ItemUpdateResponse:
         """
         Update the metadata of an application.
@@ -287,6 +291,8 @@ class ApplicationView:
                 application_id,
                 {
                     "name": metadata.name,
+                    "langfuse_public_key": metadata.langfuse_public_key,
+                    "langfuse_secret_key": metadata.langfuse_secret_key,
                     "updated_at": updated_at,
                 },
             )
