@@ -1,6 +1,6 @@
 // import { ApplicationConfiguration, ApplicationRunInput, InteractionDebugResponse } from '@api/langlink.schemas'
-import { ActionIcon, Box, Button, Divider, FileButton, Grid, Group, Kbd, Stack, Title, Tooltip } from '@mantine/core'
-import { IconPackageExport, IconPackageImport, IconX } from '@tabler/icons-react'
+import { ActionIcon, Box, Button, Divider, FileButton, Group, Kbd, Stack, Title, Tooltip } from '@mantine/core'
+import { IconPackageExport, IconPackageImport } from '@tabler/icons-react'
 import { useState } from 'react'
 // import {
 //   debugInteractionApplicationsApplicationIdDebugInteractionIdGet,
@@ -14,7 +14,6 @@ import yaml from 'js-yaml'
 import { ApplicationInfo, ApplicationVersionInfo, InteractionInfo } from '@api/linguflow.schemas'
 import {
   getInteractionInteractionsInteractionIdGet,
-  useAsyncRunAppApplicationsApplicationIdAsyncRunPost,
   useAsyncRunAppVersionApplicationsApplicationIdVersionsVersionIdAsyncRunPost,
   useGetInteractionInteractionsInteractionIdGet
 } from '@api/linguflow'
@@ -86,9 +85,6 @@ export const Debug: React.FC<{
       isInteractionLoading ||
       (!!fetchingIntercation && !Object.keys(fetchingIntercation.interaction?.data || {}).length)) &&
     !isError
-  // if (!blocks.length) {
-  //   return
-  // }
 
   const runInteraction = async () => {
     setCurrentInteraction(undefined)
@@ -156,32 +152,35 @@ export const Debug: React.FC<{
           </FileButton>
         </Group>
         <Stack gap={4} w="100%" h="calc(100% - 24px)" style={{ overflow: 'auto' }}>
-          {/* {interactions.map((interaction, index) => (
-              <Group key={interaction.interaction} spacing={4}>
-                <Kbd>{index}</Kbd>
-                <Button
-                  variant={interaction.interaction === currentInteraction?.interaction ? 'light' : 'subtle'}
+          {interactions.map((interaction, index) => (
+            <Group key={interaction.id} gap={4}>
+              <Kbd>{index}</Kbd>
+              <Button
+                variant={interaction.id === currentInteraction?.id ? 'light' : 'subtle'}
+                color="gray"
+                size="xs"
+                onClick={() => setCurrentInteraction(interactions[index])}
+                style={{ fontFamily: 'monospace' }}
+              >
+                {interaction.id.toUpperCase()}
+              </Button>
+              <Tooltip label="Export Interaction">
+                <ActionIcon
+                  variant="subtle"
                   color="gray"
-                  size="xs"
-                  onClick={() => setCurrentInteraction(interactions[index])}
+                  onClick={() => {
+                    download(
+                      yaml.dump(interaction),
+                      `${app.id}/${interaction.id}.langlink_interaction.yaml`,
+                      'text/plain'
+                    )
+                  }}
                 >
-                  {interaction.interaction}
-                </Button>
-                <Tooltip label="Export Interaction">
-                  <ActionIcon
-                    onClick={() => {
-                      download(
-                        yaml.dump(interaction),
-                        `${interaction.application}/${interaction.interaction}.langlink_interaction.yaml`,
-                        'text/plain'
-                      )
-                    }}
-                  >
-                    <IconPackageExport size="1rem" />
-                  </ActionIcon>
-                </Tooltip>
-              </Group>
-            ))} */}
+                  <IconPackageExport size="1rem" />
+                </ActionIcon>
+              </Tooltip>
+            </Group>
+          ))}
         </Stack>
       </Stack>
     </Group>
