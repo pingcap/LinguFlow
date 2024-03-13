@@ -137,9 +137,9 @@ export const Debug: React.FC<{
               }
 
               const yamlStr = await f.text()
-              // const config = yaml.load(yamlStr) as InteractionDebugResponse
-              // setCurrentInteraction(config)
-              // setInteractions((v) => [...v, config])
+              const config = yaml.load(yamlStr) as InteractionInfo
+              setCurrentInteraction(config)
+              setInteractions((v) => [...v, config])
             }}
           >
             {(props) => (
@@ -169,11 +169,7 @@ export const Debug: React.FC<{
                   variant="subtle"
                   color="gray"
                   onClick={() => {
-                    download(
-                      yaml.dump(interaction),
-                      `${app.id}/${interaction.id}.langlink_interaction.yaml`,
-                      'text/plain'
-                    )
+                    download(yaml.dump(interaction), `${app.name}/${interaction.id}.interaction.yaml`, 'text/plain')
                   }}
                 >
                   <IconPackageExport size="1rem" />
