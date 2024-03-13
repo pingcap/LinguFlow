@@ -27,10 +27,11 @@ import { ConnectionGuidance } from './ConnectionGuidance'
 export interface VersionListHeaderProps {
   app?: ApplicationInfo
   versions?: ApplicationVersionInfo[]
-  appLoading?: boolean
+  appLoading: boolean
+  isPublishing: boolean
 }
 
-export const VersionListHeader: React.FC<VersionListHeaderProps> = ({ app, versions, appLoading }) => {
+export const VersionListHeader: React.FC<VersionListHeaderProps> = ({ app, versions, appLoading, isPublishing }) => {
   const navigate = useNavigate()
   const { colors } = useMantineTheme()
   const updatedAt = useMemo(() => getDateTime(app?.updated_at), [app])
@@ -76,13 +77,21 @@ export const VersionListHeader: React.FC<VersionListHeaderProps> = ({ app, versi
                 <Text c="gray.7" fz="sm" truncate>
                   {app?.active_version ? (
                     <Group gap="xs">
-                      Published ver.
-                      <Anchor component={Link} to={`./ver/${app.active_version}`}>
-                        <Badge color="blue" radius="sm" variant="light">
-                          {app.active_version}
-                        </Badge>
-                      </Anchor>
+                      {isPublishing ? (
+                        'Publishing...'
+                      ) : (
+                        <>
+                          Published ver.
+                          <Anchor component={Link} to={`./ver/${app.active_version}`}>
+                            <Badge color="blue" radius="sm" variant="light">
+                              {app.active_version}
+                            </Badge>
+                          </Anchor>
+                        </>
+                      )}
                     </Group>
+                  ) : isPublishing ? (
+                    'Publishing...'
                   ) : (
                     'No published version'
                   )}

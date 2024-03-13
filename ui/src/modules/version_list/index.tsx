@@ -23,7 +23,9 @@ import {
 import { IconApps, IconDots, IconEdit, IconRocket, IconSearch, IconTrash } from '@tabler/icons-react'
 import { Link, useParams } from 'react-router-dom'
 import {
+  getGetAppApplicationsApplicationIdGetQueryKey,
   getListAppVersionsApplicationsApplicationIdVersionsGetQueryKey,
+  useActiveAppVersionApplicationsApplicationIdVersionsVersionIdActivePut,
   useDeleteAppVersionApplicationsApplicationIdVersionsVersionIdDelete,
   useGetAppApplicationsApplicationIdGet,
   useListAppVersionsApplicationsApplicationIdVersionsGet
@@ -58,13 +60,16 @@ export const VersionList: React.FC = () => {
     [versions, search]
   )
   const displayedVersions = useMemo(() => searchedVersions?.slice((page - 1) * 12, page * 12), [searchedVersions, page])
+  const [isPublishing, setIsPublishing] = useState(false)
 
   return (
     <Layout
       header={{
         height: app?.active_version ? 213 : 184,
         withBorder: false,
-        bottomSection: <VersionListHeader app={app} versions={versions} appLoading={appLoading} />
+        bottomSection: (
+          <VersionListHeader app={app} versions={versions} appLoading={appLoading} isPublishing={isPublishing} />
+        )
       }}
     >
       <Stack mih="100vh" gap={0} align="stretch">
@@ -84,7 +89,14 @@ export const VersionList: React.FC = () => {
             )}
 
             {versionLoading && <LoadingList />}
-            {!versionLoading && !!displayedVersions?.length && <List app={app!} versions={displayedVersions} />}
+            {!versionLoading && !!displayedVersions?.length && (
+              <List
+                app={app!}
+                versions={displayedVersions}
+                onPublish={() => setIsPublishing(true)}
+                onPublished={() => setIsPublishing(false)}
+              />
+            )}
             {!versionLoading && !versions?.length && (
               <Stack align="center">
                 <Avatar size="lg" radius="sm" variant="default">
@@ -109,7 +121,25 @@ export const VersionList: React.FC = () => {
 
 const LIST_ITEM_HEIGHT = 86
 
-const List: React.FC<{ app: ApplicationInfo; versions: ApplicationVersionInfo[] }> = ({ app, versions }) => {
+const List: React.FC<{
+  app: ApplicationInfo
+  versions: ApplicationVersionInfo[]
+  onPublish: (v: string) => void
+  onPublished: () => void
+}> = ({ app, versions, onPublished, onPublish }) => {
+  const qc = useQueryClient()
+  const [publishingId, setPublishingId] = useState('')
+  const { mutateAsync: activeVersion, isLoading: isPublishing } =
+    useActiveAppVersionApplicationsApplicationIdVersionsVersionIdActivePut({
+      mutation: {
+        onSuccess: async () => {
+          await qc.refetchQueries(getGetAppApplicationsApplicationIdGetQueryKey(app.id))
+          setPublishingId('')
+          onPublished()
+        }
+      }
+    })
+
   return (
     <Card withBorder p={0}>
       {versions.map((v, i) => {
@@ -122,14 +152,22 @@ const List: React.FC<{ app: ApplicationInfo; versions: ApplicationVersionInfo[] 
                   <Anchor component={Link} to={`./ver/${v.id}`} maw="80%" lineClamp={1} underline="never" c="dark">
                     <Title order={5}>{v.name}</Title>
                   </Anchor>
+                  {!!publishingId && v.id === publishingId && (
+                    <Badge color="orange" radius="sm" variant="light">
+                      Publishing...
+                    </Badge>
+                  )}
                   {isPublished && (
                     <Badge color="blue" radius="sm" variant="light">
                       Published
                     </Badge>
                   )}
                 </Group>
-                <Text c="gray.7" fz="sm" truncate style={{ fontFamily: 'monospace' }}>
-                  Ver. {v.id.toUpperCase()}
+                <Text c="gray.7" fz="sm" truncate>
+                  Ver.{' '}
+                  <Text span fz="xs" style={{ fontFamily: 'monospace' }}>
+                    {v.id.toUpperCase()}
+                  </Text>
                 </Text>
               </Stack>
 
@@ -147,7 +185,15 @@ const List: React.FC<{ app: ApplicationInfo; versions: ApplicationVersionInfo[] 
 
                   <Menu.Dropdown onClick={(e) => e.stopPropagation()}>
                     <Menu.Item leftSection={<IconEdit size={14} />}>Edit</Menu.Item>
-                    <Menu.Item leftSection={<IconRocket size={14} />} disabled={isPublished}>
+                    <Menu.Item
+                      leftSection={<IconRocket size={14} />}
+                      disabled={isPublished || isPublishing}
+                      onClick={() => {
+                        setPublishingId(v.id)
+                        activeVersion({ applicationId: app.id, versionId: v.id })
+                        onPublish(v.id)
+                      }}
+                    >
                       Publish
                     </Menu.Item>
                     <Menu.Divider />
