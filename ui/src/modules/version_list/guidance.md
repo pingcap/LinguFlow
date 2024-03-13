@@ -1,0 +1,77 @@
+# LinguFlow App API
+
+The LinguFlow applications API can be used to build, manage, and use apps. For details, see the [API documentation](WIP). Here's how to send requests to LinguFlow apps from your application.
+
+## Base URL
+
+[Code Block]
+
+## Authentication
+
+WIP, the authorization feature is currently being implemented.
+
+## Async Run App
+
+### POST `/applications/{application_id}/async_run`
+
+Initiates the asynchronous execution of a LinguFlow application identified by the specified ID.
+
+**Path Parameters**
+
+`application_id` (required, string): The ID of the application to run.
+
+**Request Body**
+
+`input` (required, string/string list/string dict): The user input or question content.
+
+**Response**
+
+```
+{
+  "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+}
+```
+
+`id` (string): The interaction ID of the asynchronous execution task, used for polling the running result later.
+
+### GET `/interactions/{interaction_id}`
+
+Retrieves information about a specific interaction by its ID.
+
+**Path Parameters**
+
+`interaction_id` (required, string): The ID of the interaction to retrieve.
+
+**Response**
+
+```
+{
+    interaction: {
+      "id": "string",
+      "version_id": "string",
+      "created_at": 0,
+      "updated_at": 0,
+      "output": "string",
+      "data": {
+        "{node_id_l}": "string",
+        "{node_id_n}": "string",
+        "{node_id_m}": "string"
+      },
+      "error": {}
+    }
+}
+```
+
+`id` (string): The ID of the interaction.
+
+`version_id` (string): The ID of the specific version of the application, globally unique.
+
+`created_at` (timestamp): The timestamp of when the interaction was created.
+
+`updated_at` (timestamp): The timestamp of the most recent update to the interaction. If the interaction has been completed, this is the end time.
+
+`output` (string): The response of the LinguFlow application to the input content.
+
+`data` (dictionary): The output of each node in the LinguFlow application. The keys are the IDs of the nodes in the application, and the values are strings representing the specific output of each node.
+
+`error` (string): Information about any errors encountered by the application. If there are no errors, this field is empty.

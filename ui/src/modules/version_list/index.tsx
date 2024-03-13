@@ -1,10 +1,9 @@
-import { useMemo, useState } from 'react'
-import dayjs from 'dayjs'
+import React, { useMemo, useState } from 'react'
 import {
   ActionIcon,
+  Anchor,
   Avatar,
   Badge,
-  Box,
   Button,
   Card,
   Code,
@@ -21,10 +20,12 @@ import {
   Title,
   useMantineTheme
 } from '@mantine/core'
-import { IconApps, IconDots, IconEdit, IconSearch, IconTrash } from '@tabler/icons-react'
-import { useParams } from 'react-router-dom'
+import { IconApps, IconDots, IconEdit, IconRocket, IconSearch, IconTrash } from '@tabler/icons-react'
+import { Link, useParams } from 'react-router-dom'
 import {
+  getGetAppApplicationsApplicationIdGetQueryKey,
   getListAppVersionsApplicationsApplicationIdVersionsGetQueryKey,
+  useActiveAppVersionApplicationsApplicationIdVersionsVersionIdActivePut,
   useDeleteAppVersionApplicationsApplicationIdVersionsVersionIdDelete,
   useGetAppApplicationsApplicationIdGet,
   useListAppVersionsApplicationsApplicationIdVersionsGet
@@ -32,11 +33,13 @@ import {
 import { ApplicationInfo, ApplicationVersionInfo } from '@api/linguflow.schemas'
 import { useQueryClient } from 'react-query'
 import { useDisclosure } from '@mantine/hooks'
-import { Footer } from '../../components/Layout/Footer'
 import { Pagination } from '../../components/Pagination'
 
 import { NoResult } from '../../components/NoResult'
+import { Layout } from '../../components/Layout/Layout'
 import classes from './index.module.css'
+import { getDateTime } from './utils'
+import { VersionListHeader } from './Header'
 
 const PAGE_SIZE = 12
 
@@ -49,53 +52,33 @@ export const VersionList: React.FC = () => {
   )
   const app = appData?.application
   const versions = versionData?.versions
-  const updatedAt = useMemo(() => getDateTime(app?.updated_at), [app])
   const [search, setSearch] = useState('')
   const [page, setPage] = useState(1)
   const totalPage = Math.ceil((versions?.length || 0) / PAGE_SIZE)
   const searchedVersions = useMemo(
-    () => (search ? versions?.filter((v) => v.id.includes(search)) : versions),
+    () =>
+      search
+        ? versions?.filter(
+            (v) =>
+              v.id.toLowerCase().includes(search.toLowerCase()) || v.name.toLowerCase().includes(search.toLowerCase())
+          )
+        : versions,
     [versions, search]
   )
   const displayedVersions = useMemo(() => searchedVersions?.slice((page - 1) * 12, page * 12), [searchedVersions, page])
+  const [isPublishing, setIsPublishing] = useState(false)
 
   return (
-    <>
+    <Layout
+      header={{
+        height: app?.active_version ? 213 : 184,
+        withBorder: false,
+        bottomSection: (
+          <VersionListHeader app={app} versions={versions} appLoading={appLoading} isPublishing={isPublishing} />
+        )
+      }}
+    >
       <Stack mih="100vh" gap={0} align="stretch">
-        <Container size="lg" py={30} w="100%">
-          <Stack>
-            <Group justify="space-between">
-              <Skeleton w="80%" component="span" visible={appLoading}>
-                <Title order={2} lineClamp={1}>
-                  {app?.name || 'Default App'}
-                </Title>
-              </Skeleton>
-
-              <Button color="dark" disabled={appLoading}>
-                <Text visibleFrom="sm">{!versions?.length ? 'Create' : 'Edit the latest'}</Text>
-                <Box hiddenFrom="sm">
-                  <IconEdit size={16} />
-                </Box>
-              </Button>
-            </Group>
-
-            <Stack gap={0}>
-              <Skeleton w="60%" component="span" visible={appLoading}>
-                <Text c="gray.7" fz="sm" truncate>
-                  {app?.active_version ? `Published ver. ${app.active_version}` : 'No published version'}
-                </Text>
-                {app?.active_version && (
-                  <Text c="gray.6" fz="sm" truncate>
-                    {updatedAt}
-                  </Text>
-                )}
-              </Skeleton>
-            </Stack>
-          </Stack>
-        </Container>
-
-        <Divider color="gray.3" />
-
         <Container size="lg" py="xl" w="100%">
           <Stack>
             {(versionLoading || !!versions?.length) && (
@@ -112,7 +95,14 @@ export const VersionList: React.FC = () => {
             )}
 
             {versionLoading && <LoadingList />}
-            {!versionLoading && !!displayedVersions?.length && <List app={app!} versions={displayedVersions} />}
+            {!versionLoading && !!displayedVersions?.length && (
+              <List
+                app={app!}
+                versions={displayedVersions}
+                onPublish={() => setIsPublishing(true)}
+                onPublished={() => setIsPublishing(false)}
+              />
+            )}
             {!versionLoading && !versions?.length && (
               <Stack align="center">
                 <Avatar size="lg" radius="sm" variant="default">
@@ -131,44 +121,59 @@ export const VersionList: React.FC = () => {
           </Stack>
         </Container>
       </Stack>
-
-      <Footer />
-    </>
+    </Layout>
   )
-}
-
-const getDateTime = (unixTS?: number) => {
-  if (!unixTS) {
-    return ''
-  }
-
-  const timeFromNow = dayjs.unix(unixTS).fromNow()
-  return `${dayjs.unix(unixTS).format('MMM D, YYYY [at] HH:mm')} (${timeFromNow})`
 }
 
 const LIST_ITEM_HEIGHT = 86
 
-const List: React.FC<{ app: ApplicationInfo; versions: ApplicationVersionInfo[] }> = ({ app, versions }) => {
+const List: React.FC<{
+  app: ApplicationInfo
+  versions: ApplicationVersionInfo[]
+  onPublish: (v: string) => void
+  onPublished: () => void
+}> = ({ app, versions, onPublished, onPublish }) => {
+  const qc = useQueryClient()
+  const [publishingId, setPublishingId] = useState('')
+  const { mutateAsync: activeVersion, isLoading: isPublishing } =
+    useActiveAppVersionApplicationsApplicationIdVersionsVersionIdActivePut({
+      mutation: {
+        onSuccess: async () => {
+          await qc.refetchQueries(getGetAppApplicationsApplicationIdGetQueryKey(app.id))
+          setPublishingId('')
+          onPublished()
+        }
+      }
+    })
+
   return (
     <Card withBorder p={0}>
       {versions.map((v, i) => {
         const isPublished = app?.active_version === v.id
         return (
-          <>
+          <React.Fragment key={v.id}>
             <Group p="md" justify="space-between" h={LIST_ITEM_HEIGHT}>
               <Stack gap={4} w="60%">
-                <Group>
-                  <Title order={5} style={{ cursor: 'pointer' }} maw="90%" lineClamp={1}>
-                    {v.id}
-                  </Title>
+                <Group gap="xs" wrap="nowrap">
+                  <Anchor component={Link} to={`./ver/${v.id}`} maw="80%" lineClamp={1} underline="never" c="dark">
+                    <Title order={5}>{v.name}</Title>
+                  </Anchor>
+                  {!!publishingId && v.id === publishingId && (
+                    <Badge color="orange" radius="sm" variant="light">
+                      Publishing...
+                    </Badge>
+                  )}
                   {isPublished && (
-                    <Badge color="green" radius="sm" variant="filled">
+                    <Badge color="blue" radius="sm" variant="light">
                       Published
                     </Badge>
                   )}
                 </Group>
                 <Text c="gray.7" fz="sm" truncate>
-                  No description.
+                  Ver.{' '}
+                  <Text span fz="xs" style={{ fontFamily: 'monospace' }}>
+                    {v.id.toUpperCase()}
+                  </Text>
                 </Text>
               </Stack>
 
@@ -186,6 +191,19 @@ const List: React.FC<{ app: ApplicationInfo; versions: ApplicationVersionInfo[] 
 
                   <Menu.Dropdown onClick={(e) => e.stopPropagation()}>
                     <Menu.Item leftSection={<IconEdit size={14} />}>Edit</Menu.Item>
+                    <Menu.Item
+                      leftSection={<IconRocket size={14} />}
+                      disabled={isPublished || isPublishing}
+                      onClick={() => {
+                        setPublishingId(v.id)
+                        activeVersion({ applicationId: app.id, versionId: v.id })
+                        onPublish(v.id)
+                      }}
+                    >
+                      Publish
+                    </Menu.Item>
+                    <Menu.Divider />
+
                     <DeleteVersionButton ver={v} disabled={isPublished} />
                   </Menu.Dropdown>
                 </Menu>
@@ -193,7 +211,7 @@ const List: React.FC<{ app: ApplicationInfo; versions: ApplicationVersionInfo[] 
             </Group>
 
             {i !== versions.length - 1 && <Divider color="gray.3" />}
-          </>
+          </React.Fragment>
         )
       })}
     </Card>
@@ -206,7 +224,7 @@ const LoadingList: React.FC = () => {
       {Array(PAGE_SIZE)
         .fill(0)
         .map((_, i) => (
-          <>
+          <React.Fragment key={i}>
             <Group p="md" justify="space-between" h={LIST_ITEM_HEIGHT}>
               <Stack w="35%">
                 <Skeleton height={12} />
@@ -215,7 +233,7 @@ const LoadingList: React.FC = () => {
               <Skeleton height={12} width="25%" />
             </Group>
             {i !== PAGE_SIZE - 1 && <Divider color="gray.3" />}
-          </>
+          </React.Fragment>
         ))}
     </Card>
   )
@@ -249,7 +267,7 @@ const DeleteVersionButton: React.FC<{ ver: ApplicationVersionInfo; disabled?: bo
         <Text size="sm">Deleting the app version may cause online malfunctions. Confirm to delete the version?</Text>
 
         <Group mt="xl" justify="end">
-          <Button variant="default" onClick={close}>
+          <Button variant="default" onClick={close} disabled={isLoading}>
             Cancel
           </Button>
           <Button

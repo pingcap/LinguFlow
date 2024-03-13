@@ -28,9 +28,8 @@ import { ApplicationInfo } from '@api/linguflow.schemas'
 import { useMemo, useState } from 'react'
 import dayjs from 'dayjs'
 import { useQueryClient } from 'react-query'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Card, LoadingCard } from '../../components/Card'
-import { Footer } from '../../components/Layout/Footer'
 import { Pagination } from '../../components/Pagination'
 
 import { NoResult } from '../../components/NoResult'
@@ -44,47 +43,47 @@ export const AppList: React.FC = () => {
   const [page, setPage] = useState(1)
   const totalPage = Math.ceil((data?.applications.length || 0) / PAGE_SIZE)
   const searchedData = useMemo(
-    () => (search ? data?.applications.filter((a) => a.name.includes(search)) : data?.applications),
+    () =>
+      search
+        ? data?.applications.filter((a) => a.name.toLowerCase().includes(search.toLowerCase()))
+        : data?.applications,
     [data, search]
   )
   const displayedData = useMemo(() => searchedData?.slice((page - 1) * 12, page * 12), [searchedData, page])
   const [opened, { open, close }] = useDisclosure(false)
 
   return (
-    <>
-      <Container size="lg" py="lg">
-        <Stack mih="100vh" gap="lg">
-          <Group justify="space-between">
-            <TextInput
-              className={classes.search_input}
-              leftSection={isLoading ? <Loader color="gray" size={14} /> : <IconSearch size={16} />}
-              placeholder="Search applications"
-              disabled={isLoading}
-              value={search}
-              onChange={(e) => setSearch(e.currentTarget.value)}
-            />
-            <NewAppModel opened={opened} onClose={close} />
-            <NewAppButton onClick={open} />
-          </Group>
+    <Container size="lg" py="lg">
+      <Stack mih="100vh" gap="lg">
+        <Group justify="space-between">
+          <TextInput
+            className={classes.search_input}
+            leftSection={isLoading ? <Loader color="gray" size={14} /> : <IconSearch size={16} />}
+            placeholder="Search applications"
+            disabled={isLoading}
+            value={search}
+            onChange={(e) => setSearch(e.currentTarget.value)}
+          />
+          <NewAppModel opened={opened} onClose={close} />
+          <NewAppButton onClick={open} />
+        </Group>
 
-          <SimpleGrid cols={{ lg: 3, md: 2, sm: 1 }} spacing={{ lg: 'lg', md: 'md', sm: 'sm' }}>
-            {isLoading &&
-              Array(PAGE_SIZE)
-                .fill(0)
-                .map(() => <LoadingCard />)}
-            {!isLoading && !!displayedData?.length && displayedData.map((app) => <AppCard app={app} />)}
-            {!isLoading && !displayedData?.length && !data?.applications.length && <NewAppCard onClick={open} />}
-          </SimpleGrid>
+        <SimpleGrid cols={{ lg: 3, md: 2, sm: 1 }} spacing={{ lg: 'lg', md: 'md', sm: 'sm' }}>
+          {isLoading &&
+            Array(PAGE_SIZE)
+              .fill(0)
+              .map((_, i) => <LoadingCard key={i} />)}
+          {!isLoading && !!displayedData?.length && displayedData.map((app) => <AppCard app={app} key={app.id} />)}
+          {!isLoading && !displayedData?.length && !data?.applications.length && <NewAppCard onClick={open} />}
+        </SimpleGrid>
 
-          {!isLoading && !displayedData?.length && !!data?.applications.length && <NoResult />}
+        {!isLoading && !displayedData?.length && !!data?.applications.length && <NoResult />}
 
-          {!isLoading && (searchedData?.length || 0) > PAGE_SIZE && (
-            <Pagination page={page} onChange={setPage} total={totalPage} />
-          )}
-        </Stack>
-      </Container>
-      <Footer />
-    </>
+        {!isLoading && (searchedData?.length || 0) > PAGE_SIZE && (
+          <Pagination page={page} onChange={setPage} total={totalPage} />
+        )}
+      </Stack>
+    </Container>
   )
 }
 
@@ -188,7 +187,6 @@ const NewAppCard: React.FC<{ onClick: () => void }> = ({ onClick }) => {
 }
 
 const AppCard: React.FC<{ app: ApplicationInfo }> = ({ app }) => {
-  const navigate = useNavigate()
   const createdAt = useMemo(() => {
     const isLargeThan22h = dayjs().diff(dayjs.unix(app.created_at), 'hour') > 22
     const timeFromNow = dayjs.unix(app.created_at).fromNow()
@@ -198,7 +196,7 @@ const AppCard: React.FC<{ app: ApplicationInfo }> = ({ app }) => {
   }, [app])
 
   return (
-    <Card onClick={() => navigate(`/app/${app.id}`)}>
+    <Card component={Link} to={`/app/${app.id}`}>
       <Stack>
         <Group justify="space-between">
           <Stack gap={0} maw="80%">
@@ -210,20 +208,31 @@ const AppCard: React.FC<{ app: ApplicationInfo }> = ({ app }) => {
             </Text>
           </Stack>
 
-          <Menu shadow="md" width={140} withinPortal position="bottom-start" keepMounted>
+          <Menu shadow="md" width={120} withinPortal position="bottom-start" keepMounted>
             <Menu.Target>
-              <ActionIcon variant="subtle" color="gray" size="sm" onClick={(e) => e.stopPropagation()}>
+              <ActionIcon
+                variant="subtle"
+                color="gray"
+                size="sm"
+                onClick={(e) => {
+                  e.preventDefault()
+                  e.stopPropagation()
+                }}
+              >
                 <IconDots size={16} />
               </ActionIcon>
             </Menu.Target>
 
-            <Menu.Dropdown onClick={(e) => e.stopPropagation()}>
-              <Menu.Label>Application</Menu.Label>
-              <Menu.Item leftSection={<IconHistory size={14} />}>Edit Name</Menu.Item>
+            <Menu.Dropdown
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+              }}
+            >
+              <Menu.Item>Edit Name</Menu.Item>
 
               <Menu.Divider />
 
-              <Menu.Label>Danger zone</Menu.Label>
               <DeleteAppButton app={app} />
             </Menu.Dropdown>
           </Menu>
@@ -271,7 +280,7 @@ const DeleteAppButton: React.FC<{ app: ApplicationInfo }> = ({ app }) => {
         </Text>
 
         <Group mt="xl" justify="end">
-          <Button variant="default" onClick={close}>
+          <Button variant="default" onClick={close} disabled={isLoading}>
             Cancel
           </Button>
           <Button
@@ -287,7 +296,7 @@ const DeleteAppButton: React.FC<{ app: ApplicationInfo }> = ({ app }) => {
         </Group>
       </Modal>
 
-      <Menu.Item color="red" leftSection={<IconTrash size={14} />} onClick={open}>
+      <Menu.Item color="red" onClick={open}>
         Delete
       </Menu.Item>
     </>
