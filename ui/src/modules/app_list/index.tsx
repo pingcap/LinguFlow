@@ -72,8 +72,8 @@ export const AppList: React.FC = () => {
           {isLoading &&
             Array(PAGE_SIZE)
               .fill(0)
-              .map(() => <LoadingCard />)}
-          {!isLoading && !!displayedData?.length && displayedData.map((app) => <AppCard app={app} />)}
+              .map((_, i) => <LoadingCard key={i} />)}
+          {!isLoading && !!displayedData?.length && displayedData.map((app) => <AppCard app={app} key={app.id} />)}
           {!isLoading && !displayedData?.length && !data?.applications.length && <NewAppCard onClick={open} />}
         </SimpleGrid>
 
