@@ -3,8 +3,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "start": "vite",
-    "dev": "vite",
+    "start": "yarn dev",
+    "dev": "yarn gen:api && vite",
     "build": "tsc && vite build",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
@@ -58,5 +58,6 @@
     "vite": "^4.4.0",
     "vite-plugin-markdown": "^2.2.0",
     "vite-tsconfig-paths": "^4.2.0"
-  }
+  },
+  "license": "MIT"
 }

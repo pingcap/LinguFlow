@@ -128,7 +128,7 @@ const List: React.FC<{ app: ApplicationInfo; versions: ApplicationVersionInfo[] 
                     </Badge>
                   )}
                 </Group>
-                <Text c="gray.7" fz="sm" truncate>
+                <Text c="gray.7" fz="sm" truncate style={{ fontFamily: 'monospace' }}>
                   Ver. {v.id.toUpperCase()}
                 </Text>
               </Stack>
