@@ -2,6 +2,7 @@ import { BlockInfo, Parameter } from '@api/linguflow.schemas'
 import {
   ActionIcon,
   Box,
+  CopyButton,
   Drawer,
   DrawerProps,
   FocusTrap,
@@ -11,9 +12,10 @@ import {
   TextInput,
   Tooltip,
   UnstyledButton,
+  rem,
   useMantineTheme
 } from '@mantine/core'
-import { IconSettings, IconX } from '@tabler/icons-react'
+import { IconCheck, IconCopy, IconSettings, IconX } from '@tabler/icons-react'
 import { Edge, Handle, NodeProps, Position, useEdges, useNodeId, useReactFlow, useUpdateNodeInternals } from 'reactflow'
 import { useState } from 'react'
 import { nanoid } from 'nanoid'
@@ -120,11 +122,22 @@ export const BlockNode: React.FC<NodeProps<BlockNodeProps>> = ({ data, selected 
             </Tooltip>
             {alias}({node.id})
           </Box>
-          {!!slots?.length && (
-            <ActionIcon variant="subtle" color="gray" onClick={openDrawer}>
-              <IconSettings size="1rem" />
-            </ActionIcon>
-          )}
+          <Group gap={4}>
+            <CopyButton value={node?.id || ''} timeout={2000}>
+              {({ copied, copy }) => (
+                <Tooltip label={copied ? 'Copied' : 'Copy Block ID'} withArrow position="top">
+                  <ActionIcon color={copied ? 'teal' : 'gray'} variant="subtle" onClick={copy}>
+                    {copied ? <IconCheck style={{ width: rem(16) }} /> : <IconCopy style={{ width: rem(16) }} />}
+                  </ActionIcon>
+                </Tooltip>
+              )}
+            </CopyButton>
+            {!!slots?.length && (
+              <ActionIcon variant="subtle" color="gray" onClick={openDrawer}>
+                <IconSettings size="1rem" />
+              </ActionIcon>
+            )}
+          </Group>
         </Group>
         <Stack gap={6}>
           {inports?.map(

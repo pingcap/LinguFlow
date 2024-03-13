@@ -56,7 +56,13 @@ export const VersionList: React.FC = () => {
   const [page, setPage] = useState(1)
   const totalPage = Math.ceil((versions?.length || 0) / PAGE_SIZE)
   const searchedVersions = useMemo(
-    () => (search ? versions?.filter((v) => v.id.includes(search)) : versions),
+    () =>
+      search
+        ? versions?.filter(
+            (v) =>
+              v.id.toLowerCase().includes(search.toLowerCase()) || v.name.toLowerCase().includes(search.toLowerCase())
+          )
+        : versions,
     [versions, search]
   )
   const displayedVersions = useMemo(() => searchedVersions?.slice((page - 1) * 12, page * 12), [searchedVersions, page])
@@ -261,7 +267,7 @@ const DeleteVersionButton: React.FC<{ ver: ApplicationVersionInfo; disabled?: bo
         <Text size="sm">Deleting the app version may cause online malfunctions. Confirm to delete the version?</Text>
 
         <Group mt="xl" justify="end">
-          <Button variant="default" onClick={close}>
+          <Button variant="default" onClick={close} disabled={isLoading}>
             Cancel
           </Button>
           <Button

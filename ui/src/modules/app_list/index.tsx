@@ -43,7 +43,10 @@ export const AppList: React.FC = () => {
   const [page, setPage] = useState(1)
   const totalPage = Math.ceil((data?.applications.length || 0) / PAGE_SIZE)
   const searchedData = useMemo(
-    () => (search ? data?.applications.filter((a) => a.name.includes(search)) : data?.applications),
+    () =>
+      search
+        ? data?.applications.filter((a) => a.name.toLowerCase().includes(search.toLowerCase()))
+        : data?.applications,
     [data, search]
   )
   const displayedData = useMemo(() => searchedData?.slice((page - 1) * 12, page * 12), [searchedData, page])
@@ -205,20 +208,31 @@ const AppCard: React.FC<{ app: ApplicationInfo }> = ({ app }) => {
             </Text>
           </Stack>
 
-          <Menu shadow="md" width={140} withinPortal position="bottom-start" keepMounted>
+          <Menu shadow="md" width={120} withinPortal position="bottom-start" keepMounted>
             <Menu.Target>
-              <ActionIcon variant="subtle" color="gray" size="sm" onClick={(e) => e.stopPropagation()}>
+              <ActionIcon
+                variant="subtle"
+                color="gray"
+                size="sm"
+                onClick={(e) => {
+                  e.preventDefault()
+                  e.stopPropagation()
+                }}
+              >
                 <IconDots size={16} />
               </ActionIcon>
             </Menu.Target>
 
-            <Menu.Dropdown onClick={(e) => e.stopPropagation()}>
-              <Menu.Label>Application</Menu.Label>
-              <Menu.Item leftSection={<IconHistory size={14} />}>Edit Name</Menu.Item>
+            <Menu.Dropdown
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+              }}
+            >
+              <Menu.Item>Edit Name</Menu.Item>
 
               <Menu.Divider />
 
-              <Menu.Label>Danger zone</Menu.Label>
               <DeleteAppButton app={app} />
             </Menu.Dropdown>
           </Menu>
@@ -266,7 +280,7 @@ const DeleteAppButton: React.FC<{ app: ApplicationInfo }> = ({ app }) => {
         </Text>
 
         <Group mt="xl" justify="end">
-          <Button variant="default" onClick={close}>
+          <Button variant="default" onClick={close} disabled={isLoading}>
             Cancel
           </Button>
           <Button
@@ -282,7 +296,7 @@ const DeleteAppButton: React.FC<{ app: ApplicationInfo }> = ({ app }) => {
         </Group>
       </Modal>
 
-      <Menu.Item color="red" leftSection={<IconTrash size={14} />} onClick={open}>
+      <Menu.Item color="red" onClick={open}>
         Delete
       </Menu.Item>
     </>
