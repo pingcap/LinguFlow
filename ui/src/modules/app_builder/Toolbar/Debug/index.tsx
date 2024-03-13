@@ -11,7 +11,13 @@ import download from 'downloadjs'
 import yaml from 'js-yaml'
 // import { useBlockSchemas } from '../hooks/useLangLinkSchema'
 // import { useAppId } from '../hooks/useAppId'
-import { ApplicationInfo, ApplicationVersionInfo } from '@api/linguflow.schemas'
+import { ApplicationInfo, ApplicationVersionInfo, InteractionInfo } from '@api/linguflow.schemas'
+import {
+  getInteractionInteractionsInteractionIdGet,
+  useAsyncRunAppApplicationsApplicationIdAsyncRunPost,
+  useAsyncRunAppVersionApplicationsApplicationIdVersionsVersionIdAsyncRunPost,
+  useGetInteractionInteractionsInteractionIdGet
+} from '@api/linguflow'
 import { TextIntercation } from './TextInteraction'
 import { ObjectIntercation } from './ObjectInteraction'
 import { ListIntercation } from './ListInteraction'
@@ -35,75 +41,75 @@ export const Debug: React.FC<{
   ver: ApplicationVersionInfo
   // onClose: () => void
   // onUpdateCurrentInteraction: (interaction?: InteractionDebugResponse) => void
-}> = () => {
+}> = ({ app, ver }) => {
   // const appId = useAppId()
   // const { blocks, blockMap } = useBlockSchemas()
   // const inputBlock = ver.nodes.map((n) => blockMap[n.name]).find((n) => n.dir === 'input')!
   // const InteractionComponent = interactionComponents[inputBlock.name]
   const InteractionComponent = interactionComponents.TextInput
   const [value, setValue] = useState<any>(InteractionComponent.defaultValue())
-  // const [interactions, setInteractions] = useState<InteractionDebugResponse[]>([])
-  // const [currentInteraction, _setCurrentInteraction] = useState<InteractionDebugResponse>()
-  // const setCurrentInteraction = (int?: InteractionDebugResponse) => {
-  //   _setCurrentInteraction(int)
-  //   onUpdateCurrentInteraction(int)
-  // }
-  // const { mutateAsync: runApp } = useRunApplicationAsyncApplicationsApplicationIdAsyncPost()
-  // const [isError, setIsError] = useState(false)
-  // const { data: fetchingIntercation, isLoading: isInteractionLoading } =
-  //   useDebugInteractionApplicationsApplicationIdDebugInteractionIdGet(
-  //     appId!,
-  //     (currentInteraction as any)?.interaction as string,
-  //     {},
-  //     {
-  //       query: {
-  //         enabled: !!currentInteraction?.interaction && !currentInteraction?.debug.length && !isError,
-  //         refetchInterval: () => {
-  //           if (currentInteraction?.debug.length) {
-  //             return false
-  //           }
-  //           return 5000
-  //         },
-  //         refetchIntervalInBackground: true,
-  //         onSuccess: (data) => {
-  //           if (!data.debug.length) {
-  //             return
-  //           }
-  //           setCurrentInteraction(data)
-  //           setValue(InteractionComponent.defaultValue())
-  //           setInteractions((v) => [...v, data])
-  //         },
-  //         onError: () => setIsError(true)
-  //       }
-  //     }
-  //   )
-  const [isLoading, setIsLoading] = useState(false)
-  // const isLoading =
-  //   (_isLoading || isInteractionLoading || (!!fetchingIntercation && !fetchingIntercation.debug.length)) && !isError
+  const [interactions, setInteractions] = useState<InteractionInfo[]>([])
+  const [currentInteraction, _setCurrentInteraction] = useState<InteractionInfo>()
+  const setCurrentInteraction = (int?: InteractionInfo) => {
+    _setCurrentInteraction(int)
+    // onUpdateCurrentInteraction(int)
+  }
+  const { mutateAsync: runVersion } = useAsyncRunAppVersionApplicationsApplicationIdVersionsVersionIdAsyncRunPost()
+  const [isError, setIsError] = useState(false)
+  const { data: fetchingIntercation, isLoading: isInteractionLoading } = useGetInteractionInteractionsInteractionIdGet(
+    currentInteraction?.id as string,
+    {
+      query: {
+        enabled: !!currentInteraction?.id && !Object.keys(currentInteraction?.data || {}).length && !isError,
+        refetchInterval: () => {
+          if (Object.keys(currentInteraction?.data || {}).length) {
+            return false
+          }
+          return 5000
+        },
+        refetchIntervalInBackground: true,
+        onSuccess: (data) => {
+          if (!Object.keys(data.interaction?.data || {}).length) {
+            return
+          }
+          setCurrentInteraction(data.interaction)
+          setValue(InteractionComponent.defaultValue())
+          setInteractions((v) => [...v, data.interaction!])
+        },
+        onError: () => setIsError(true)
+      }
+    }
+  )
+  const [_isLoading, setIsLoading] = useState(false)
+  const isLoading =
+    (_isLoading ||
+      isInteractionLoading ||
+      (!!fetchingIntercation && !Object.keys(fetchingIntercation.interaction?.data || {}).length)) &&
+    !isError
   // if (!blocks.length) {
   //   return
   // }
 
-  // const runInteraction = async () => {
-  //   setCurrentInteraction(undefined)
-  //   setIsError(false)
-  //   setIsLoading(true)
-  //   try {
-  //     const interactionRst = await runApp({ applicationId: appId!, data: { input: value } })
-  //     const debugRst = await debugInteractionApplicationsApplicationIdDebugInteractionIdGet(appId!, interactionRst.id)
-  //     setCurrentInteraction(debugRst)
+  const runInteraction = async () => {
+    setCurrentInteraction(undefined)
+    setIsError(false)
+    setIsLoading(true)
+    try {
+      const interactionRst = await runVersion({ applicationId: app.id, versionId: ver.id, data: { input: value } })
+      const debugRst = await getInteractionInteractionsInteractionIdGet(interactionRst.id)
+      setCurrentInteraction(debugRst.interaction)
 
-  //     if (!debugRst.debug.length) {
-  //       return
-  //     }
-  //     setValue(InteractionComponent.defaultValue())
-  //     setInteractions((v) => [...v, debugRst])
-  //   } catch {
-  //     setIsError(true)
-  //   } finally {
-  //     setIsLoading(false)
-  //   }
-  // }
+      if (!Object.keys(debugRst.interaction?.data || {}).length) {
+        return
+      }
+      setValue(InteractionComponent.defaultValue())
+      setInteractions((v) => [...v, debugRst.interaction!])
+    } catch {
+      setIsError(true)
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   return (
     <Group h="100%">
@@ -118,7 +124,7 @@ export const Debug: React.FC<{
             }}
           />
         </Box>
-        <Button variant="light" loading={isLoading}>
+        <Button variant="light" loading={isLoading} onClick={runInteraction}>
           Send
         </Button>
       </Group>
