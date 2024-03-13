@@ -2,6 +2,7 @@ import { useHotkeys } from '@mantine/hooks'
 import ReactFlow, {
   Background,
   Connection,
+  ConnectionMode,
   Controls,
   Edge,
   MarkerType,
@@ -9,6 +10,7 @@ import ReactFlow, {
   NodeDragHandler,
   OnNodesChange,
   XYPosition,
+  addEdge,
   useEdgesState,
   useNodesState,
   useReactFlow
@@ -20,6 +22,7 @@ import { useFormContext } from 'react-hook-form'
 import { BLOCK_NODE_NAME, BlockNode, BlockNodeProps } from '../Block'
 import { Config, MetadataUI } from '../linguflow.type'
 import { useBlockSchema } from '../useSchema'
+import { useNodeType } from '../Block/useValidConnection'
 import { HotKeyMenu } from './HotKeyMenu'
 import { useHotKeyMenu } from './useHotKeyMenu'
 
@@ -80,6 +83,7 @@ export const BuilderCanvas: React.FC<BuilderCanvasProps> = ({ config, metadata, 
   }, [config, blockMap, blocks, metadata])
 
   // manipulate nodes
+  const getNodeType = useNodeType()
   const addNode = useRef((node: Node<BlockNodeProps>) => {
     setNodes((nds) => nds.concat(node))
     register(node.data.node.id, { value: node.data.node })
@@ -91,6 +95,15 @@ export const BuilderCanvas: React.FC<BuilderCanvasProps> = ({ config, metadata, 
         setEdges((es) => es.filter((e) => e.target !== node.id || e.source !== node.id))
       }),
     [setEdges, unregister]
+  )
+  const onConnectFn = useCallback(
+    (params: Connection) => {
+      setEdges((eds) => {
+        const isBoolean = getNodeType(params.source!)?.data?.schema?.outport === 'boolean'
+        return addEdge(toCustomEdge({ ...params, data: { case: isBoolean ? true : null } }), eds)
+      })
+    },
+    [getNodeType, setEdges]
   )
 
   // hot keys
@@ -117,17 +130,19 @@ export const BuilderCanvas: React.FC<BuilderCanvasProps> = ({ config, metadata, 
       />
 
       <ReactFlow
+        minZoom={0.2}
+        fitView
+        connectionMode={ConnectionMode.Strict}
+        nodeTypes={NODE_TYPES}
         nodes={nodes}
         edges={edges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
-        minZoom={0.2}
-        fitView
+        onConnect={onConnectFn}
         onClick={(e) => {
           setHotKeyMenuOpened(false)
           onClick?.(e)
         }}
-        nodeTypes={NODE_TYPES}
         onNodeDragStop={onNodeDragStop}
         onNodesDelete={onNodesDeleteFn}
         {...paneEvents}

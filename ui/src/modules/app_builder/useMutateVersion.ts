@@ -61,7 +61,11 @@ export const useCreateVersion = (version?: ApplicationVersionInfo) => {
     })
     Object.keys(getValues()).forEach((k) => resetField(k))
     setCanSave(false)
-    navigate(`../${id}`, { replace: true, relative: 'path' })
+    if (verId) {
+      navigate(`../${id}`, { replace: true, relative: 'path' })
+    } else {
+      navigate(`./${id}`, { replace: true, relative: 'path' })
+    }
   }
 
   return { createVersion, isCreatingVersion: isLoading, canSave, setCanSave }

@@ -23,6 +23,8 @@ import { Node } from '../linguflow.type'
 import { useContainerElem } from '../Canvas/useContainerElem'
 import { Slot } from './Slot'
 import { useCloseAllDrawer, useRegisterCloseDrawer } from './useBlockDrawer'
+import { useValidConnection } from './useValidConnection'
+import { SlotReadonly } from './SlotReadonly'
 
 export const BLOCK_NODE_NAME = 'custom_block_node'
 
@@ -60,6 +62,7 @@ export const BlockNode: React.FC<NodeProps<BlockNodeProps>> = ({ data, selected 
   const edges = useEdges()
   const targetEdges = edges.filter((e) => e.target === node.id && e.targetHandle !== 'null')
   const restArgsEdges = targetEdges.filter((e) => e.targetHandle && !inports.some((inp) => inp.name === e.targetHandle))
+  const isValidConnection = useValidConnection()
 
   const { getFieldState } = useFormContext()
   const { isDirty } = getFieldState(node.id)
@@ -158,7 +161,7 @@ export const BlockNode: React.FC<NodeProps<BlockNodeProps>> = ({ data, selected 
             <Box key={s.name} p="sm" bg="gray.0" style={{ position: 'relative' }}>
               <Text maw={300} style={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
                 <Text span>{s.name}: </Text>
-                {/* <SlotReadonly formPath={props.id} slot={s} /> */}
+                <SlotReadonly formPath={node.id} slot={s} />
               </Text>
             </Box>
           ))}
@@ -170,7 +173,7 @@ export const BlockNode: React.FC<NodeProps<BlockNodeProps>> = ({ data, selected 
                   position={Position.Right}
                   id="outport"
                   isConnectableEnd={false}
-                  // isValidConnection={isValidConnection}
+                  isValidConnection={isValidConnection}
                   style={{
                     ...PORT_CUSTOM_STYLE,
                     right: `-${PORT_OFFSET}px`
