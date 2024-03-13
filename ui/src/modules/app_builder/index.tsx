@@ -1,6 +1,6 @@
 import { ActionIcon, Anchor, Badge, Box, Group, Loader, LoadingOverlay, Menu, rem } from '@mantine/core'
 import { IconChevronLeft, IconDeviceFloppy, IconDownload, IconMenu2, IconRocket, IconUpload } from '@tabler/icons-react'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 
 import 'reactflow/dist/style.css'
 import {
@@ -59,6 +59,15 @@ const AppBuilder: React.FC = () => {
       }
     }
   )
+  // when route change, the verData will be undefined caused by the verId change
+  const verDataCacheRef = useRef(verData)
+  const verDataCache = useMemo(() => {
+    if (!verData) {
+      return verDataCacheRef.current
+    }
+    verDataCacheRef.current = verData
+    return verData
+  }, [verData])
   const isBlocksLoading = useIsFetching(getBlocksBlocksGetQueryKey()) > 0
   const isPatternsLoading = useIsFetching(getPatternsPatternsGetQueryKey()) > 0
   const isInfoLoading = isBlocksLoading || isPatternsLoading || isAppLoading || (isVerLoading && !firstInitRef.current)
@@ -147,7 +156,7 @@ const AppBuilder: React.FC = () => {
             loaderProps={{ color: 'gray.3' }}
           />
           <BuilderCanvas
-            config={verData?.version?.configuration as Config}
+            config={verDataCache?.version?.configuration as Config}
             metadata={verData?.version?.metadata as VersionMetadata}
             interaction={currentInteraction}
             onClick={() => setMenuOpened(false)}
