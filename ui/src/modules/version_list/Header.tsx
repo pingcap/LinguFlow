@@ -9,6 +9,7 @@ import {
   CopyButton,
   Divider,
   Group,
+  Overlay,
   Skeleton,
   Stack,
   Text,
@@ -18,7 +19,7 @@ import {
   useMantineTheme
 } from '@mantine/core'
 import { IconCheck, IconChevronUp, IconCirclesRelation, IconCopy, IconEdit } from '@tabler/icons-react'
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { ApplicationInfo, ApplicationVersionInfo } from '@api/linguflow.schemas'
 import { getDateTime } from './utils'
@@ -35,12 +36,13 @@ export const VersionListHeader: React.FC<VersionListHeaderProps> = ({ app, versi
   const navigate = useNavigate()
   const { colors } = useMantineTheme()
   const updatedAt = useMemo(() => getDateTime(app?.updated_at), [app])
+  const [showGuidance, setShowGuidance] = useState(false)
 
   return (
     <>
       <Divider color="gray.3" />
       <Card shadow="sm" p={0}>
-        <Container size="lg" py={30} w="100%" style={{ position: 'relative' }}>
+        <Container size="lg" py={30} w="100%" pos="relative">
           <Stack>
             <Group justify="space-between">
               <Skeleton w="80%" component="span" visible={appLoading}>
@@ -117,17 +119,35 @@ export const VersionListHeader: React.FC<VersionListHeaderProps> = ({ app, versi
                   cursor: 'pointer',
                   userSelect: 'none'
                 }}
+                onClick={() => setShowGuidance((v) => !v)}
               >
                 <Box w="20px" h="20px">
-                  {/* <IconChevronUp style={{ width: '100%', height: '100%', color: colors.gray[7] }} stroke={1} /> */}
-                  <IconCirclesRelation style={{ width: '100%', height: '100%', color: colors.gray[7] }} stroke={1} />
+                  {showGuidance ? (
+                    <IconChevronUp style={{ width: '100%', height: '100%', color: colors.gray[7] }} stroke={1} />
+                  ) : (
+                    <IconCirclesRelation style={{ width: '100%', height: '100%', color: colors.gray[7] }} stroke={1} />
+                  )}
                 </Box>
                 <Text size="sm" c="gray.7">
                   Connect App
                 </Text>
               </Group>
             )}
-            {/* <ConnectionGuidance /> */}
+            {showGuidance && (
+              <Card
+                pos="fixed"
+                radius={0}
+                top={210}
+                left={0}
+                w="100%"
+                h="60%"
+                style={{ overflow: 'auto', zIndex: 9999999 }}
+              >
+                <Container size="lg" py={30} w="100%">
+                  <ConnectionGuidance />
+                </Container>
+              </Card>
+            )}
           </Stack>
         </Container>
       </Card>
