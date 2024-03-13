@@ -9,17 +9,7 @@ import dayjs from 'dayjs'
 import { ApplicationVersionInfo } from '@api/linguflow.schemas'
 import { useState } from 'react'
 
-const INIT_V = 1
-const getDigitsNum = (num: number) => (num / 10000).toFixed(4).split('.')[1]
-const getCurrentDateTimeName = () => `v${dayjs().format('YYYY-MM-DD')}.${getDigitsNum(INIT_V)}`
-const autoName = (prevName: string) => {
-  const nameArr = prevName.split('.')
-  const lastSegmentOfName = nameArr[nameArr.length - 1]
-  if (!lastSegmentOfName || Number.isNaN(Number(lastSegmentOfName))) {
-    return `${nameArr.join('.')}.${getDigitsNum(INIT_V)}`
-  }
-  return `${nameArr.slice(0, nameArr.length - 1).join('.')}.${getDigitsNum(Number(lastSegmentOfName) + 1)}`
-}
+const getCurrentDateTimeName = () => `v${dayjs().format('YYYY-MM-DD')}.${dayjs().unix()}`
 
 export const useCreateVersion = (version?: ApplicationVersionInfo) => {
   const { appId, verId } = useParams()
@@ -38,7 +28,7 @@ export const useCreateVersion = (version?: ApplicationVersionInfo) => {
       applicationId: appId!,
       data: {
         parentId: verId,
-        name: version?.name ? autoName(version.name) : getCurrentDateTimeName(),
+        name: getCurrentDateTimeName(),
         configuration: {
           nodes: Object.values(getValues()),
           edges: getEdges().map((e) => ({
