@@ -134,19 +134,29 @@ export const VersionListHeader: React.FC<VersionListHeaderProps> = ({ app, versi
               </Group>
             )}
             {showGuidance && (
-              <Card
-                pos="fixed"
-                radius={0}
-                top={210}
-                left={0}
-                w="100%"
-                h="60%"
-                style={{ overflow: 'auto', zIndex: 9999999 }}
-              >
-                <Container size="lg" py={30} w="100%">
-                  <ConnectionGuidance />
-                </Container>
-              </Card>
+              <Box pos="fixed" left={0} top={0} h="100%" w="100%" style={{ pointerEvents: 'none' }}>
+                <Box
+                  pos="absolute"
+                  top={210}
+                  h="calc(100% - 210px)"
+                  w="100%"
+                  style={{ pointerEvents: 'auto', zIndex: 999999 }}
+                >
+                  <Overlay backgroundOpacity={0.01} blur={5} />
+                </Box>
+                <Card
+                  pos="absolute"
+                  top={210}
+                  radius={0}
+                  h="60%"
+                  w="100%"
+                  style={{ overflow: 'auto', zIndex: 9999999, pointerEvents: 'auto' }}
+                >
+                  <Container size="lg" py={30} w="100%">
+                    <ConnectionGuidance />
+                  </Container>
+                </Card>
+              </Box>
             )}
           </Stack>
         </Container>
