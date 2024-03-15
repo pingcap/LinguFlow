@@ -5,6 +5,7 @@ from datetime import datetime
 from typing import Dict, List
 
 from environs import Env
+from fastapi import Request
 from fastapi_utils.cbv import cbv
 from fastapi_utils.inferring_router import InferringRouter
 from sqlalchemy import create_engine
@@ -31,6 +32,7 @@ from api.api_schemas import (
     ItemUpdateResponse,
     Parameter,
     PatternInfo,
+    User,
     VersionCreateResponse,
     VersionInfoResponse,
     VersionListResponse,
@@ -543,3 +545,11 @@ class ApplicationView:
                 success=False,
                 message=str(e),
             )
+
+    @router.get("/ping")
+    def ping(self) -> dict:
+        return {"message": "pong"}
+
+    @router.get("/me")
+    def me(self, request: Request) -> User:
+        return User(user=request.state.user)
