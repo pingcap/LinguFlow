@@ -73,18 +73,26 @@ class AuthMiddleware(BaseHTTPMiddleware):
         self.auth_plugin = load_auth_plugin()
 
     async def dispatch(self, request: Request, call_next):
+        # if the target path is the login path, dispatch to plugin's login method.
         if request.url.path == self.login_path:
             return self.auth_plugin.login(request)
 
+        # if the target path does not require authorization.
         if request.url.path in self.white_list:
             return await call_next(request)
 
+        # check if the request belong to a valid user.
+        # if so, attach the user identity to the request state.
         user = self.auth_plugin.user_identity(request)
         if user:
             request.state.user = user
             return await call_next(request)
 
+        # the user is not valid, redirect it to authorize url
         auth_url = self.auth_plugin.authorize_url(request)
+
+        # if the plugin is not able to allocate authorize url for this request,
+        # 403 should be returned and the plugin should explain the reason.
         if auth_url:
             return JSONResponse({"auth_url": auth_url}, status_code=401)
         else:

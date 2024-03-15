@@ -311,4 +311,6 @@ class ApplicationRunResponse(APIModel):
 
 
 class User(APIModel):
+    """The user identity"""
+
     user: str
