@@ -308,3 +308,7 @@ class ApplicationRunResponse(APIModel):
     """The response model for trigger an app."""
 
     id: InteractionID
+
+
+class User(APIModel):
+    user: str
