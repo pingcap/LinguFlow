@@ -31,7 +31,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <ColorSchemeScript defaultColorScheme="auto" />
         <MantineProvider defaultColorScheme="auto">
           <ModalsProvider>
-            <Notifications position="top-center" zIndex={99999999} />
+            <Notifications position="top-center" zIndex={Number.MAX_SAFE_INTEGER} />
             <ErrorBoundary
               fallbackRender={(error) => {
                 return <CustomError error={error} />
