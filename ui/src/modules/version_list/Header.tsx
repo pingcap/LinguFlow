@@ -67,7 +67,7 @@ export const VersionListHeader: React.FC<VersionListHeaderProps> = ({ app, versi
                 disabled={appLoading}
                 onClick={() => navigate(!versions?.length ? './ver' : `./ver/${versions[0].id}`)}
               >
-                <Text visibleFrom="sm">{!versions?.length ? 'Create' : 'Edit the latest'}</Text>
+                <Text visibleFrom="sm">{!versions?.length ? 'Create' : 'Edit latest version'}</Text>
                 <Box hiddenFrom="sm">
                   <IconEdit size={16} />
                 </Box>
