@@ -3,22 +3,26 @@ import ReactFlow, {
   Background,
   Connection,
   ConnectionMode,
+  ControlButton,
   Controls,
   Edge,
   MarkerType,
   Node,
   NodeDragHandler,
   OnNodesDelete,
+  Position,
   XYPosition,
   addEdge,
   useEdgesState,
   useNodesState,
   useReactFlow
 } from 'reactflow'
+import dagre from 'dagre'
 import { nanoid } from 'nanoid'
 import { BlockInfo, InteractionInfo, VersionMetadata, VersionMetadataMetadata } from '@api/linguflow.schemas'
 import { useCallback, useEffect, useRef } from 'react'
 import { useFormContext } from 'react-hook-form'
+import { IconSitemap } from '@tabler/icons-react'
 import { BLOCK_NODE_NAME, BlockNode, BlockNodeProps } from '../Block'
 import { Config, MetadataUI } from '../linguflow.type'
 import { useBlockSchema } from '../useSchema'
@@ -30,9 +34,11 @@ export interface BuilderCanvasProps {
   config?: Config
   metadata?: VersionMetadata
   onClick?: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void
+  interaction?: InteractionInfo
   onNodeDragStop: NodeDragHandler
   onNodesDelete: OnNodesDelete
-  interaction?: InteractionInfo
+  onAddNode: (n: Node<BlockNodeProps>) => void
+  onRelayout: () => void
 }
 
 const NODE_TYPES = {
@@ -42,10 +48,12 @@ const NODE_TYPES = {
 export const BuilderCanvas: React.FC<BuilderCanvasProps> = ({
   config,
   metadata,
+  interaction,
   onClick,
   onNodeDragStop,
-  interaction,
-  onNodesDelete
+  onNodesDelete,
+  onAddNode,
+  onRelayout
 }) => {
   const { blocks, blockMap } = useBlockSchema()
   const { getNodes, getEdges, fitView, project, getViewport } = useReactFlow()
@@ -102,6 +110,7 @@ export const BuilderCanvas: React.FC<BuilderCanvasProps> = ({
   const addNode = useRef((node: Node<BlockNodeProps>) => {
     setNodes((nds) => nds.concat(node))
     register(node.data.node.id, { value: node.data.node })
+    onAddNode(node)
   })
   const onNodesDeleteFn = useCallback(
     (n: Node[]) => {
@@ -166,19 +175,19 @@ export const BuilderCanvas: React.FC<BuilderCanvasProps> = ({
       >
         <Background />
         <Controls showInteractive={false}>
-          {/* <ControlButton
-                onClick={() => {
-                  const nodes = layoutedNodes({ nodes: getNodes(), edges: getEdges() })
-                  setNodes(nodes)
-                  window.requestAnimationFrame(() => {
-                    fitView()
-                    saveCurrentUIMetadata()
-                  })
-                }}
-                title="reorder"
-              >
-                <IconSitemap />
-              </ControlButton> */}
+          <ControlButton
+            onClick={() => {
+              const nodes = layoutedNodes({ nodes: getNodes(), edges: getEdges() })
+              setNodes(nodes)
+              window.requestAnimationFrame(() => {
+                fitView()
+                onRelayout()
+              })
+            }}
+            title="reorder"
+          >
+            <IconSitemap />
+          </ControlButton>
         </Controls>
       </ReactFlow>
     </>
@@ -249,4 +258,34 @@ const getMetadataUINode = (id: string, metadata: VersionMetadataMetadata) => {
     return {}
   }
   return metadataUI.nodes.find((n) => n.id === id) || {}
+}
+
+const layoutedNodes = ({ nodes, edges }: { nodes: Node[]; edges: Edge[] }): Node[] => {
+  const dagreGraph = new dagre.graphlib.Graph()
+  dagreGraph.setDefaultEdgeLabel(() => ({}))
+  dagreGraph.setGraph({ rankdir: 'LR', nodesep: 300, ranksep: 300 })
+
+  nodes.forEach((node) => {
+    const { width, height } = document.querySelector(`[data-id="${node.id}"]`)!.getBoundingClientRect()
+    dagreGraph.setNode(node.id, { width, height })
+  })
+
+  edges.forEach((edge) => {
+    dagreGraph.setEdge(edge.source, edge.target)
+  })
+
+  dagre.layout(dagreGraph)
+
+  return nodes.map((node) => {
+    const nodeWithPosition = dagreGraph.node(node.id)
+    node.targetPosition = Position.Left
+    node.sourcePosition = Position.Right
+    const { width, height } = document.querySelector(`[data-id="${node.id}"]`)!.getBoundingClientRect()
+    node.position = {
+      x: nodeWithPosition.x - width / 2,
+      y: nodeWithPosition.y - height / 2
+    }
+
+    return node
+  })
 }

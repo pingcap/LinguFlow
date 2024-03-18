@@ -20,7 +20,7 @@ import {
   Title,
   useMantineTheme
 } from '@mantine/core'
-import { IconApps, IconDots, IconEdit, IconRocket, IconSearch, IconTrash } from '@tabler/icons-react'
+import { IconApps, IconDots, IconRocket, IconSearch, IconTrash } from '@tabler/icons-react'
 import { Link, useParams } from 'react-router-dom'
 import {
   getGetAppApplicationsApplicationIdGetQueryKey,
@@ -190,7 +190,6 @@ const List: React.FC<{
                   </Menu.Target>
 
                   <Menu.Dropdown onClick={(e) => e.stopPropagation()}>
-                    <Menu.Item leftSection={<IconEdit size={14} />}>Edit</Menu.Item>
                     <Menu.Item
                       leftSection={<IconRocket size={14} />}
                       disabled={isPublished || isPublishing}
@@ -204,7 +203,7 @@ const List: React.FC<{
                     </Menu.Item>
                     <Menu.Divider />
 
-                    <DeleteVersionButton ver={v} disabled={isPublished} />
+                    <DeleteVersionButton ver={v} disabled={isPublished || isPublishing} />
                   </Menu.Dropdown>
                 </Menu>
               </Group>
