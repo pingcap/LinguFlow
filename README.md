@@ -2,6 +2,19 @@
 
 # LinguFlow
 
+## Develop Guide
+
+To set up the development environment for LinguFlow:
+
+```shell
+docker-compose -f docker-compose.dev.yaml build
+docker-compose -f docker-compose.dev.yaml up
+```
+
+These two commands will create an API container and a UI container, install necessary dependencies inside the containers, and initialize a temporary SQLite database in the API container for storing development/testing data.
+
+Then you can visit `http://localhost:5173/` with your browser and play with the environment.
+
 ## What is LinguFlow
 
 LinguFlow, a low-code tool designed for LLM application development, simplifies the building, debugging, and deployment process for developers. It utilizes a DAG-based message flow for business logic, requiring only minimal familiarity with LinguFlow blocks to effectively use.
