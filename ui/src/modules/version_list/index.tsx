@@ -203,7 +203,7 @@ const List: React.FC<{
                     </Menu.Item>
                     <Menu.Divider />
 
-                    <DeleteVersionButton ver={v} disabled={isPublished} />
+                    <DeleteVersionButton ver={v} disabled={isPublished || isPublishing} />
                   </Menu.Dropdown>
                 </Menu>
               </Group>
