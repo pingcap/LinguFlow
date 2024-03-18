@@ -65,7 +65,10 @@ export const VersionList: React.FC = () => {
         : versions,
     [versions, search]
   )
-  const displayedVersions = useMemo(() => searchedVersions?.slice((page - 1) * 12, page * 12), [searchedVersions, page])
+  const displayedVersions = useMemo(
+    () => searchedVersions?.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE),
+    [searchedVersions, page]
+  )
   const [isPublishing, setIsPublishing] = useState(false)
 
   return (

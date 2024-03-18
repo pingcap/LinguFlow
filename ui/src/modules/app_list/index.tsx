@@ -49,7 +49,10 @@ export const AppList: React.FC = () => {
         : data?.applications,
     [data, search]
   )
-  const displayedData = useMemo(() => searchedData?.slice((page - 1) * 12, page * 12), [searchedData, page])
+  const displayedData = useMemo(
+    () => searchedData?.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE),
+    [searchedData, page]
+  )
   const [opened, { open, close }] = useDisclosure(false)
 
   return (
