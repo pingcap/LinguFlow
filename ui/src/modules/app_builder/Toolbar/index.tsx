@@ -4,6 +4,7 @@ import React, { PropsWithChildren, useState } from 'react'
 
 import 'reactflow/dist/style.css'
 import { ApplicationInfo, ApplicationVersionInfo, InteractionInfo } from '@api/linguflow.schemas'
+import { notifications } from '@mantine/notifications'
 import classes from './index.module.css'
 import { Pane, TabValue } from './Pane'
 
@@ -45,8 +46,8 @@ export const Toolbar: React.FC<{
               setToolbarPaneOpened((v) => !v)
             }
           }}
-          disabled={false}
-          disabledTooltip="Input & Output blocks are required."
+          disabled={!ver}
+          disabledTooltip="Current version not saved."
         >
           <IconBug style={{ width: '80%', height: '80%', color: colors.gray[9] }} stroke={1} />
         </ToolbarButton>
@@ -103,7 +104,17 @@ const ToolbarButton: React.FC<
           c="gray.9"
           bg={bg || '#fff'}
           className={classes.toolbar_button}
-          onClick={onClick}
+          onClick={
+            disabled
+              ? () => {
+                  notifications.show({
+                    title: 'Error',
+                    message: disabledTooltip,
+                    color: 'red'
+                  })
+                }
+              : onClick
+          }
         >
           {children}
         </Group>
