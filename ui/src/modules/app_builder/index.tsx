@@ -14,7 +14,7 @@ import {
 } from '@api/linguflow'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useDebouncedValue, useHotkeys } from '@mantine/hooks'
-import { ReactFlowProvider, useNodesInitialized } from 'reactflow'
+import { ReactFlowProvider, useEdges, useNodesInitialized } from 'reactflow'
 import { FormProvider, useForm, useFormContext } from 'react-hook-form'
 import { InteractionInfo, VersionMetadata } from '@api/linguflow.schemas'
 import { useIsFetching } from 'react-query'
@@ -79,25 +79,28 @@ const AppBuilder: React.FC = () => {
   const [currentInteraction, setCurrentInteraction] = useState<InteractionInfo>()
 
   const {
-    formState: { isDirty }
+    formState: { dirtyFields }
   } = useFormContext()
+  const edges = useEdges()
   const nodesInitialized = useNodesInitialized()
   const { createVersion, isCreatingVersion, canSave, setCanSave } = useCreateVersion(verData?.version)
   const { canUpdate, setCanUpdate, updateVersion } = useUpdateVersion(verData?.version)
-  const [debouncedCanUpdate] = useDebouncedValue(canUpdate, 30 * 1000, { leading: false })
+  const [debouncedCanUpdate] = useDebouncedValue(canUpdate, 5 * 1000, { leading: false })
 
   useEffect(() => {
-    if (!isDirty) {
+    const dirtyKeys = Object.keys(dirtyFields)
+    if (!dirtyKeys.length) {
       return
     }
     setCanSave(true)
-  }, [isDirty, setCanSave])
+  }, [dirtyFields, setCanSave])
 
   useEffect(() => {
     if (!debouncedCanUpdate || canSave) {
       return
     }
     updateVersion()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedCanUpdate])
 
   useEffect(() => {
@@ -107,12 +110,17 @@ const AppBuilder: React.FC = () => {
 
     if (nodesInitialized && !firstInitRef.current) {
       firstInitRef.current = true
-      setCanSave(false)
       return
     }
+  }, [nodesInitialized])
 
+  useEffect(() => {
+    if (!firstInitRef.current) {
+      return
+    }
     setCanSave(true)
-  }, [nodesInitialized, setCanSave])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [edges])
 
   useHotkeys([
     [
@@ -160,10 +168,10 @@ const AppBuilder: React.FC = () => {
             metadata={verData?.version?.metadata as VersionMetadata}
             interaction={currentInteraction}
             onClick={() => setMenuOpened(false)}
-            onNodeDragStop={() => {
-              setCanUpdate(true)
-            }}
+            onNodeDragStop={() => setCanUpdate(true)}
+            onRelayout={() => setCanUpdate(true)}
             onNodesDelete={() => setCanSave(true)}
+            onAddNode={() => setCanSave(true)}
           />
         </Box>
         <Toolbar

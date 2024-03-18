@@ -5,7 +5,6 @@ import {
   Button,
   Code,
   Container,
-  FocusTrap,
   Group,
   Loader,
   Menu,
@@ -16,16 +15,17 @@ import {
   TextInput,
   Title
 } from '@mantine/core'
-import { IconDots, IconHistory, IconPlus, IconSearch, IconTrash } from '@tabler/icons-react'
+import { IconDots, IconPlus, IconSearch } from '@tabler/icons-react'
 import { getHotkeyHandler, useDisclosure } from '@mantine/hooks'
 import {
   getListAppApplicationsGetQueryKey,
   useCreateAppApplicationsPost,
   useDeleteAppApplicationsApplicationIdDelete,
-  useListAppApplicationsGet
+  useListAppApplicationsGet,
+  useUpdateAppMetaApplicationsApplicationIdPut
 } from '@api/linguflow'
 import { ApplicationInfo } from '@api/linguflow.schemas'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import dayjs from 'dayjs'
 import { useQueryClient } from 'react-query'
 import { Link, useNavigate } from 'react-router-dom'
@@ -64,7 +64,7 @@ export const AppList: React.FC = () => {
             value={search}
             onChange={(e) => setSearch(e.currentTarget.value)}
           />
-          <NewAppModel opened={opened} onClose={close} />
+          <ModifyAppModel opened={opened} onClose={close} />
           <NewAppButton onClick={open} />
         </Group>
 
@@ -87,34 +87,61 @@ export const AppList: React.FC = () => {
   )
 }
 
-interface NewAppModelProps {
+interface ModifyAppModelProps {
   opened: boolean
   onClose: () => void
+  app?: ApplicationInfo
 }
 
-const NewAppModel: React.FC<NewAppModelProps> = ({ opened, onClose: _onClose }) => {
+const ModifyAppModel: React.FC<ModifyAppModelProps> = ({ opened, onClose, app }) => {
   const queryClient = useQueryClient()
   const navigate = useNavigate()
-  const [name, setName] = useState('')
-  const onClose = () => {
-    setName('')
-    _onClose()
-  }
-  const { mutateAsync, isLoading } = useCreateAppApplicationsPost({
+  const [name, setName] = useState(app?.name || '')
+  const [langfusePK, setLangfusePK] = useState(app?.langfuse_public_key || '')
+  const [langfuseSK, setLangfuseSK] = useState(app?.langfuse_secret_key || '')
+  const { mutateAsync: createApp, isLoading: isCreating } = useCreateAppApplicationsPost({
     mutation: {
       onSuccess: async (data) => {
         await queryClient.fetchQuery({ queryKey: getListAppApplicationsGetQueryKey() })
+        onClose()
         navigate(`/app/${data.id}`)
+      }
+    }
+  })
+  const { mutateAsync: updateApp, isLoading: isUpdating } = useUpdateAppMetaApplicationsApplicationIdPut({
+    mutation: {
+      onSuccess: async () => {
+        await queryClient.fetchQuery({ queryKey: getListAppApplicationsGetQueryKey() })
         onClose()
       }
     }
   })
-  const handleCreate = async () => {
+  const handleConfirm = async () => {
     if (isLoading || !opened || !name) {
       return
     }
-    await mutateAsync({ data: { name } })
+
+    if (!app) {
+      await createApp({ data: { name, langfusePublicKey: langfusePK, langfuseSecretKey: langfuseSK } })
+    } else {
+      await updateApp({
+        applicationId: app.id,
+        data: { name, langfusePublicKey: langfusePK, langfuseSecretKey: langfuseSK }
+      })
+    }
   }
+
+  const isLoading = isCreating || isUpdating
+
+  useEffect(() => {
+    if (!opened) {
+      return
+    }
+    setName(app?.name || '')
+    setLangfusePK(app?.langfuse_public_key || '')
+    setLangfuseSK(app?.langfuse_secret_key || '')
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [opened])
 
   return (
     <Modal
@@ -123,12 +150,24 @@ const NewAppModel: React.FC<NewAppModelProps> = ({ opened, onClose: _onClose }) 
       withCloseButton={!isLoading}
       opened={opened}
       onClose={onClose}
-      title={<Title order={5}>New Application</Title>}
+      title={
+        <Title order={5}>
+          {!app ? (
+            'New Application'
+          ) : (
+            <>
+              Edit <Code fz="md">{app.name}</Code>
+            </>
+          )}
+        </Title>
+      }
       centered
       trapFocus={false}
     >
-      <FocusTrap active={opened}>
+      <Stack>
         <TextInput
+          required
+          autoFocus
           label="Name"
           placeholder="Please input the application name"
           value={name}
@@ -136,15 +175,36 @@ const NewAppModel: React.FC<NewAppModelProps> = ({ opened, onClose: _onClose }) 
           onChange={(event) => {
             setName(event.currentTarget.value)
           }}
-          onKeyDown={getHotkeyHandler([['Enter', handleCreate]])}
+          onKeyDown={getHotkeyHandler([['Enter', handleConfirm]])}
         />
-      </FocusTrap>
+
+        <TextInput
+          label="Langfuse Public Key"
+          placeholder="Please input the langfuse public key"
+          value={langfusePK}
+          disabled={isLoading}
+          onChange={(event) => {
+            setLangfusePK(event.currentTarget.value)
+          }}
+        />
+
+        <TextInput
+          label="Langfuse Secret Key"
+          placeholder="Please input the langfuse secret key"
+          value={langfuseSK}
+          disabled={isLoading}
+          onChange={(event) => {
+            setLangfuseSK(event.currentTarget.value)
+          }}
+          onKeyDown={getHotkeyHandler([['Enter', handleConfirm]])}
+        />
+      </Stack>
 
       <Group mt="xl" justify="end">
         <Button variant="default" onClick={onClose} disabled={isLoading}>
           Cancel
         </Button>
-        <Button color="dark" loading={isLoading} disabled={!name} onClick={handleCreate}>
+        <Button color="dark" loading={isLoading} disabled={!name} onClick={handleConfirm}>
           Confirm
         </Button>
       </Group>
@@ -187,6 +247,7 @@ const NewAppCard: React.FC<{ onClick: () => void }> = ({ onClick }) => {
 }
 
 const AppCard: React.FC<{ app: ApplicationInfo }> = ({ app }) => {
+  const [opened, { open, close }] = useDisclosure(false)
   const createdAt = useMemo(() => {
     const isLargeThan22h = dayjs().diff(dayjs.unix(app.created_at), 'hour') > 22
     const timeFromNow = dayjs.unix(app.created_at).fromNow()
@@ -229,7 +290,8 @@ const AppCard: React.FC<{ app: ApplicationInfo }> = ({ app }) => {
                 e.stopPropagation()
               }}
             >
-              <Menu.Item>Edit Name</Menu.Item>
+              <Menu.Item onClick={open}>Edit</Menu.Item>
+              <ModifyAppModel opened={opened} onClose={close} app={app} />
 
               <Menu.Divider />
 
