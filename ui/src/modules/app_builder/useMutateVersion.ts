@@ -7,7 +7,7 @@ import { useReactFlow } from 'reactflow'
 import { useFormContext } from 'react-hook-form'
 import dayjs from 'dayjs'
 import { ApplicationVersionInfo } from '@api/linguflow.schemas'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 const getCurrentDateTimeName = () => `v${dayjs().format('YYYY-MM-DD')}.${dayjs().unix()}`
 
@@ -49,6 +49,7 @@ export const useCreateVersion = (version?: ApplicationVersionInfo) => {
         }
       }
     })
+
     Object.keys(getValues()).forEach((k) => resetField(k))
     setCanSave(false)
     if (verId) {
@@ -89,6 +90,10 @@ export const useUpdateVersion = (version?: ApplicationVersionInfo) => {
     })
     setCanUpdate(false)
   }
+
+  useEffect(() => {
+    setCanUpdate(false)
+  }, [version])
 
   return { updateVersion, isUpdatingVersion: isLoading, canUpdate, setCanUpdate }
 }
