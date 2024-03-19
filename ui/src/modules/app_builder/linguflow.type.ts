@@ -1,4 +1,4 @@
-import { Viewport, Node as ReactFlowNode } from 'reactflow'
+import { Node as ReactFlowNode } from 'reactflow'
 
 export type NodeSlots = { [key: string]: any }
 
@@ -25,7 +25,6 @@ export interface Edge {
 }
 
 export interface MetadataUI {
-  viewport: Viewport
   nodes: ReactFlowNode<any>[]
 }
 
