@@ -3,6 +3,9 @@ import { useCallback } from 'react'
 import { usePatternSchema } from '../useSchema'
 import { BlockNodeProps } from '.'
 
+export const BLOCK_PORT_ID_NULL = '__null__'
+export const BOOLEAN_CLASS_NAME = 'boolean'
+
 export const useValidConnection = () => {
   const getNodeType = useNodeType()
   const { patternMap } = usePatternSchema()
@@ -13,12 +16,13 @@ export const useValidConnection = () => {
     )?.class_name
 
     const notSelfNode = connection.source !== connection.target
-    const isConditionalTarget = connection.targetHandle === 'null'
-    const isOutportBoolean = outportClassName === 'boolean'
+    const isConditionalTarget = connection.targetHandle === BLOCK_PORT_ID_NULL
+    const isOutportBoolean = outportClassName === BOOLEAN_CLASS_NAME
     const isConditionalConnection = isConditionalTarget && isOutportBoolean
     const isAnyTarget = !isConditionalTarget && !inportClassName
     const isSameClass = outportClassName === inportClassName
-    const isOutportClassASubclassOfInportClass = patternMap[inportClassName!].candidates.includes(outportClassName)
+    const isOutportClassASubclassOfInportClass =
+      !!inportClassName && patternMap[inportClassName]?.candidates?.includes(outportClassName)
 
     return (
       notSelfNode && (isConditionalConnection || isAnyTarget || isSameClass || isOutportClassASubclassOfInportClass)

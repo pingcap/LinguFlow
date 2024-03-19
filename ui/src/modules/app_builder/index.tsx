@@ -26,6 +26,8 @@ import { ContainerElemProvider } from './Canvas/useContainerElem'
 import { TOOLBAR_HEIGHT, TOOLBAR_PANE_HEIGHT, Toolbar } from './Toolbar'
 import { useCreateVersion, useUpdateVersion } from './useMutateVersion'
 
+const MENU_ZINDEX = 99
+
 const AppBuilderWithReactFlowProviders: React.FC = () => {
   const form = useForm()
   const { data: blocksData } = useBlocksBlocksGet()
@@ -114,14 +116,6 @@ const AppBuilder: React.FC = () => {
     }
   }, [nodesInitialized])
 
-  useEffect(() => {
-    if (!firstInitRef.current) {
-      return
-    }
-    setCanSave(true)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [edges])
-
   useHotkeys([
     [
       'mod+S',
@@ -144,7 +138,7 @@ const AppBuilder: React.FC = () => {
         />
         <Anchor
           href="https://github.com/pingcap/LinguFlow"
-          style={{ position: 'absolute', top: '15px', right: '15px', zIndex: 999 }}
+          style={{ position: 'absolute', top: '15px', right: '15px', zIndex: MENU_ZINDEX }}
           target="_blank"
         >
           <ActionIcon variant="default" aria-label="GitHub" size="lg">
@@ -172,6 +166,15 @@ const AppBuilder: React.FC = () => {
             onRelayout={() => setCanUpdate(true)}
             onNodesDelete={() => setCanSave(true)}
             onAddNode={() => setCanSave(true)}
+            onConnect={() => setCanSave(true)}
+            onEdgeChange={(c) => {
+              const isSelect = c.some((e) => e.type === 'select')
+              if (isSelect) {
+                return
+              }
+              setCanSave(true)
+            }}
+            onCanSave={() => setCanSave(true)}
           />
         </Box>
         <Toolbar
@@ -213,7 +216,7 @@ const BuilderMenu: React.FC<{
   // }
 
   return (
-    <Group style={{ position: 'absolute', top: '15px', left: '15px', zIndex: 999 }}>
+    <Group style={{ position: 'absolute', top: '15px', left: '15px', zIndex: MENU_ZINDEX }}>
       <ActionIcon.Group>
         <ActionIcon variant="default" aria-label="Go Back" size="lg" onClick={() => navigate(-1)}>
           <IconChevronLeft style={{ width: '60%', height: '60%', color: '#000' }} stroke={1.5} />
