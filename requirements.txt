@@ -5,7 +5,7 @@ fastapi==0.100.0
 uvicorn==0.23.1
 fastapi-utils==0.2.1
 environs==9.5.0
-openai==1.2.4
+openai>=1.2.4
 PyMySQL==1.1.0
 SQLAlchemy==1.4.49
 qdrant-client==1.7.0

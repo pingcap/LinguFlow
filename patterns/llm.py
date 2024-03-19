@@ -64,7 +64,7 @@ class OpneAIWrapper(OpenAI):
             input_fn=lambda args, kwargs: input_texts,
             output_fn=parse_output,
             usage_fn=lambda r: r.llm_output["token_usage"],
-        )(super().generate_prompt)(prompts, *args, **kwargs)
+        )(super(ChatOpenAIWrapper, self).generate_prompt)(prompts, *args, **kwargs)
 
 
 @pattern(name="OpenAI_Chat_LLM")
@@ -121,4 +121,4 @@ class ChatOpenAIWrapper(ChatOpenAI):
             input_fn=lambda args, kwargs: input_texts,
             output_fn=parse_output,
             usage_fn=lambda r: r.llm_output["token_usage"],
-        )(super().generate_prompt)(prompts, *args, **kwargs)
+        )(super(ChatOpenAIWrapper, self).generate_prompt)(prompts, *args, **kwargs)
