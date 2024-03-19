@@ -90,7 +90,7 @@ export const Debug: React.FC<{
       const debugRst = await getInteractionInteractionsInteractionIdGet(interactionRst.id)
       setCurrentInteraction(debugRst.interaction)
 
-      if (!Object.keys(debugRst.interaction?.data || {}).length) {
+      if (!isInteractionFinished(debugRst.interaction)) {
         return
       }
       setValue(InteractionComponent.defaultValue())
