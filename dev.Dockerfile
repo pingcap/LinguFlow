@@ -3,7 +3,7 @@ FROM python:3.9
 WORKDIR /usr/src/app
 
 COPY . .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN find . -name "requirements.txt" -type f -exec pip install -r '{}' ';'
 RUN pip install isort black
 
 # init database
