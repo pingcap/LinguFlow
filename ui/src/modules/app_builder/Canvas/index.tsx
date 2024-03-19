@@ -15,7 +15,6 @@ import ReactFlow, {
   Position,
   XYPosition,
   addEdge,
-  updateEdge,
   useEdgesState,
   useNodesState,
   useReactFlow
@@ -69,7 +68,7 @@ export const BuilderCanvas: React.FC<BuilderCanvasProps> = ({
   onEdgeChange: onEdgeChangeEvent
 }) => {
   const { blocks, blockMap } = useBlockSchema()
-  const { getNodes, getEdges, fitView, project, getViewport } = useReactFlow()
+  const { getNodes, getEdges, fitView } = useReactFlow()
   const [nodes, setNodes, onNodesChange] = useNodesState([])
   const [edges, setEdges, onEdgesChange] = useEdgesState<LinguEdge>([])
 
