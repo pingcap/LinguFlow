@@ -56,7 +56,7 @@ export const BuilderCanvas: React.FC<BuilderCanvasProps> = ({
   onRelayout
 }) => {
   const { blocks, blockMap } = useBlockSchema()
-  const { getNodes, getEdges, fitView, project, getViewport } = useReactFlow()
+  const { getNodes, getEdges, fitView } = useReactFlow()
   const [nodes, setNodes, onNodesChange] = useNodesState([])
   const [edges, setEdges, onEdgesChange] = useEdgesState([])
 

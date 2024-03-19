@@ -28,3 +28,8 @@ export interface MetadataUI {
   viewport: Viewport
   nodes: ReactFlowNode<any>[]
 }
+
+export interface ConfigAndMetadataUI {
+  config: Config
+  ui: MetadataUI
+}

@@ -1,4 +1,4 @@
-import { ActionIcon, Anchor, Badge, Box, Group, Loader, LoadingOverlay, Menu, rem } from '@mantine/core'
+import { ActionIcon, Anchor, Badge, Box, FileButton, Group, Loader, LoadingOverlay, Menu, rem } from '@mantine/core'
 import { IconChevronLeft, IconDeviceFloppy, IconDownload, IconMenu2, IconRocket, IconUpload } from '@tabler/icons-react'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 
@@ -13,15 +13,17 @@ import {
   usePatternsPatternsGet
 } from '@api/linguflow'
 import { useNavigate, useParams } from 'react-router-dom'
+import download from 'downloadjs'
+import yaml from 'js-yaml'
 import { useDebouncedValue, useHotkeys } from '@mantine/hooks'
-import { ReactFlowProvider, useEdges, useNodesInitialized } from 'reactflow'
+import { ReactFlowProvider, useEdges, useNodesInitialized, useReactFlow } from 'reactflow'
 import { FormProvider, useForm, useFormContext } from 'react-hook-form'
 import { InteractionInfo, VersionMetadata } from '@api/linguflow.schemas'
 import { useIsFetching } from 'react-query'
 import { GithubLogo } from '../../components/Layout/GithubLogo'
 import { BuilderCanvas } from './Canvas'
 import { SchemaProvider } from './useSchema'
-import { Config } from './linguflow.type'
+import { Config, ConfigAndMetadataUI, MetadataUI } from './linguflow.type'
 import { ContainerElemProvider } from './Canvas/useContainerElem'
 import { TOOLBAR_HEIGHT, TOOLBAR_PANE_HEIGHT, Toolbar } from './Toolbar'
 import { useCreateVersion, useUpdateVersion } from './useMutateVersion'
@@ -50,12 +52,18 @@ const AppBuilder: React.FC = () => {
       enabled: !!appId
     }
   })
+  const [importConfig, setImportConfig] = useState<Config | null>(null)
+  const [importMetadata, setImportMetadata] = useState<MetadataUI | null>(null)
   const { data: verData, isLoading: isVerLoading } = useGetAppVersionApplicationsApplicationIdVersionsVersionIdGet(
     appId!,
     verId!,
     {
       query: {
-        enabled: !!appId && !!verId
+        enabled: !!appId && !!verId,
+        onSuccess: () => {
+          setImportConfig(null)
+          setImportMetadata(null)
+        }
       }
     }
   )
@@ -68,6 +76,16 @@ const AppBuilder: React.FC = () => {
     verDataCacheRef.current = verData
     return verData
   }, [verData])
+  const verConfig = useMemo(() => {
+    return importConfig || (verDataCache?.version?.configuration as Config | undefined)
+  }, [verDataCache, importConfig])
+  const verMetadata = useMemo<VersionMetadata | undefined>(() => {
+    return (
+      importMetadata
+        ? { ui: importMetadata, name: verDataCache?.version?.metadata || '' }
+        : verDataCache?.version?.metadata
+    ) as VersionMetadata
+  }, [verDataCache, importMetadata])
   const isBlocksLoading = useIsFetching(getBlocksBlocksGetQueryKey()) > 0
   const isPatternsLoading = useIsFetching(getPatternsPatternsGetQueryKey()) > 0
   const isInfoLoading = isBlocksLoading || isPatternsLoading || isAppLoading || (isVerLoading && !firstInitRef.current)
@@ -141,6 +159,10 @@ const AppBuilder: React.FC = () => {
           loading={isCreatingVersion}
           canSave={canSave}
           createVersion={createVersion}
+          importApp={(config) => {
+            setImportConfig(config.config)
+            setImportMetadata(config.ui)
+          }}
         />
         <Anchor
           href="https://github.com/pingcap/LinguFlow"
@@ -164,8 +186,8 @@ const AppBuilder: React.FC = () => {
             loaderProps={{ color: 'gray.3' }}
           />
           <BuilderCanvas
-            config={verDataCache?.version?.configuration as Config}
-            metadata={verData?.version?.metadata as VersionMetadata}
+            config={verConfig}
+            metadata={verMetadata}
             interaction={currentInteraction}
             onClick={() => setMenuOpened(false)}
             onNodeDragStop={() => setCanUpdate(true)}
@@ -193,24 +215,44 @@ const BuilderMenu: React.FC<{
   loading: boolean
   canSave: boolean
   createVersion: () => void
-}> = ({ opened, setOpened, loading, canSave, createVersion }) => {
+  importApp: (config: ConfigAndMetadataUI) => void
+}> = ({ opened, setOpened, loading, canSave, createVersion, importApp }) => {
   const { appId, verId } = useParams()
   const navigate = useNavigate()
+  const { getNodes, getEdges, getViewport } = useReactFlow()
+  const { getValues } = useFormContext()
   const { mutateAsync: activeVersion } = useActiveAppVersionApplicationsApplicationIdVersionsVersionIdActivePut()
 
-  // const importYAML = async (f: File) => {
-  //   if (!f) {
-  //     return
-  //   }
+  const importYAML = async (f: File | null) => {
+    if (!f) {
+      return
+    }
 
-  //   const yamlStr = await f.text()
-  //   const config = yaml.load(yamlStr) as ApplicationConfiguration
-  // }
+    const yamlStr = await f.text()
+    const config = yaml.load(yamlStr) as ConfigAndMetadataUI
+    importApp(config)
+  }
 
-  // const exportYAML = () => {
-  //   const appConfig = getAppConfig()
-  //   download(yaml.dump(appConfig), `${appConfig.metadata.name!}.langlink.yaml`, 'text/plain')
-  // }
+  const exportYAML = () => {
+    const config: ConfigAndMetadataUI = {
+      config: {
+        nodes: Object.values(getValues()),
+        edges: getEdges().map((e) => ({
+          src_block: e.source,
+          dst_block: e.target,
+          dst_port: e.targetHandle!,
+          alias: e.data?.alias,
+          case: e.data?.case
+        }))
+      },
+      ui: {
+        viewport: getViewport(),
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        nodes: getNodes().map(({ data, ...n }) => ({ ...n, data: undefined }))
+      }
+    }
+    download(yaml.dump(config), `${appId!}${verId ? `.${verId}` : ''}.langlink.yaml`, 'text/plain')
+  }
 
   return (
     <Group style={{ position: 'absolute', top: '15px', left: '15px', zIndex: 999 }}>
@@ -245,10 +287,14 @@ const BuilderMenu: React.FC<{
 
             <Menu.Divider />
 
-            <Menu.Item leftSection={<IconUpload style={{ width: rem(14), height: rem(14) }} />} disabled>
-              Import
-            </Menu.Item>
-            <Menu.Item leftSection={<IconDownload style={{ width: rem(14), height: rem(14) }} />} disabled>
+            <FileButton onChange={importYAML} accept=".yml,.yaml">
+              {(props) => (
+                <Menu.Item {...props} leftSection={<IconUpload style={{ width: rem(14), height: rem(14) }} />}>
+                  Import
+                </Menu.Item>
+              )}
+            </FileButton>
+            <Menu.Item onClick={exportYAML} leftSection={<IconDownload style={{ width: rem(14), height: rem(14) }} />}>
               Export
             </Menu.Item>
           </Menu.Dropdown>
