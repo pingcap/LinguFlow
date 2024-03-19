@@ -67,7 +67,7 @@ class AuthMiddleware(BaseHTTPMiddleware):
         login_path: str,
         white_list: List[str] = [],
     ):
-        super().__init__(app)
+        super(AuthMiddleware, self).__init__(app)
         self.login_path = login_path
         self.white_list = white_list
         self.auth_plugin = load_auth_plugin()

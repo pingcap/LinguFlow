@@ -35,13 +35,13 @@ class OpneAIWrapper(OpenAI):
         if max_tokens == 0:
             super(OpneAIWrapper, self).__init__(
                 model_name=model_name,
-                openai_api_key=openai_api_key,
+                api_key=str(openai_api_key),
                 temperature=temperature,
             )
         else:
             super(OpneAIWrapper, self).__init__(
                 model_name=model_name,
-                openai_api_key=openai_api_key,
+                api_key=str(openai_api_key),
                 temperature=temperature,
                 max_tokens=max_tokens,
             )
@@ -92,13 +92,13 @@ class ChatOpenAIWrapper(ChatOpenAI):
         if max_tokens == 0:
             super(ChatOpenAIWrapper, self).__init__(
                 model_name=model_name,
-                openai_api_key=openai_api_key,
+                api_key=str(openai_api_key),
                 temperature=temperature,
             )
         else:
             super(ChatOpenAIWrapper, self).__init__(
                 model_name=model_name,
-                openai_api_key=openai_api_key,
+                api_key=str(openai_api_key),
                 temperature=temperature,
                 max_tokens=max_tokens,
             )
