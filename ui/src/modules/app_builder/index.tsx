@@ -82,11 +82,7 @@ const AppBuilder: React.FC = () => {
     return importConfig || (verDataCache?.version?.configuration as Config | undefined)
   }, [verDataCache, importConfig])
   const verMetadata = useMemo<VersionMetadata | undefined>(() => {
-    return (
-      importMetadata
-        ? { ui: importMetadata, name: verDataCache?.version?.metadata || '' }
-        : verDataCache?.version?.metadata
-    ) as VersionMetadata
+    return (importMetadata ? { ui: importMetadata } : verDataCache?.version?.metadata) as VersionMetadata
   }, [verDataCache, importMetadata])
   const isBlocksLoading = useIsFetching(getBlocksBlocksGetQueryKey()) > 0
   const isPatternsLoading = useIsFetching(getPatternsPatternsGetQueryKey()) > 0
