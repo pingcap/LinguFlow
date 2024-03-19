@@ -46,7 +46,7 @@ export const Toolbar: React.FC<{
               setToolbarPaneOpened((v) => !v)
             }
           }}
-          disabled={!ver}
+          disabled={!ver || isCreatingVersion}
           disabledTooltip="Current version not saved."
         >
           <IconBug style={{ width: '80%', height: '80%', color: colors.gray[9] }} stroke={1} />

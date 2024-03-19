@@ -53,7 +53,12 @@ const usePortCustomStyle = () => {
 export interface BlockNodeProps {
   schema: BlockInfo
   node: Node
-  interaction?: string
+  interaction?: DisplayedInteraction
+}
+
+export interface DisplayedInteraction {
+  interaction: string
+  isError: boolean
 }
 
 export const BlockNode: React.FC<NodeProps<BlockNodeProps>> = ({ data, selected }) => {
@@ -105,7 +110,7 @@ export const BlockNode: React.FC<NodeProps<BlockNodeProps>> = ({ data, selected 
         onDoubleClick={openDrawer}
       >
         <Group justify="space-between" p="sm" style={{ position: 'relative' }}>
-          <Box>
+          <Box maw={400}>
             <Tooltip position="left" label="Conditional(BOOLEAN)">
               <Handle
                 type="target"
@@ -198,7 +203,7 @@ export const BlockNode: React.FC<NodeProps<BlockNodeProps>> = ({ data, selected 
             </Box>
           )}
         </Stack>
-        {!!interaction && <DebugInfo data={interaction} />}
+        {!!interaction?.interaction && <DebugInfo data={interaction} />}
       </Stack>
       {!!slots?.length && (
         <ConfigDrawer

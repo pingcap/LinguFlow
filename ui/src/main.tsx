@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { HashRouter } from 'react-router-dom'
-import { ColorSchemeScript, MantineProvider } from '@mantine/core'
+import { MantineProvider } from '@mantine/core'
 import { Notifications } from '@mantine/notifications'
 import { ErrorBoundary } from 'react-error-boundary'
 import { ModalsProvider } from '@mantine/modals'
@@ -28,8 +28,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <HashRouter>
       <QueryClientProvider client={queryClient}>
-        <ColorSchemeScript defaultColorScheme="auto" />
-        <MantineProvider defaultColorScheme="auto">
+        <MantineProvider defaultColorScheme="light">
           <ModalsProvider>
             <Notifications position="top-center" zIndex={Number.MAX_SAFE_INTEGER} />
             <ErrorBoundary

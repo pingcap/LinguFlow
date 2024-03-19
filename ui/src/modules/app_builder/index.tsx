@@ -25,6 +25,7 @@ import { Config } from './linguflow.type'
 import { ContainerElemProvider } from './Canvas/useContainerElem'
 import { TOOLBAR_HEIGHT, TOOLBAR_PANE_HEIGHT, Toolbar } from './Toolbar'
 import { useCreateVersion, useUpdateVersion } from './useMutateVersion'
+import { useCloseAllDrawer } from './Block/useBlockDrawer'
 
 const MENU_ZINDEX = 99
 
@@ -84,8 +85,20 @@ const AppBuilder: React.FC = () => {
     formState: { dirtyFields }
   } = useFormContext()
   const edges = useEdges()
+  const closeAllDrawer = useCloseAllDrawer()
   const nodesInitialized = useNodesInitialized()
-  const { createVersion, isCreatingVersion, canSave, setCanSave } = useCreateVersion(verData?.version)
+  const {
+    createVersion: _createVersion,
+    isCreatingVersion: _isCreatingVersion,
+    canSave,
+    setCanSave
+  } = useCreateVersion(verData?.version)
+  const isCreatingVersion = _isCreatingVersion || isVerLoading
+  const createVersion = () => {
+    setToolbarPaneOpened(false)
+    closeAllDrawer()
+    return _createVersion()
+  }
   const { canUpdate, setCanUpdate, updateVersion } = useUpdateVersion(verData?.version)
   const [debouncedCanUpdate] = useDebouncedValue(canUpdate, 5 * 1000, { leading: false })
 
@@ -148,6 +161,7 @@ const AppBuilder: React.FC = () => {
 
         <Box
           w="100%"
+          pos="relative"
           h={`calc(100% - ${TOOLBAR_HEIGHT + (toolbarPaneOpened ? TOOLBAR_PANE_HEIGHT : 0)}px)`}
           ref={containerElem}
         >

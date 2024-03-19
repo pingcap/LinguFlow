@@ -260,10 +260,23 @@ const appConfigToReactflow = (
         if (!schema) {
           throw new Error(`Unknown block: ${n.name}`)
         }
+
+        const errorMsg = interaction?.error as any
+        const isError = n.id === errorMsg?.content?.node_id
+
         return toCustomNode({
           ...getMetadataUINode(n.id, metadata),
           id: n.id,
-          data: { schema, node: n, interaction: interaction?.data?.[n.id] }
+          data: {
+            schema,
+            node: n,
+            interaction: {
+              interaction: isError
+                ? `${errorMsg?.content.code as string}: ${errorMsg?.content.message as string}`
+                : interaction?.data?.[n.id] || '',
+              isError
+            }
+          }
         })
       }) || [],
     edges: edges.map((e) => {
