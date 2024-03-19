@@ -31,6 +31,8 @@ const interactionComponents: {
 
 const INPUT_NAMES = ['Text_Input', 'Dict_Input', 'List_Input']
 
+const isInteractionFinished = (interaction?: InteractionInfo) => !!interaction?.output || !!interaction?.error
+
 export const Debug: React.FC<{
   app: ApplicationInfo
   ver: ApplicationVersionInfo
@@ -54,19 +56,19 @@ export const Debug: React.FC<{
     currentInteraction?.id as string,
     {
       query: {
-        enabled: !!currentInteraction?.id && !Object.keys(currentInteraction?.data || {}).length && !isError,
+        enabled: !!currentInteraction?.id && !isInteractionFinished(currentInteraction) && !isError,
         refetchInterval: () => {
-          if (Object.keys(currentInteraction?.data || {}).length) {
+          if (isInteractionFinished(currentInteraction)) {
             return false
           }
           return 5000
         },
         refetchIntervalInBackground: true,
         onSuccess: (data) => {
-          if (!Object.keys(data.interaction?.data || {}).length) {
+          setCurrentInteraction(data.interaction)
+          if (!isInteractionFinished(data.interaction)) {
             return
           }
-          setCurrentInteraction(data.interaction)
           setValue(InteractionComponent.defaultValue())
           setInteractions((v) => [...v, data.interaction!])
         },
@@ -76,9 +78,7 @@ export const Debug: React.FC<{
   )
   const [_isLoading, setIsLoading] = useState(false)
   const isLoading =
-    (_isLoading ||
-      isInteractionLoading ||
-      (!!fetchingIntercation && !Object.keys(fetchingIntercation.interaction?.data || {}).length)) &&
+    (_isLoading || isInteractionLoading || (!!fetchingIntercation && !isInteractionFinished(currentInteraction))) &&
     !isError
 
   const runInteraction = async () => {
@@ -90,7 +90,7 @@ export const Debug: React.FC<{
       const debugRst = await getInteractionInteractionsInteractionIdGet(interactionRst.id)
       setCurrentInteraction(debugRst.interaction)
 
-      if (!Object.keys(debugRst.interaction?.data || {}).length) {
+      if (!isInteractionFinished(debugRst.interaction)) {
         return
       }
       setValue(InteractionComponent.defaultValue())

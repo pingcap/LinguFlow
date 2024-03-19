@@ -1,26 +1,27 @@
 import { ActionIcon, Box, Code, CopyButton, Group, HoverCard, ScrollArea, Stack, Text, Tooltip } from '@mantine/core'
 import { IconBug, IconCheck, IconCopy } from '@tabler/icons-react'
+import type { DisplayedInteraction } from '.'
 
-export const DebugInfo: React.FC<{ data: string }> = ({ data }) => {
+export const DebugInfo: React.FC<{ data: DisplayedInteraction }> = ({ data: { interaction, isError } }) => {
   return (
     <HoverCard width={500} withinPortal openDelay={500}>
       <HoverCard.Target>
         <Box
           p="sm"
-          maw={300}
+          maw={500}
           style={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis', cursor: 'pointer' }}
-          bg="green.0"
+          bg={isError ? 'red.0' : 'green.0'}
         >
           <IconBug size="1.2rem" />
           <Text span style={{ verticalAlign: 'text-bottom' }} ml="xs">
-            {data}
+            {interaction}
           </Text>
         </Box>
       </HoverCard.Target>
       <HoverCard.Dropdown onDoubleClick={(e) => e.stopPropagation()}>
         <Stack gap="xs">
           <Group justify="flex-end">
-            <CopyButton value={data} timeout={2000}>
+            <CopyButton value={interaction} timeout={2000}>
               {({ copied, copy }) => (
                 <Tooltip label={copied ? 'Copied' : 'Copy'} withArrow position="right">
                   <ActionIcon variant="subtle" color={copied ? 'teal' : 'gray'} onClick={copy}>
@@ -31,7 +32,7 @@ export const DebugInfo: React.FC<{ data: string }> = ({ data }) => {
             </CopyButton>
           </Group>
           <ScrollArea mah={300} fz="xs">
-            <Code block>{data}</Code>
+            <Code block>{interaction}</Code>
           </ScrollArea>
         </Stack>
       </HoverCard.Dropdown>
