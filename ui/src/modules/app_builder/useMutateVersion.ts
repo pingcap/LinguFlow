@@ -10,7 +10,7 @@ import { ApplicationVersionInfo, GraphEdge } from '@api/linguflow.schemas'
 import { useEffect, useState } from 'react'
 import { BLOCK_PORT_ID_NULL } from './Block/useValidConnection'
 
-const getCurrentDateTimeName = () => `v${dayjs().format('YYYY-MM-DD')}.${dayjs().unix()}`
+export const getCurrentDateTimeName = () => `v${dayjs().format('YYYY-MM-DD')}.${dayjs().unix()}`
 
 export const useCreateVersion = (version?: ApplicationVersionInfo) => {
   const { appId, verId } = useParams()
@@ -46,7 +46,6 @@ export const useCreateVersion = (version?: ApplicationVersionInfo) => {
         metadata: {
           ...version?.metadata,
           ui: {
-            // viewport: getViewport(),
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             nodes: getNodes().map(({ data, ...n }) => n)
           }
@@ -85,7 +84,6 @@ export const useUpdateVersion = (version?: ApplicationVersionInfo) => {
         metadata: {
           ...version?.metadata,
           ui: {
-            // viewport: getViewport(),
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             nodes: getNodes().map(({ data, ...n }) => n)
           }

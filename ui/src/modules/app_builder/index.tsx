@@ -18,7 +18,7 @@ import yaml from 'js-yaml'
 import { useDebouncedValue, useHotkeys } from '@mantine/hooks'
 import { ReactFlowProvider, useNodesInitialized, useReactFlow } from 'reactflow'
 import { FormProvider, useForm, useFormContext } from 'react-hook-form'
-import { InteractionInfo, VersionMetadata } from '@api/linguflow.schemas'
+import { ApplicationInfo, InteractionInfo, VersionMetadata } from '@api/linguflow.schemas'
 import { useIsFetching } from 'react-query'
 import { GithubLogo } from '../../components/Layout/GithubLogo'
 import { BuilderCanvas } from './Canvas'
@@ -26,7 +26,7 @@ import { SchemaProvider } from './useSchema'
 import { Config, ConfigAndMetadataUI, MetadataUI } from './linguflow.type'
 import { ContainerElemProvider } from './Canvas/useContainerElem'
 import { TOOLBAR_HEIGHT, TOOLBAR_PANE_HEIGHT, Toolbar } from './Toolbar'
-import { useCreateVersion, useUpdateVersion } from './useMutateVersion'
+import { getCurrentDateTimeName, useCreateVersion, useUpdateVersion } from './useMutateVersion'
 import { useCloseAllDrawer } from './Block/useBlockDrawer'
 
 const MENU_ZINDEX = 99
@@ -156,6 +156,7 @@ const AppBuilder: React.FC = () => {
     <ContainerElemProvider value={containerElem.current}>
       <Box w="100vw" h="100vh" style={{ overflow: 'hidden' }}>
         <BuilderMenu
+          app={appData?.application}
           opened={menuOpened}
           setOpened={setMenuOpened}
           loading={isCreatingVersion}
@@ -164,6 +165,7 @@ const AppBuilder: React.FC = () => {
           importApp={(config) => {
             setImportConfig(config.config)
             setImportMetadata(config.ui)
+            setCanSave(true)
           }}
         />
         <Anchor
@@ -222,16 +224,17 @@ const AppBuilder: React.FC = () => {
 }
 
 const BuilderMenu: React.FC<{
+  app?: ApplicationInfo
   opened: boolean
   setOpened: React.Dispatch<React.SetStateAction<boolean>>
   loading: boolean
   canSave: boolean
   createVersion: () => void
   importApp: (config: ConfigAndMetadataUI) => void
-}> = ({ opened, setOpened, loading, canSave, createVersion, importApp }) => {
+}> = ({ app, opened, setOpened, loading, canSave, createVersion, importApp }) => {
   const { appId, verId } = useParams()
   const navigate = useNavigate()
-  const { getNodes, getEdges, getViewport } = useReactFlow()
+  const { getNodes, getEdges } = useReactFlow()
   const { getValues } = useFormContext()
   const { mutateAsync: activeVersion } = useActiveAppVersionApplicationsApplicationIdVersionsVersionIdActivePut()
 
@@ -258,12 +261,11 @@ const BuilderMenu: React.FC<{
         }))
       },
       ui: {
-        viewport: getViewport(),
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         nodes: getNodes().map(({ data, ...n }) => ({ ...n, data: undefined }))
       }
     }
-    download(yaml.dump(config), `${appId!}${verId ? `.${verId}` : ''}.langlink.yaml`, 'text/plain')
+    download(yaml.dump(config), `${app?.name || appId!}.${getCurrentDateTimeName()}.langlink.yaml`, 'text/plain')
   }
 
   return (
@@ -273,7 +275,7 @@ const BuilderMenu: React.FC<{
           <IconChevronLeft style={{ width: '60%', height: '60%', color: '#000' }} stroke={1.5} />
         </ActionIcon>
 
-        <Menu shadow="md" width={140} position="bottom-start" opened={opened} onChange={setOpened}>
+        <Menu shadow="md" width={140} position="bottom-start" opened={opened} onChange={setOpened} keepMounted>
           <Menu.Target>
             <ActionIcon variant="default" aria-label="Menu" size="lg">
               <IconMenu2 style={{ width: '60%', height: '60%', color: '#000' }} stroke={1.5} />
@@ -289,6 +291,7 @@ const BuilderMenu: React.FC<{
               Save
             </Menu.Item>
             <Menu.Item
+              disabled={!verId}
               leftSection={<IconRocket style={{ width: rem(14), height: rem(14) }} />}
               onClick={async () => {
                 await activeVersion({ applicationId: appId!, versionId: verId! })
