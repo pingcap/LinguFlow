@@ -1,6 +1,10 @@
-from langchain_community.chat_models import ChatOpenAI
-from langchain_community.llms import OpenAI
+from typing import List
 
+from langchain_core.outputs import LLMResult
+from langchain_core.prompt_values import PromptValue
+from langchain_openai import ChatOpenAI, OpenAI
+
+from observability import generation
 from resolver import pattern
 
 from .secret import Secret
@@ -42,6 +46,26 @@ class OpneAIWrapper(OpenAI):
                 max_tokens=max_tokens,
             )
 
+    def generate_prompt(self, prompts: List[PromptValue], *args, **kwargs) -> LLMResult:
+        input_texts = (
+            [p.to_string() for p in prompts]
+            if len(prompts) != 1
+            else prompts[0].to_string()
+        )
+
+        def parse_output(r: LLMResult):
+            if len(r.generations) == 1:
+                return r.generations[0][0].text
+            else:
+                return [g[0].text for g in r.generations]
+
+        return generation(
+            name="OpenAI_Complete_LLM",
+            input_fn=lambda args, kwargs: input_texts,
+            output_fn=parse_output,
+            usage_fn=lambda r: r.llm_output["token_usage"],
+        )(super().generate_prompt)(prompts, *args, **kwargs)
+
 
 @pattern(name="OpenAI_Chat_LLM")
 class ChatOpenAIWrapper(ChatOpenAI):
@@ -78,3 +102,23 @@ class ChatOpenAIWrapper(ChatOpenAI):
                 temperature=temperature,
                 max_tokens=max_tokens,
             )
+
+    def generate_prompt(self, prompts: List[PromptValue], *args, **kwargs) -> LLMResult:
+        input_texts = (
+            [p.to_string() for p in prompts]
+            if len(prompts) != 1
+            else prompts[0].to_string()
+        )
+
+        def parse_output(r: LLMResult):
+            if len(r.generations) == 1:
+                return r.generations[0][0].text
+            else:
+                return [g[0].text for g in r.generations]
+
+        return generation(
+            name="OpenAI_Complete_LLM",
+            input_fn=lambda args, kwargs: input_texts,
+            output_fn=parse_output,
+            usage_fn=lambda r: r.llm_output["token_usage"],
+        )(super().generate_prompt)(prompts, *args, **kwargs)
