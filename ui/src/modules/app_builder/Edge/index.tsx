@@ -65,6 +65,9 @@ export const CustomEdge: React.FC<EdgeProps<LinguEdge>> = ({
                   return eds
                 })
               }}
+              comboboxProps={{
+                width: 'max-content'
+              }}
             />
           )}
         </Group>
