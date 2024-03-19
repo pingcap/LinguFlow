@@ -2,11 +2,7 @@ import { ApplicationInfo, ApplicationVersionInfo } from '@api/linguflow.schemas'
 import { ActionIcon, Group, Stack, Text, TextInput } from '@mantine/core'
 import { IconCheck, IconPencil, IconX } from '@tabler/icons-react'
 import { useState } from 'react'
-import {
-  getGetAppVersionApplicationsApplicationIdVersionsVersionIdGetQueryKey,
-  useGetAppVersionApplicationsApplicationIdVersionsVersionIdGet
-} from '@api/linguflow'
-import { useIsFetching } from 'react-query'
+import { useGetAppVersionApplicationsApplicationIdVersionsVersionIdGet } from '@api/linguflow'
 import { useParams } from 'react-router-dom'
 import { useUpdateVersion } from '../useMutateVersion'
 

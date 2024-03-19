@@ -25,7 +25,7 @@ import { Node } from '../linguflow.type'
 import { useContainerElem } from '../Canvas/useContainerElem'
 import { Slot } from './Slot'
 import { useCloseAllDrawer, useRegisterCloseDrawer } from './useBlockDrawer'
-import { useValidConnection } from './useValidConnection'
+import { BLOCK_PORT_ID_NULL, useValidConnection } from './useValidConnection'
 import { SlotReadonly } from './SlotReadonly'
 import { DebugInfo } from './DebugInfo'
 
@@ -53,7 +53,12 @@ const usePortCustomStyle = () => {
 export interface BlockNodeProps {
   schema: BlockInfo
   node: Node
-  interaction?: string
+  interaction?: DisplayedInteraction
+}
+
+export interface DisplayedInteraction {
+  interaction: string
+  isError: boolean
 }
 
 export const BlockNode: React.FC<NodeProps<BlockNodeProps>> = ({ data, selected }) => {
@@ -63,7 +68,7 @@ export const BlockNode: React.FC<NodeProps<BlockNodeProps>> = ({ data, selected 
   const { alias, inports, outport, slots, name } = schema
   const { setEdges } = useReactFlow()
   const edges = useEdges()
-  const targetEdges = edges.filter((e) => e.target === node.id && e.targetHandle !== 'null')
+  const targetEdges = edges.filter((e) => e.target === node.id && e.targetHandle !== BLOCK_PORT_ID_NULL)
   const restArgsEdges = targetEdges.filter((e) => e.targetHandle && !inports.some((inp) => inp.name === e.targetHandle))
   const isValidConnection = useValidConnection()
 
@@ -105,12 +110,12 @@ export const BlockNode: React.FC<NodeProps<BlockNodeProps>> = ({ data, selected 
         onDoubleClick={openDrawer}
       >
         <Group justify="space-between" p="sm" style={{ position: 'relative' }}>
-          <Box>
+          <Box maw={400}>
             <Tooltip position="left" label="Conditional(BOOLEAN)">
               <Handle
                 type="target"
                 position={Position.Left}
-                id="null"
+                id={BLOCK_PORT_ID_NULL}
                 isValidConnection={() => false}
                 style={{
                   ...PORT_CUSTOM_STYLE,
@@ -198,7 +203,7 @@ export const BlockNode: React.FC<NodeProps<BlockNodeProps>> = ({ data, selected 
             </Box>
           )}
         </Stack>
-        {!!interaction && <DebugInfo data={interaction} />}
+        {!!interaction?.interaction && <DebugInfo data={interaction} />}
       </Stack>
       {!!slots?.length && (
         <ConfigDrawer

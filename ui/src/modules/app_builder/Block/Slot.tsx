@@ -94,7 +94,7 @@ const SlotTypeParams: React.FC<{
   return (
     <Box pl={stackIndex * 10}>
       {subSlots?.map((s) => (
-        <Box py={4}>
+        <Box py={4} key={s.name}>
           <Slot key={s.name} formPath={formPath} slot={s} disabled={disabled} stackIndex={stackIndex + 1} />
         </Box>
       ))}
