@@ -64,6 +64,11 @@ class OpneAIWrapper(OpenAI):
             input_fn=lambda args, kwargs: input_texts,
             output_fn=parse_output,
             usage_fn=lambda r: r.llm_output["token_usage"],
+            model=self.model_name,
+            model_parameters={
+                "temperature": self.temperature,
+                "max_tokens": self.max_tokens,
+            },
         )(super(ChatOpenAIWrapper, self).generate_prompt)(prompts, *args, **kwargs)
 
 
@@ -117,8 +122,13 @@ class ChatOpenAIWrapper(ChatOpenAI):
                 return [g[0].text for g in r.generations]
 
         return generation(
-            name="OpenAI_Complete_LLM",
+            name="OpenAI_Chat_LLM",
             input_fn=lambda args, kwargs: input_texts,
             output_fn=parse_output,
             usage_fn=lambda r: r.llm_output["token_usage"],
+            model=self.model_name,
+            model_parameters={
+                "temperature": self.temperature,
+                "max_tokens": self.max_tokens,
+            },
         )(super(ChatOpenAIWrapper, self).generate_prompt)(prompts, *args, **kwargs)
