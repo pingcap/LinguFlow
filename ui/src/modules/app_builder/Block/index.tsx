@@ -25,7 +25,7 @@ import { Node } from '../linguflow.type'
 import { useContainerElem } from '../Canvas/useContainerElem'
 import { Slot } from './Slot'
 import { useCloseAllDrawer, useRegisterCloseDrawer } from './useBlockDrawer'
-import { useValidConnection } from './useValidConnection'
+import { BLOCK_PORT_ID_NULL, useValidConnection } from './useValidConnection'
 import { SlotReadonly } from './SlotReadonly'
 import { DebugInfo } from './DebugInfo'
 
@@ -63,7 +63,7 @@ export const BlockNode: React.FC<NodeProps<BlockNodeProps>> = ({ data, selected 
   const { alias, inports, outport, slots, name } = schema
   const { setEdges } = useReactFlow()
   const edges = useEdges()
-  const targetEdges = edges.filter((e) => e.target === node.id && e.targetHandle !== 'null')
+  const targetEdges = edges.filter((e) => e.target === node.id && e.targetHandle !== BLOCK_PORT_ID_NULL)
   const restArgsEdges = targetEdges.filter((e) => e.targetHandle && !inports.some((inp) => inp.name === e.targetHandle))
   const isValidConnection = useValidConnection()
 
@@ -110,7 +110,7 @@ export const BlockNode: React.FC<NodeProps<BlockNodeProps>> = ({ data, selected 
               <Handle
                 type="target"
                 position={Position.Left}
-                id="null"
+                id={BLOCK_PORT_ID_NULL}
                 isValidConnection={() => false}
                 style={{
                   ...PORT_CUSTOM_STYLE,
