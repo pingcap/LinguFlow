@@ -6,7 +6,7 @@ import type { SlotTypeComponentProps } from './Slot'
 export const ListComponent: React.FC<SlotTypeComponentProps> = ({ slot, formPath, disabled }) => {
   const { getValues } = useFormContext()
   const _data = (getValues(formPath) as string[]) || slot.default || []
-  const [data, setData] = useState(_data)
+  const [data] = useState(_data)
   return (
     <Controller
       name={formPath}

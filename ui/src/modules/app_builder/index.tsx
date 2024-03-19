@@ -16,7 +16,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import download from 'downloadjs'
 import yaml from 'js-yaml'
 import { useDebouncedValue, useHotkeys } from '@mantine/hooks'
-import { ReactFlowProvider, useEdges, useNodesInitialized, useReactFlow } from 'reactflow'
+import { ReactFlowProvider, useNodesInitialized, useReactFlow } from 'reactflow'
 import { FormProvider, useForm, useFormContext } from 'react-hook-form'
 import { InteractionInfo, VersionMetadata } from '@api/linguflow.schemas'
 import { useIsFetching } from 'react-query'
@@ -101,7 +101,6 @@ const AppBuilder: React.FC = () => {
   const {
     formState: { dirtyFields }
   } = useFormContext()
-  const edges = useEdges()
   const nodesInitialized = useNodesInitialized()
   const { createVersion, isCreatingVersion, canSave, setCanSave } = useCreateVersion(verData?.version)
   const { canUpdate, setCanUpdate, updateVersion } = useUpdateVersion(verData?.version)

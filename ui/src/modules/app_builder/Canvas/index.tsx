@@ -15,7 +15,6 @@ import ReactFlow, {
   Position,
   XYPosition,
   addEdge,
-  updateEdge,
   useEdgesState,
   useNodesState,
   useReactFlow
