@@ -265,7 +265,7 @@ const BuilderMenu: React.FC<{
         nodes: getNodes().map(({ data, ...n }) => ({ ...n, data: undefined }))
       }
     }
-    download(yaml.dump(config), `${app?.name || appId!}.${getCurrentDateTimeName()}.langlink.yaml`, 'text/plain')
+    download(yaml.dump(config), `${app?.name || appId!}.${getCurrentDateTimeName()}.linguflow.yaml`, 'text/plain')
   }
 
   return (
