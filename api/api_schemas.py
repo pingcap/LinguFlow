@@ -203,7 +203,6 @@ class InteractionInfo(BaseModel):
     updated_at: int
     output: Optional[str]
     data: Optional[Dict[str, Any]]
-    error: Optional[dict]
 
 
 class InteractionInfoResponse(APIModel):
