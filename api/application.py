@@ -166,6 +166,7 @@ class ApplicationView:
                 ApplicationInfo(
                     id=app.id,
                     name=app.name,
+                    user=app.user,
                     langfuse_public_key=app.langfuse_public_key,
                     langfuse_secret_key=app.langfuse_secret_key,
                     active_version=app.active_version,
@@ -191,6 +192,7 @@ class ApplicationView:
                 ApplicationInfo(
                     id=app.id,
                     name=app.name,
+                    user=app.user,
                     langfuse_public_key=app.langfuse_public_key,
                     langfuse_secret_key=app.langfuse_secret_key,
                     active_version=app.active_version,
@@ -202,7 +204,9 @@ class ApplicationView:
         )
 
     @router.post("/applications")
-    def create_app(self, application: ApplicationCreate) -> ApplicationCreateResponse:
+    def create_app(
+        self, request: Request, application: ApplicationCreate
+    ) -> ApplicationCreateResponse:
         """
         Endpoint to create a new application.
 
@@ -218,6 +222,7 @@ class ApplicationView:
             Application(
                 id=_id,
                 name=application.name,
+                user=request.state.user,
                 langfuse_public_key=application.langfuse_public_key,
                 langfuse_secret_key=application.langfuse_secret_key,
                 created_at=created_at,
@@ -228,7 +233,7 @@ class ApplicationView:
 
     @router.post("/applications/{application_id}/async_run")
     def async_run_app(
-        self, application_id: str, config: ApplicationRun
+        self, request: Request, application_id: str, config: ApplicationRun
     ) -> ApplicationRunResponse:
         """
         Asynchronously runs an application with the specified ID and configuration.
@@ -242,7 +247,11 @@ class ApplicationView:
                 used for polling running result latter.
         """
         return ApplicationRunResponse(
-            id=self.invoker.invoke(config.input, application_id)
+            id=self.invoker.invoke(
+                request.state.user,
+                application_id,
+                config.input,
+            )
         )
 
     @router.get("/interactions/{interaction_id}")
@@ -261,6 +270,7 @@ class ApplicationView:
             interaction=(
                 InteractionInfo(
                     id=interaction.id,
+                    user=interaction.user,
                     version_id=interaction.version_id,
                     created_at=int(interaction.created_at.timestamp()),
                     updated_at=int(interaction.updated_at.timestamp()),
@@ -340,7 +350,11 @@ class ApplicationView:
 
     @router.post("/applications/{application_id}/versions/{version_id}/async_run")
     def async_run_app_version(
-        self, application_id: str, version_id: str, config: ApplicationRun
+        self,
+        request: Request,
+        application_id: str,
+        version_id: str,
+        config: ApplicationRun,
     ) -> ApplicationRunResponse:
         """
         Asynchronously runs an application with the specified app ID, version ID and configuration.
@@ -355,7 +369,12 @@ class ApplicationView:
                 used for polling running result latter.
         """
         return ApplicationRunResponse(
-            id=self.invoker.invoke(config.input, application_id, version_id)
+            id=self.invoker.invoke(
+                request.state.user,
+                application_id,
+                config.input,
+                version_id=version_id,
+            )
         )
 
     @router.get("/applications/{application_id}/versions/{version_id}")
@@ -371,6 +390,7 @@ class ApplicationView:
                 ApplicationVersionInfo(
                     id=version.id,
                     name=version.name,
+                    user=version.user,
                     app_id=version.app_id,
                     created_at=int(version.created_at.timestamp()),
                     updated_at=int(version.updated_at.timestamp()),
@@ -398,6 +418,7 @@ class ApplicationView:
                 ApplicationVersionInfo(
                     id=version.id,
                     name=version.name,
+                    user=version.user,
                     app_id=version.app_id,
                     created_at=int(version.created_at.timestamp()),
                     updated_at=int(version.updated_at.timestamp()),
@@ -411,6 +432,7 @@ class ApplicationView:
     @router.post("/applications/{application_id}/versions")
     def create_app_version(
         self,
+        request: Request,
         application_id: str,
         version: ApplicationVersionCreate,
     ) -> VersionCreateResponse:
@@ -430,6 +452,7 @@ class ApplicationView:
             ApplicationVersion(
                 id=_id,
                 name=version.name,
+                user=request.state.user,
                 app_id=application_id,
                 parent_id=version.parent_id,
                 created_at=created_at,
