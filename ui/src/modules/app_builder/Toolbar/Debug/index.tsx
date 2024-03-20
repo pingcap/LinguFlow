@@ -29,9 +29,9 @@ const interactionComponents: {
   List_Input: { component: ListIntercation, defaultValue: () => [] }
 }
 
-const INPUT_NAMES = ['Text_Input', 'Dict_Input', 'List_Input']
+export const INPUT_NAMES = ['Text_Input', 'Dict_Input', 'List_Input']
 
-const isInteractionFinished = (interaction?: InteractionInfo) => !!interaction?.output || !!interaction?.error
+const isInteractionFinished = (interaction?: InteractionInfo) => !!interaction?.output
 
 export const Debug: React.FC<{
   app: ApplicationInfo
