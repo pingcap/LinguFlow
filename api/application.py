@@ -166,6 +166,7 @@ class ApplicationView:
                 ApplicationInfo(
                     id=app.id,
                     name=app.name,
+                    user=app.user,
                     langfuse_public_key=app.langfuse_public_key,
                     langfuse_secret_key=app.langfuse_secret_key,
                     active_version=app.active_version,
@@ -191,6 +192,7 @@ class ApplicationView:
                 ApplicationInfo(
                     id=app.id,
                     name=app.name,
+                    user=app.user,
                     langfuse_public_key=app.langfuse_public_key,
                     langfuse_secret_key=app.langfuse_secret_key,
                     active_version=app.active_version,
@@ -268,6 +270,7 @@ class ApplicationView:
             interaction=(
                 InteractionInfo(
                     id=interaction.id,
+                    user=interaction.user,
                     version_id=interaction.version_id,
                     created_at=int(interaction.created_at.timestamp()),
                     updated_at=int(interaction.updated_at.timestamp()),
@@ -387,6 +390,7 @@ class ApplicationView:
                 ApplicationVersionInfo(
                     id=version.id,
                     name=version.name,
+                    user=version.user,
                     app_id=version.app_id,
                     created_at=int(version.created_at.timestamp()),
                     updated_at=int(version.updated_at.timestamp()),
@@ -414,6 +418,7 @@ class ApplicationView:
                 ApplicationVersionInfo(
                     id=version.id,
                     name=version.name,
+                    user=version.user,
                     app_id=version.app_id,
                     created_at=int(version.created_at.timestamp()),
                     updated_at=int(version.updated_at.timestamp()),
