@@ -14,7 +14,7 @@ export const HotKeyMenu: React.FC<{
   menuPosition: number[]
   onCreateBlock: (node: Node<BlockNodeProps>) => void
 }> = ({ opened, setOpened, menuPosition, onCreateBlock }) => {
-  const { project } = useReactFlow()
+  const { screenToFlowPosition } = useReactFlow()
   const { blocks, blocksByDir } = useBlockSchema()
   const dirAndBlocks = useMemo(
     () => Object.entries(blocksByDir).sort(([dirA], [dirB]) => DIR_SORTS.indexOf(dirA) - DIR_SORTS.indexOf(dirB)),
@@ -22,14 +22,14 @@ export const HotKeyMenu: React.FC<{
   )
   const [search, setSearch] = useState('')
   const searchedBlocks = useMemo(
-    () => blocks.filter((b) => b.alias.toLowerCase().includes(search)).slice(0, 6),
+    () => blocks.filter((b) => b.alias.toLowerCase().includes(search.trim())).slice(0, 6),
     [blocks, search]
   )
   const containerElem = useContainerElem()
   const handleClickBlock = (b: BlockInfo) => {
     const newId = nanoid()
     const reactflowBounds = containerElem.getBoundingClientRect()
-    const position = project({
+    const position = screenToFlowPosition({
       x: menuPosition[0] - reactflowBounds.left,
       y: menuPosition[1] - reactflowBounds.top
     })
@@ -62,7 +62,6 @@ export const HotKeyMenu: React.FC<{
           px="sm"
           variant="unstyled"
           placeholder="Search..."
-          autoFocus
           value={search}
           onChange={(e) => setSearch(e.currentTarget.value)}
         />

@@ -4,7 +4,7 @@ import type { DisplayedInteraction } from '.'
 
 export const DebugInfo: React.FC<{ data: DisplayedInteraction }> = ({ data: { interaction, isError } }) => {
   return (
-    <HoverCard width={500} withinPortal openDelay={500}>
+    <HoverCard width="target" offset={16} withinPortal openDelay={500} closeDelay={500}>
       <HoverCard.Target>
         <Box
           p="sm"

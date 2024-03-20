@@ -19,14 +19,18 @@ export const CustomEdge: React.FC<EdgeProps<LinguEdge>> = ({
   targetY,
   data,
   label,
+  sourcePosition,
+  targetPosition,
   ...props
 }) => {
   const { setEdges } = useReactFlow()
   const [edgePath, labelX, labelY] = getSimpleBezierPath({
     sourceX,
     sourceY,
+    sourcePosition,
     targetX,
-    targetY
+    targetY,
+    targetPosition
   })
   const sourceNode = useNodeType()(props.source)
   const isBoolean = sourceNode?.data?.schema?.outport === BOOLEAN_CLASS_NAME
