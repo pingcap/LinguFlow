@@ -165,6 +165,7 @@ class Graph:
     def run(
         self,
         input: Union[str, dict, list],
+        context: dict,
         node_callback: Callable[[str, Any], None] = None,
     ) -> str:
         """
@@ -172,30 +173,35 @@ class Graph:
 
         Args:
             input (Union[str, dict, list]): The input data for the graph.
+            context (dict): The global context during running.
             node_callback (callable): Optional callback function to be called after running each node.
 
         Returns:
             str: The output of the graph.
         """
         self._reset()
+        ctx_token = BaseBlock._ctx.set(context)
 
-        input_nodes = [node for node in self.nodes.values() if node.is_input]
-        assert len(input_nodes) == 1, "exactly one input node is required"
+        try:
+            input_nodes = [node for node in self.nodes.values() if node.is_input]
+            assert len(input_nodes) == 1, "exactly one input node is required"
 
-        output_nodes = [
-            node_id for node_id, node in self.nodes.items() if node.is_output
-        ]
-        assert len(output_nodes) == 1, "exactly one output node is required"
+            output_nodes = [
+                node_id for node_id, node in self.nodes.items() if node.is_output
+            ]
+            assert len(output_nodes) == 1, "exactly one output node is required"
 
-        input_nodes[0].input(input)
+            input_nodes[0].input(input)
 
-        self.g.nodes[output_nodes[0]]["data"] = self.run_node(
-            output_nodes[0],
-            node_callback=node_callback,
-        )
-        if node_callback:
-            node_callback(output_nodes[0], self.g.nodes[output_nodes[0]]["data"])
-        return self.g.nodes[output_nodes[0]]["data"]
+            self.g.nodes[output_nodes[0]]["data"] = self.run_node(
+                output_nodes[0],
+                node_callback=node_callback,
+            )
+            if node_callback:
+                node_callback(output_nodes[0], self.g.nodes[output_nodes[0]]["data"])
+            return self.g.nodes[output_nodes[0]]["data"]
+        finally:
+            BaseBlock._ctx.reset(ctx_token)
 
     @property
     def data(self):

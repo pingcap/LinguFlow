@@ -1,3 +1,4 @@
+import contextvars
 from abc import abstractmethod
 from typing import Any, Callable
 
@@ -9,9 +10,15 @@ class BaseBlock(Callable):
     A block defines the code template of DAG nodes.
     """
 
-    def __init__(self): ...
+    # the global context for all blocks
+    _ctx = contextvars.ContextVar("context")
 
-    def __str__(self) -> str: ...
+    def __init__(self):
+        pass
+
+    @property
+    def context(self) -> dict:
+        return self._ctx.get({})
 
     @property
     def is_input(self) -> bool:

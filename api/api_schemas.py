@@ -113,6 +113,7 @@ class ApplicationInfo(BaseModel):
 
     id: str
     name: str
+    user: str
     langfuse_public_key: Optional[str]
     langfuse_secret_key: Optional[str]
     active_version: Optional[str]
@@ -128,6 +129,7 @@ class ApplicationVersionInfo(BaseModel):
 
     id: str
     name: str
+    user: str
     app_id: str
     created_at: int
     updated_at: int
@@ -195,6 +197,7 @@ class InteractionInfo(BaseModel):
     """
 
     id: str
+    user: str
     version_id: str
     created_at: int
     updated_at: int

@@ -34,7 +34,8 @@ class Application(Base):
     __tablename__ = "applications"
 
     id = Column(String(36), primary_key=True, nullable=False)
-    name = Column(String(255), nullable=False)
+    name = Column(String(256), nullable=False)
+    user = Column(String(256), nullable=False)
     langfuse_public_key = Column(String(64), nullable=True)
     langfuse_secret_key = Column(String(64), nullable=True)
     active_version = Column(String(36), nullable=True)
@@ -54,6 +55,7 @@ class ApplicationVersion(Base):
 
     id = Column(String(36), primary_key=True, nullable=False)
     name = Column(String(36), nullable=False)
+    user = Column(String(256), nullable=False)
     parent_id = Column(String(36), nullable=True)
     app_id = Column(String(36), nullable=False)
     meta = Column(JSON, nullable=True)
@@ -75,6 +77,7 @@ class Interaction(Base):
     __tablename__ = "interactions"
 
     id = Column(String(36), primary_key=True, nullable=False)
+    user = Column(String(256), nullable=False)
     app_id = Column(String(36), nullable=False)
     version_id = Column(String(36), nullable=False)
     created_at = Column(TIMESTAMP, nullable=False)
