@@ -41,7 +41,7 @@ class GoogleSearch(BaseBlock):
     def __init__(self, cx: str, key: Secret, top_k=5):
         self.cx = cx
         self.key = key
-        self.top_k = 5
+        self.top_k = top_k
 
     @span(name="search google")
     def __call__(self, text: str) -> list:
