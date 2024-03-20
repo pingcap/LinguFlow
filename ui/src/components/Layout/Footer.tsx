@@ -1,4 +1,4 @@
-import { Box, Button, Container, Group, Stack } from '@mantine/core'
+import { Anchor, Box, Button, Container, Group, Stack } from '@mantine/core'
 
 export const Footer: React.FC = () => {
   return (
@@ -6,12 +6,16 @@ export const Footer: React.FC = () => {
       <Stack gap="xs">
         <Box>© 2024 LinguFlow</Box>
         <Group mx="-xs" gap="xs">
-          <Button variant="subtle" size="compact-lg" color="dark">
-            Docs
-          </Button>
-          <Button variant="subtle" size="compact-lg" color="dark">
-            GitHub
-          </Button>
+          <Anchor href="https://github.com/pingcap/LinguFlow" target="_blank">
+            <Button variant="subtle" size="compact-lg" color="dark">
+              Docs
+            </Button>
+          </Anchor>
+          <Anchor href="https://github.com/pingcap/LinguFlow" target="_blank">
+            <Button variant="subtle" size="compact-lg" color="dark">
+              GitHub
+            </Button>
+          </Anchor>
         </Group>
       </Stack>
     </Container>

@@ -1,4 +1,4 @@
-import { Connection, Node, useNodes } from 'reactflow'
+import { Connection, Node, useStoreApi } from 'reactflow'
 import { useCallback } from 'react'
 import { usePatternSchema } from '../useSchema'
 import { BlockNodeProps } from '.'
@@ -31,7 +31,11 @@ export const useValidConnection = () => {
 }
 
 export const useNodeType = () => {
-  const nodes = useNodes()
-  const useNodeTypeFn = useCallback((id: string) => nodes.find((n) => n.id === id) as Node<BlockNodeProps>, [nodes])
+  const store = useStoreApi()
+  const useNodeTypeFn = useCallback(
+    (id: string) =>
+      Array.from(store.getState().nodeInternals.values()).find((n) => n.id === id) as Node<BlockNodeProps>,
+    [store]
+  )
   return useNodeTypeFn
 }
