@@ -69,7 +69,7 @@ class OpneAIWrapper(OpenAI):
                 "temperature": self.temperature,
                 "max_tokens": self.max_tokens,
             },
-        )(super(ChatOpenAIWrapper, self).generate_prompt)(prompts, *args, **kwargs)
+        )(super(OpneAIWrapper, self).generate_prompt)(prompts, *args, **kwargs)
 
 
 @pattern(name="OpenAI_Chat_LLM")
