@@ -6,6 +6,7 @@ from typing import Dict, List
 
 from environs import Env
 from fastapi import Request
+from fastapi.responses import JSONResponse
 from fastapi_utils.cbv import cbv
 from fastapi_utils.inferring_router import InferringRouter
 from sqlalchemy import create_engine
@@ -266,6 +267,8 @@ class ApplicationView:
             InteractionInfoResponse: An object containing information about the interaction.
         """
         interaction = self.invoker.poll(interaction_id)
+        if interaction is not None and interaction.error is not None:
+            return JSONResponse(**interaction.error)
         return InteractionInfoResponse(
             interaction=(
                 InteractionInfo(
@@ -275,7 +278,6 @@ class ApplicationView:
                     created_at=int(interaction.created_at.timestamp()),
                     updated_at=int(interaction.updated_at.timestamp()),
                     data=interaction.data,
-                    error=interaction.error,
                     output=interaction.output,
                 )
                 if interaction
