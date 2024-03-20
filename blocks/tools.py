@@ -46,4 +46,5 @@ class GoogleSearch(BaseBlock):
     @span(name="search google")
     def __call__(self, text: str) -> list:
         r = search_google(self.cx, self.key, text)
-        return [item["snippet"] for item in r["items"][: self.top_k]]
+        items = r.get("items", [])
+        return [item["snippet"] for item in items[: self.top_k]]
