@@ -17,7 +17,7 @@ import {
 } from '@mantine/core'
 import { IconCheck, IconCopy, IconSettings, IconX } from '@tabler/icons-react'
 import { Edge, Handle, NodeProps, Position, useEdges, useNodeId, useReactFlow, useUpdateNodeInternals } from 'reactflow'
-import { memo, useState } from 'react'
+import { useState } from 'react'
 import { nanoid } from 'nanoid'
 import { useDisclosure } from '@mantine/hooks'
 import { useFormContext } from 'react-hook-form'
@@ -61,7 +61,7 @@ export interface DisplayedInteraction {
   isError: boolean
 }
 
-export const BlockNode: React.FC<NodeProps<BlockNodeProps>> = memo(({ data, selected }) => {
+export const BlockNode: React.FC<NodeProps<BlockNodeProps>> = ({ data, selected }) => {
   const { colors } = useMantineTheme()
   const PORT_CUSTOM_STYLE = usePortCustomStyle()
   const { schema, node, interaction } = data
@@ -218,7 +218,7 @@ export const BlockNode: React.FC<NodeProps<BlockNodeProps>> = memo(({ data, sele
       )}
     </>
   )
-})
+}
 
 interface Port {
   id: string
