@@ -21,9 +21,10 @@ export const useCreateVersion = (version?: ApplicationVersionInfo) => {
 
   const [canSave, setCanSave] = useState(false)
   const createVersion = async () => {
-    if (!canSave) {
+    if (!canSave || isLoading) {
       return
     }
+    setCanSave(false)
 
     const { id } = await _createVersion({
       applicationId: appId!,
@@ -54,7 +55,6 @@ export const useCreateVersion = (version?: ApplicationVersionInfo) => {
     })
 
     Object.keys(getValues()).forEach((k) => resetField(k))
-    setCanSave(false)
     if (verId) {
       navigate(`../${id}`, { replace: true, relative: 'path' })
     } else {
