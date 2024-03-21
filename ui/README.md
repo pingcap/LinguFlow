@@ -1,6 +1,6 @@
 # LinguFlow UI
 
-![alt text](./public/readme.png)
+![readme_img](./public/readme.png)
 
 LinguFlow UI is a low-code application builder powered by LinguFlow, designed to assist you in rapidly prototyping LLM applications, combining them into workflows, and interacting with them to accomplish tasks. It is built on top of the LinguFlow framework.
 
