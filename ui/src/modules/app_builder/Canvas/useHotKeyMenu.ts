@@ -52,6 +52,7 @@ export const useHotKeyMenu = () => {
     hotKeyMenuOpened,
     setHotKeyMenuOpened,
     menuPosition,
+    menuStatus,
     events: {
       onPaneMouseEnter,
       onPaneMouseLeave,

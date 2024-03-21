@@ -32,6 +32,7 @@ import { BLOCK_PORT_ID_NULL, BOOLEAN_CLASS_NAME, useNodeType } from '../Block/us
 import { CUSTOM_EDGE_NAME, CustomEdge, EdgeModal } from '../Edge'
 import { HotKeyMenu } from './HotKeyMenu'
 import { useHotKeyMenu } from './useHotKeyMenu'
+import { useCopyBlock } from './useCopyBlock'
 
 export interface BuilderCanvasProps {
   config?: Config
@@ -40,7 +41,7 @@ export interface BuilderCanvasProps {
   interaction?: InteractionInfo
   onNodeDragStop: NodeDragHandler
   onNodesDelete: OnNodesDelete
-  onAddNode: (n: Node<BlockNodeProps>) => void
+  onAddNode: (n: Node<BlockNodeProps>[]) => void
   onConnect: OnConnect
   onEdgeChange: OnEdgesChange
   onRelayout: () => void
@@ -119,10 +120,10 @@ export const BuilderCanvas: React.FC<BuilderCanvasProps> = ({
 
   // manipulate nodes
   const getNodeType = useNodeType()
-  const addNode = useRef((node: Node<BlockNodeProps>) => {
-    setNodes((nds) => nds.concat(node))
-    register(node.data.node.id, { value: node.data.node })
-    onAddNode(node)
+  const addNodes = useRef((nodes: Node<BlockNodeProps>[]) => {
+    setNodes((nds) => nds.concat(...nodes))
+    nodes.forEach((node) => register(node.data.node.id, { value: node.data.node }))
+    onAddNode(nodes)
   })
   const onNodesDeleteFn = useCallback(
     (n: Node[]) => {
@@ -146,7 +147,7 @@ export const BuilderCanvas: React.FC<BuilderCanvasProps> = ({
   )
 
   // hot keys
-  const { events: paneEvents, hotKeyMenuOpened, setHotKeyMenuOpened, menuPosition } = useHotKeyMenu()
+  const { events: paneEvents, hotKeyMenuOpened, setHotKeyMenuOpened, menuPosition, menuStatus } = useHotKeyMenu()
 
   useHotkeys([
     [
@@ -182,13 +183,18 @@ export const BuilderCanvas: React.FC<BuilderCanvasProps> = ({
     onCanSave()
   }
 
+  useCopyBlock(menuStatus, ({ nodes, edges }) => {
+    addNodes.current(nodes)
+    setEdges((eds) => eds.concat(...edges))
+  })
+
   return (
     <>
       <HotKeyMenu
         opened={hotKeyMenuOpened}
         setOpened={setHotKeyMenuOpened}
         menuPosition={menuPosition}
-        onCreateBlock={addNode.current}
+        onCreateBlock={(n) => addNodes.current([n])}
       />
 
       <ReactFlow
