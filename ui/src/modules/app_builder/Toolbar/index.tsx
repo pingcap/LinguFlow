@@ -62,9 +62,8 @@ export const Toolbar: React.FC<{
                 <Text span fw="bold" c="gray.9" size="xs">
                   {app.name}
                 </Text>
-                /
                 <Text span c="gray.9" size="xs">
-                  {ver.name}
+                  /{ver.name}
                 </Text>
               </Box>
               <ToolbarButton

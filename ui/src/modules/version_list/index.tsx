@@ -23,9 +23,7 @@ import {
 import { IconApps, IconDots, IconRocket, IconSearch, IconTrash } from '@tabler/icons-react'
 import { Link, useParams } from 'react-router-dom'
 import {
-  getGetAppApplicationsApplicationIdGetQueryKey,
   getListAppVersionsApplicationsApplicationIdVersionsGetQueryKey,
-  useActiveAppVersionApplicationsApplicationIdVersionsVersionIdActivePut,
   useDeleteAppVersionApplicationsApplicationIdVersionsVersionIdDelete,
   useGetAppApplicationsApplicationIdGet,
   useListAppVersionsApplicationsApplicationIdVersionsGet
@@ -37,6 +35,7 @@ import { Pagination } from '../../components/Pagination'
 
 import { NoResult } from '../../components/NoResult'
 import { Layout } from '../../components/Layout/Layout'
+import { PublishModal } from '../shared/PublishModal'
 import classes from './index.module.css'
 import { getDateTime } from './utils'
 import { VersionListHeader } from './Header'
@@ -136,18 +135,7 @@ const List: React.FC<{
   onPublish: (v: string) => void
   onPublished: () => void
 }> = ({ app, versions, onPublished, onPublish }) => {
-  const qc = useQueryClient()
   const [publishingId, setPublishingId] = useState('')
-  const { mutateAsync: activeVersion, isLoading: isPublishing } =
-    useActiveAppVersionApplicationsApplicationIdVersionsVersionIdActivePut({
-      mutation: {
-        onSuccess: async () => {
-          await qc.refetchQueries(getGetAppApplicationsApplicationIdGetQueryKey(app.id))
-          setPublishingId('')
-          onPublished()
-        }
-      }
-    })
 
   return (
     <Card withBorder p={0}>
@@ -155,68 +143,94 @@ const List: React.FC<{
         const isPublished = app?.active_version === v.id
         return (
           <React.Fragment key={v.id}>
-            <Group p="md" justify="space-between" h={LIST_ITEM_HEIGHT}>
-              <Stack gap={4} w="60%">
-                <Group gap="xs" wrap="nowrap">
-                  <Anchor component={Link} to={`./ver/${v.id}`} maw="80%" lineClamp={1} underline="never" c="dark">
-                    <Title order={5}>{v.name}</Title>
-                  </Anchor>
-                  {!!publishingId && v.id === publishingId && (
-                    <Badge color="orange" radius="sm" variant="light">
-                      Publishing...
-                    </Badge>
-                  )}
-                  {isPublished && (
-                    <Badge color="blue" radius="sm" variant="light">
-                      Published
-                    </Badge>
-                  )}
-                </Group>
-                <Text c="gray.7" fz="sm" truncate>
-                  Ver.{' '}
-                  <Text span fz="xs" style={{ fontFamily: 'monospace' }}>
-                    {v.id.toUpperCase()}
-                  </Text>
-                </Text>
-              </Stack>
-
-              <Group>
-                <Stack gap={4} align="flex-end" c="gray.7" fz="sm">
-                  <Text>{getDateTime(v.created_at)}</Text>
-                  <Text>by {v.user}</Text>
-                </Stack>
-                <Menu shadow="md" width={140} withinPortal position="bottom-end" keepMounted>
-                  <Menu.Target>
-                    <ActionIcon variant="subtle" color="gray" size="sm" onClick={(e) => e.stopPropagation()}>
-                      <IconDots size={16} />
-                    </ActionIcon>
-                  </Menu.Target>
-
-                  <Menu.Dropdown onClick={(e) => e.stopPropagation()}>
-                    <Menu.Item
-                      leftSection={<IconRocket size={14} />}
-                      disabled={isPublished || isPublishing}
-                      onClick={() => {
-                        setPublishingId(v.id)
-                        activeVersion({ applicationId: app.id, versionId: v.id })
-                        onPublish(v.id)
-                      }}
-                    >
-                      Publish
-                    </Menu.Item>
-                    <Menu.Divider />
-
-                    <DeleteVersionButton ver={v} disabled={isPublished || isPublishing} />
-                  </Menu.Dropdown>
-                </Menu>
-              </Group>
-            </Group>
-
+            <VersionItem
+              ver={v}
+              isPublished={isPublished}
+              publishingId={publishingId}
+              setPublishingId={setPublishingId}
+              onPublish={onPublish}
+              onPublished={onPublished}
+            />
             {i !== versions.length - 1 && <Divider color="gray.3" />}
           </React.Fragment>
         )
       })}
     </Card>
+  )
+}
+
+const VersionItem: React.FC<{
+  ver: ApplicationVersionInfo
+  isPublished: boolean
+  publishingId: string
+  setPublishingId: (id: string) => void
+  onPublish: (v: string) => void
+  onPublished: () => void
+}> = ({ ver, isPublished, publishingId, setPublishingId, onPublish, onPublished }) => {
+  const [publishModalOpened, { open: openPublishModal, close: closePublishModal }] = useDisclosure(false)
+
+  return (
+    <Group p="md" justify="space-between" h={LIST_ITEM_HEIGHT}>
+      <Stack gap={4} w="60%">
+        <Group gap="xs" wrap="nowrap">
+          <Anchor component={Link} to={`./ver/${ver.id}`} maw="80%" lineClamp={1} underline="never" c="dark">
+            <Title order={5}>{ver.name}</Title>
+          </Anchor>
+          {!!publishingId && ver.id === publishingId && (
+            <Badge color="orange" radius="sm" variant="light">
+              Publishing...
+            </Badge>
+          )}
+          {isPublished && (
+            <Badge color="blue" radius="sm" variant="light">
+              Published
+            </Badge>
+          )}
+        </Group>
+        <Text c="gray.7" fz="sm" truncate>
+          Ver.{' '}
+          <Text span fz="xs" style={{ fontFamily: 'monospace' }}>
+            {ver.id.toUpperCase()}
+          </Text>
+        </Text>
+      </Stack>
+
+      <Group>
+        <Stack gap={4} align="flex-end" c="gray.7" fz="sm">
+          <Text>{getDateTime(ver.created_at)}</Text>
+          <Text>by {ver.user}</Text>
+        </Stack>
+        <Menu shadow="md" width={140} withinPortal position="bottom-end" keepMounted>
+          <Menu.Target>
+            <ActionIcon variant="subtle" color="gray" size="sm" onClick={(e) => e.stopPropagation()}>
+              <IconDots size={16} />
+            </ActionIcon>
+          </Menu.Target>
+
+          <Menu.Dropdown onClick={(e) => e.stopPropagation()}>
+            <Menu.Item leftSection={<IconRocket size={14} />} disabled={isPublished} onClick={openPublishModal}>
+              Publish
+            </Menu.Item>
+            <PublishModal
+              ver={ver}
+              opened={publishModalOpened}
+              close={closePublishModal}
+              beforePublish={() => {
+                setPublishingId(ver.id)
+                onPublish(ver.id)
+              }}
+              onSuccess={() => {
+                setPublishingId('')
+                onPublished()
+              }}
+            />
+            <Menu.Divider />
+
+            <DeleteVersionButton ver={ver} disabled={isPublished} />
+          </Menu.Dropdown>
+        </Menu>
+      </Group>
+    </Group>
   )
 }
 
@@ -261,7 +275,7 @@ const DeleteVersionButton: React.FC<{ ver: ApplicationVersionInfo; disabled?: bo
         onClose={close}
         title={
           <Text fw="bold">
-            Delete <Code fz="md">{ver.id}</Code>
+            Delete <Code fz="md">{ver.name}</Code>
           </Text>
         }
         centered
