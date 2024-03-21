@@ -183,7 +183,7 @@ const List: React.FC<{
               <Group>
                 <Stack gap={4} align="flex-end" c="gray.7" fz="sm">
                   <Text>{getDateTime(v.created_at)}</Text>
-                  <Text>by Default User</Text>
+                  <Text>by {v.user}</Text>
                 </Stack>
                 <Menu shadow="md" width={140} withinPortal position="bottom-end" keepMounted>
                   <Menu.Target>
@@ -260,9 +260,9 @@ const DeleteVersionButton: React.FC<{ ver: ApplicationVersionInfo; disabled?: bo
         opened={opened}
         onClose={close}
         title={
-          <Title order={5}>
+          <Text fw="bold">
             Delete <Code fz="md">{ver.id}</Code>
-          </Title>
+          </Text>
         }
         centered
       >
