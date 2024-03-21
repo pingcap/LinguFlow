@@ -305,7 +305,7 @@ const AppCard: React.FC<{ app: ApplicationInfo }> = ({ app }) => {
 
         <Stack gap={0}>
           <Text c="gray.6" fz="sm" truncate>
-            Owned by {app.user || 'Default User'}
+            Owned by {app.user}
           </Text>
           <Text c="gray.6" fz="sm" truncate>
             {createdAt}
