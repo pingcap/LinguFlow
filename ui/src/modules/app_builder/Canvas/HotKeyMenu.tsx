@@ -60,6 +60,7 @@ export const HotKeyMenu: React.FC<{
       <Menu.Dropdown>
         <TextInput
           px="sm"
+          autoFocus
           variant="unstyled"
           placeholder="Search..."
           value={search}

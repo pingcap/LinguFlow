@@ -8,7 +8,7 @@ import { notifications } from '@mantine/notifications'
 import { Config } from '../linguflow.type'
 import classes from './index.module.css'
 import { Pane, TabValue } from './Pane'
-import { INPUT_NAMES } from './Debug'
+import { ErrorInteraction, INPUT_NAMES } from './Debug'
 
 export const TOOLBAR_HEIGHT = 30
 export const TOOLBAR_PANE_HEIGHT = 260
@@ -20,7 +20,16 @@ export const Toolbar: React.FC<{
   setToolbarPaneOpened: React.Dispatch<React.SetStateAction<boolean>>
   isCreatingVersion: boolean
   onUpdateCurrentInteraction: (interaction?: InteractionInfo) => void
-}> = ({ app, ver, toolbarPaneOpened, setToolbarPaneOpened, isCreatingVersion, onUpdateCurrentInteraction }) => {
+  onInteractionError: (errorInteraction?: ErrorInteraction) => void
+}> = ({
+  app,
+  ver,
+  toolbarPaneOpened,
+  setToolbarPaneOpened,
+  isCreatingVersion,
+  onUpdateCurrentInteraction,
+  onInteractionError
+}) => {
   const { colors } = useMantineTheme()
   const [tab, setTab] = useState<TabValue>(TabValue.DEBUG)
   const versionNotSaved = !ver || isCreatingVersion
@@ -37,6 +46,7 @@ export const Toolbar: React.FC<{
           ver={ver}
           isCreatingVersion={isCreatingVersion}
           onUpdateCurrentInteraction={onUpdateCurrentInteraction}
+          onInteractionError={onInteractionError}
         />
       )}
 
