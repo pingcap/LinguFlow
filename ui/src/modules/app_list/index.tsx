@@ -154,7 +154,7 @@ const ModifyAppModel: React.FC<ModifyAppModelProps> = ({ opened, onClose, app })
       opened={opened}
       onClose={onClose}
       title={
-        <Title order={5}>
+        <Text fw="bold">
           {!app ? (
             'New Application'
           ) : (
@@ -162,7 +162,7 @@ const ModifyAppModel: React.FC<ModifyAppModelProps> = ({ opened, onClose, app })
               Edit <Code fz="md">{app.name}</Code>
             </>
           )}
-        </Title>
+        </Text>
       }
       centered
       trapFocus={false}
@@ -305,7 +305,7 @@ const AppCard: React.FC<{ app: ApplicationInfo }> = ({ app }) => {
 
         <Stack gap={0}>
           <Text c="gray.6" fz="sm" truncate>
-            Owned by Default User
+            Owned by {app.user}
           </Text>
           <Text c="gray.6" fz="sm" truncate>
             {createdAt}
@@ -334,9 +334,9 @@ const DeleteAppButton: React.FC<{ app: ApplicationInfo }> = ({ app }) => {
         opened={opened}
         onClose={close}
         title={
-          <Title order={5}>
+          <Text fw="bold">
             Delete <Code fz="md">{app.name}</Code>
-          </Title>
+          </Text>
         }
         centered
       >

@@ -5,8 +5,10 @@ import React, { PropsWithChildren, useState } from 'react'
 import 'reactflow/dist/style.css'
 import { ApplicationInfo, ApplicationVersionInfo, InteractionInfo } from '@api/linguflow.schemas'
 import { notifications } from '@mantine/notifications'
+import { Config } from '../linguflow.type'
 import classes from './index.module.css'
 import { Pane, TabValue } from './Pane'
+import { ErrorInteraction, INPUT_NAMES } from './Debug'
 
 export const TOOLBAR_HEIGHT = 30
 export const TOOLBAR_PANE_HEIGHT = 260
@@ -18,9 +20,20 @@ export const Toolbar: React.FC<{
   setToolbarPaneOpened: React.Dispatch<React.SetStateAction<boolean>>
   isCreatingVersion: boolean
   onUpdateCurrentInteraction: (interaction?: InteractionInfo) => void
-}> = ({ app, ver, toolbarPaneOpened, setToolbarPaneOpened, isCreatingVersion, onUpdateCurrentInteraction }) => {
+  onInteractionError: (errorInteraction?: ErrorInteraction) => void
+}> = ({
+  app,
+  ver,
+  toolbarPaneOpened,
+  setToolbarPaneOpened,
+  isCreatingVersion,
+  onUpdateCurrentInteraction,
+  onInteractionError
+}) => {
   const { colors } = useMantineTheme()
   const [tab, setTab] = useState<TabValue>(TabValue.DEBUG)
+  const versionNotSaved = !ver || isCreatingVersion
+  const noInputBlock = !((ver?.configuration || {}) as Config)?.nodes?.some((n) => INPUT_NAMES.includes(n.name))
 
   return (
     <Box h={TOOLBAR_HEIGHT + (toolbarPaneOpened ? TOOLBAR_PANE_HEIGHT : 0)}>
@@ -33,6 +46,7 @@ export const Toolbar: React.FC<{
           ver={ver}
           isCreatingVersion={isCreatingVersion}
           onUpdateCurrentInteraction={onUpdateCurrentInteraction}
+          onInteractionError={onInteractionError}
         />
       )}
 
@@ -46,8 +60,8 @@ export const Toolbar: React.FC<{
               setToolbarPaneOpened((v) => !v)
             }
           }}
-          disabled={!ver || isCreatingVersion}
-          disabledTooltip="Current version not saved."
+          disabled={versionNotSaved || noInputBlock}
+          disabledTooltip={versionNotSaved ? 'Current version not saved.' : 'Invalid input block.'}
         >
           <IconBug style={{ width: '80%', height: '80%', color: colors.gray[9] }} stroke={1} />
         </ToolbarButton>
