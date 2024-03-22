@@ -1,5 +1,5 @@
-import { useHotkeys } from '@mantine/hooks'
-import { useRef, useState } from 'react'
+import { getHotkeyHandler } from '@mantine/hooks'
+import { useEffect, useRef, useState } from 'react'
 
 export const useHotKeyMenu = () => {
   const [menuPosition, setMenuPosition] = useState([0, 0])
@@ -46,7 +46,11 @@ export const useHotKeyMenu = () => {
     e.preventDefault()
   }
 
-  useHotkeys([['Space', showHotKeyMenu]])
+  useEffect(() => {
+    const showHotKeyMenuHandler = getHotkeyHandler([['Space', showHotKeyMenu]])
+    document.body.addEventListener('keyup', showHotKeyMenuHandler)
+    return () => document.body.removeEventListener('keyup', showHotKeyMenuHandler)
+  }, [])
 
   return {
     hotKeyMenuOpened,
