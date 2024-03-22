@@ -100,6 +100,7 @@ const AppBuilder: React.FC = () => {
   const {
     formState: { dirtyFields }
   } = useFormContext()
+  const dirtyKeys = Object.keys(dirtyFields).join(',')
   const closeAllDrawer = useCloseAllDrawer()
   const nodesInitialized = useNodesInitialized()
   const {
@@ -118,12 +119,11 @@ const AppBuilder: React.FC = () => {
   const [debouncedCanUpdate] = useDebouncedValue(canUpdate, 5 * 1000, { leading: false })
 
   useEffect(() => {
-    const dirtyKeys = Object.keys(dirtyFields)
     if (!dirtyKeys.length) {
       return
     }
     setCanSave(true)
-  }, [dirtyFields, setCanSave])
+  }, [dirtyKeys, setCanSave])
 
   useEffect(() => {
     if (!debouncedCanUpdate || canSave) {
