@@ -4,7 +4,7 @@ The LinguFlow applications API can be used to build, manage, and use apps. For d
 
 ## Base URL
 
-[Code Block]
+<code>{props.baseURL}</code>
 
 ## Authentication
 
@@ -12,7 +12,7 @@ WIP, the authorization feature is currently being implemented.
 
 ## Async Run App
 
-### POST `/applications/{application_id}/async_run`
+### POST <code>/applications/{props.appId}/async_run</code>
 
 Initiates the asynchronous execution of a LinguFlow application identified by the specified ID.
 
@@ -57,7 +57,6 @@ Retrieves information about a specific interaction by its ID.
         "{node_id_n}": "string",
         "{node_id_m}": "string"
       },
-      "error": {}
     }
 }
 ```
@@ -73,5 +72,3 @@ Retrieves information about a specific interaction by its ID.
 `output` (string): The response of the LinguFlow application to the input content.
 
 `data` (dictionary): The output of each node in the LinguFlow application. The keys are the IDs of the nodes in the application, and the values are strings representing the specific output of each node.
-
-`error` (string): Information about any errors encountered by the application. If there are no errors, this field is empty.

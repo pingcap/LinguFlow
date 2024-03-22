@@ -33,11 +33,22 @@ export const INPUT_NAMES = ['Text_Input', 'Dict_Input', 'List_Input']
 
 const isInteractionFinished = (interaction?: InteractionInfo) => !!interaction?.output
 
+export interface ErrorInteraction {
+  id: string
+  msg: string
+  code: string
+}
+
+interface InteractionErrResponse {
+  response: { data: { node_id: string; message: string; code: string } }
+}
+
 export const Debug: React.FC<{
   app: ApplicationInfo
   ver: ApplicationVersionInfo
   onUpdateCurrentInteraction: (interaction?: InteractionInfo) => void
-}> = ({ app, ver, onUpdateCurrentInteraction }) => {
+  onInteractionError: (errorInteraction?: ErrorInteraction) => void
+}> = ({ app, ver, onUpdateCurrentInteraction, onInteractionError }) => {
   const { blockMap } = useBlockSchema()
   const inputBlock = (ver.configuration as Config).nodes
     .map((n) => blockMap[n.name])
@@ -64,6 +75,7 @@ export const Debug: React.FC<{
           return 5000
         },
         refetchIntervalInBackground: true,
+
         onSuccess: (data) => {
           setCurrentInteraction(data.interaction)
           if (!isInteractionFinished(data.interaction)) {
@@ -72,7 +84,16 @@ export const Debug: React.FC<{
           setValue(InteractionComponent.defaultValue())
           setInteractions((v) => [...v, data.interaction!])
         },
-        onError: () => setIsError(true)
+        onError: (error: InteractionErrResponse) => {
+          setIsError(true)
+          if (error?.response?.data?.node_id) {
+            onInteractionError({
+              id: error.response.data.node_id,
+              msg: error.response.data.message,
+              code: error.response.data.code
+            })
+          }
+        }
       }
     }
   )
@@ -83,6 +104,7 @@ export const Debug: React.FC<{
 
   const runInteraction = async () => {
     setCurrentInteraction(undefined)
+    onInteractionError(undefined)
     setIsError(false)
     setIsLoading(true)
     try {
@@ -95,8 +117,15 @@ export const Debug: React.FC<{
       }
       setValue(InteractionComponent.defaultValue())
       setInteractions((v) => [...v, debugRst.interaction!])
-    } catch {
+    } catch (error: any) {
       setIsError(true)
+      if (error?.response?.data?.node_id) {
+        onInteractionError({
+          id: error.response.data.node_id,
+          msg: error.response.data.message,
+          code: error.response.data.code
+        })
+      }
     } finally {
       setIsLoading(false)
     }
