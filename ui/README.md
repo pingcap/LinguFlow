@@ -11,8 +11,8 @@ LinguFlow UI is a low-code application builder powered by LinguFlow, designed to
 
 ### Prerequisites
 
-- [Node.js](https://nodejs.org/en)
-- [Yarn](https://yarnpkg.com/getting-started/install)
+- [Node.js](https://nodejs.org/en) > v19
+- [Yarn](https://yarnpkg.com/getting-started/install) > v1.12
 
 ### Local Development
 
