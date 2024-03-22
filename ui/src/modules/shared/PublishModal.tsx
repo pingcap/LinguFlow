@@ -41,7 +41,7 @@ export const PublishModal: React.FC<PublishModalProps> = ({ opened, close, ver, 
       }
       centered
     >
-      <Text size="sm">Publish the app version may cause online malfunctions. Confirm to publish the version?</Text>
+      <Text size="sm">Publish the app version may change online app behavior. Confirm to publish the version?</Text>
 
       <Group mt="xl" justify="end">
         <Button variant="default" onClick={close} disabled={isLoading}>
