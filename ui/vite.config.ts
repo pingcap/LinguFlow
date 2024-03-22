@@ -1,11 +1,11 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tsconfigPaths from 'vite-tsconfig-paths'
-import { plugin as mdPlugin, Mode } from 'vite-plugin-markdown'
+import mdx from '@mdx-js/rollup'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react(), tsconfigPaths(), mdPlugin({ mode: [Mode.HTML] })],
+  plugins: [{ enforce: 'pre', ...mdx() }, react(), tsconfigPaths()],
   server: {
     proxy: {
       '/linguflow-api': {
