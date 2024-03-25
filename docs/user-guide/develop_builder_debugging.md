@@ -1,3 +1,9 @@
+---
+title: Block
+sidebar_label: Builder/Block
+sidebar_position: 4.4
+---
+
 # Debugging
 
 Debugging is a crucial step after completing the construction of a LinguFlow application.

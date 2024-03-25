@@ -1,3 +1,10 @@
+---
+title: Block
+sidebar_label: Builder/Block
+sidebar_position: 4.3
+---
+
+
 # Block
 
 ## General

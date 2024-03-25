@@ -1,3 +1,9 @@
+---
+title: Summary
+sidebar_label: Builder/Summary
+sidebar_position: 4.2
+---
+
 # Builder Summary
 
 The Builder is a tool designed for constructing LinguFlow application logic using a Directed Acyclic Graph (DAG) approach. With a basic understanding of Blocks and Lines, you can quickly create an LinguFlow application.

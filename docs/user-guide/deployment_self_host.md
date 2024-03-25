@@ -1,3 +1,9 @@
+---
+title: Self-Host Deployment
+sidebar_label: Deployment/Self-Host
+sidebar_position: 3.2
+---
+
 # Self-Host Deployment
 
 LinguFlow Server, encompassing both the API and Web UI, is open-source and can be self-hosted using Docker, offering flexibility for deployment.

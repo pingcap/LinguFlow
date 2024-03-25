@@ -1,3 +1,9 @@
+---
+title: Self-Host Deployment
+sidebar_label: Self-Host
+sidebar_position: 4.1
+---
+
 # Application & Version
 
 On LinguFlow, you can build your own LLM applications, each supporting multiple versions.

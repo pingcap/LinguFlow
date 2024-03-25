@@ -1,3 +1,9 @@
+---
+title: Local Deployment
+sidebar_label: Deployment/Local
+sidebar_position: 3.1
+---
+
 # Local Deployment
 
 Deploy LinguFlow on your local machine using Docker Compose. This setup is perfect for developing, testing LinguFlow applications, and diagnosing integration issues.

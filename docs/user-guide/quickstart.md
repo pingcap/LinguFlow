@@ -1,3 +1,10 @@
+---
+title: Quick Start
+sidebar_label: Quick Start
+sidebar_position: 2
+---
+
+
 # Quick Start
 
 This quick start guide will assist you in building your LLM application with LinguFlow efficiently.

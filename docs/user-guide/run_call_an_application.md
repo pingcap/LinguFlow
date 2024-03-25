@@ -1,3 +1,9 @@
+---
+title: Call an Application
+sidebar_label: Run/Call an Application
+sidebar_position: 5.1
+---
+
 ## Call an Application
 
 You can Run a LinguFlow application using an asynchronous API.
