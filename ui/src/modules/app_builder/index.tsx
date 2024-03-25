@@ -28,6 +28,7 @@ import { ContainerElemProvider } from './Canvas/useContainerElem'
 import { TOOLBAR_HEIGHT, TOOLBAR_PANE_HEIGHT, Toolbar } from './Toolbar'
 import { getCurrentDateTimeName, useCreateVersion, useUpdateVersion } from './useMutateVersion'
 import { useCloseAllDrawer } from './Block/useBlockDrawer'
+import { ErrorInteraction } from './Toolbar/Debug'
 
 const MENU_ZINDEX = 99
 
@@ -94,10 +95,12 @@ const AppBuilder: React.FC = () => {
   const [toolbarPaneOpened, setToolbarPaneOpened] = useState(false)
 
   const [currentInteraction, setCurrentInteraction] = useState<InteractionInfo>()
+  const [errorInteraction, setErrorInteraction] = useState<ErrorInteraction>()
 
   const {
     formState: { dirtyFields }
   } = useFormContext()
+  const dirtyKeys = Object.keys(dirtyFields).join(',')
   const closeAllDrawer = useCloseAllDrawer()
   const nodesInitialized = useNodesInitialized()
   const {
@@ -116,12 +119,11 @@ const AppBuilder: React.FC = () => {
   const [debouncedCanUpdate] = useDebouncedValue(canUpdate, 5 * 1000, { leading: false })
 
   useEffect(() => {
-    const dirtyKeys = Object.keys(dirtyFields)
     if (!dirtyKeys.length) {
       return
     }
     setCanSave(true)
-  }, [dirtyFields, setCanSave])
+  }, [dirtyKeys, setCanSave])
 
   useEffect(() => {
     if (!debouncedCanUpdate || canSave) {
@@ -194,6 +196,7 @@ const AppBuilder: React.FC = () => {
             config={verConfig}
             metadata={verMetadata}
             interaction={currentInteraction}
+            errorInteraction={errorInteraction}
             onClick={() => setMenuOpened(false)}
             onNodeDragStop={() => setCanUpdate(true)}
             onRelayout={() => setCanUpdate(true)}
@@ -217,6 +220,7 @@ const AppBuilder: React.FC = () => {
           setToolbarPaneOpened={setToolbarPaneOpened}
           isCreatingVersion={isCreatingVersion}
           onUpdateCurrentInteraction={setCurrentInteraction}
+          onInteractionError={setErrorInteraction}
         />
       </Box>
     </ContainerElemProvider>
