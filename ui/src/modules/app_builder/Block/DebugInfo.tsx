@@ -18,7 +18,7 @@ export const DebugInfo: React.FC<{ data: DisplayedInteraction }> = ({ data: { in
           </Text>
         </Box>
       </HoverCard.Target>
-      <HoverCard.Dropdown onDoubleClick={(e) => e.stopPropagation()}>
+      <HoverCard.Dropdown miw="400" onDoubleClick={(e) => e.stopPropagation()}>
         <Stack gap="xs">
           <Group justify="flex-end">
             <CopyButton value={interaction} timeout={2000}>
@@ -31,9 +31,11 @@ export const DebugInfo: React.FC<{ data: DisplayedInteraction }> = ({ data: { in
               )}
             </CopyButton>
           </Group>
-          <ScrollArea mah={300} fz="xs">
-            <Code block>{interaction}</Code>
-          </ScrollArea>
+          <Code block>
+            <ScrollArea h={260} fz="xs">
+              {interaction}
+            </ScrollArea>
+          </Code>
         </Stack>
       </HoverCard.Dropdown>
     </HoverCard>
