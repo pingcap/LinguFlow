@@ -14,8 +14,10 @@ class LLMChain(BaseBlock):
     LLMChain render template with given text and pass the result to llm model.
     """
 
-    def __init__(self, model: BaseLanguageModel, prompt_template: StringPromptTemplate):
-        self.chain = langchain.chains.LLMChain(llm=model, prompt=prompt_template)
+    def __init__(
+        self, model: BaseLanguageModel, prompt_template_type: StringPromptTemplate
+    ):
+        self.chain = langchain.chains.LLMChain(llm=model, prompt=prompt_template_type)
 
     @span(name="LLM Chain")
     def __call__(self, text: str, **kwargs) -> str:
