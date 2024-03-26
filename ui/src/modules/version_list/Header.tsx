@@ -47,18 +47,29 @@ export const VersionListHeader: React.FC<VersionListHeaderProps> = ({ app, versi
             <Group justify="space-between">
               <Skeleton w="80%" component="span" visible={appLoading}>
                 <Group gap="xs" wrap="nowrap">
-                  <Title maw="80%" order={2} lineClamp={1}>
+                  <Title maw="70%" order={2} lineClamp={1}>
                     {app?.name || 'Default App'}
                   </Title>
-                  <CopyButton value={app?.id || ''} timeout={2000}>
-                    {({ copied, copy }) => (
-                      <Tooltip label={copied ? 'Copied' : 'Copy App ID'} withArrow position="right">
-                        <ActionIcon color={copied ? 'teal' : 'gray'} variant="subtle" onClick={copy}>
-                          {copied ? <IconCheck style={{ width: rem(16) }} /> : <IconCopy style={{ width: rem(16) }} />}
-                        </ActionIcon>
-                      </Tooltip>
-                    )}
-                  </CopyButton>
+                  <Group maw="30%" gap={0}>
+                    <Text fz="xs">(App ID: </Text>
+                    <Text span fz="xs" maw="55%" lineClamp={1} style={{ fontFamily: 'monospace' }}>
+                      {app?.id}
+                    </Text>
+                    <Text fz="xs">)</Text>
+                    <CopyButton value={app?.id || ''} timeout={2000}>
+                      {({ copied, copy }) => (
+                        <Tooltip label={copied ? 'Copied' : 'Copy App ID'} withArrow position="right">
+                          <ActionIcon color={copied ? 'teal' : 'gray'} variant="subtle" onClick={copy}>
+                            {copied ? (
+                              <IconCheck style={{ width: rem(16) }} />
+                            ) : (
+                              <IconCopy style={{ width: rem(16) }} />
+                            )}
+                          </ActionIcon>
+                        </Tooltip>
+                      )}
+                    </CopyButton>
+                  </Group>
                 </Group>
               </Skeleton>
 
@@ -85,7 +96,7 @@ export const VersionListHeader: React.FC<VersionListHeaderProps> = ({ app, versi
                         <>
                           Published ver.
                           <Anchor component={Link} to={`./ver/${app.active_version}`}>
-                            <Badge color="blue" radius="sm" variant="light">
+                            <Badge color="blue" radius="sm" variant="light" style={{ textTransform: 'none' }}>
                               {app.active_version}
                             </Badge>
                           </Anchor>

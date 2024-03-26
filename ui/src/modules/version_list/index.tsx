@@ -190,7 +190,7 @@ const VersionItem: React.FC<{
         <Text c="gray.7" fz="sm" truncate>
           Ver.{' '}
           <Text span fz="xs" style={{ fontFamily: 'monospace' }}>
-            {ver.id.toUpperCase()}
+            {ver.id}
           </Text>
         </Text>
       </Stack>
