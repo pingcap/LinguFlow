@@ -10,7 +10,7 @@ You can Run a LinguFlow application using an asynchronous API.
 
 ## Prerequisites
 
-You need to have a completed LinguFlow application with a [published version]() available.
+You need to have a completed LinguFlow application with a [published version](https://github.com/pingcap/LinguFlow) available.
 
 When using the API to call an application, it is the published version of that application that is actually used.
 

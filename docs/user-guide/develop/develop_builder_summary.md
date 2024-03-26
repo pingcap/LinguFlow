@@ -32,7 +32,7 @@ The foundation of the Builder is a canvas. You can drag, zoom, or center the can
 
 Right-clicking or pressing the `space` key on the canvas brings up the block selection box. Selecting a specific block will place it on the canvas.
 
-Blocks are the nodes within the DAG, each representing a specific processing logic. Block types include input, output, LLM, third-party tools, numerical processing, and invoking other LinguFlow applications. For a detailed introduction to block content, refer to the [Builder - Block]() documentation.
+Blocks are the nodes within the DAG, each representing a specific processing logic. Block types include input, output, LLM, third-party tools, numerical processing, and invoking other LinguFlow applications. For a detailed introduction to block content, refer to the [Builder - Block](https://github.com/pingcap/LinguFlow) documentation.
 
 ## Line
 
@@ -44,4 +44,4 @@ There are two types of lines:
 
 ## Debugging
 
-The `Debugging` button, located at the bottom left corner of the Builder interface, opens the [Debugging]() window when clicked.
+The `Debugging` button, located at the bottom left corner of the Builder interface, opens the [Debugging](https://github.com/pingcap/LinguFlow) window when clicked.

@@ -10,22 +10,22 @@ Welcome to the LinguFlow User Guide! LinguFlow is a cutting-edge LLM (Large Lang
 
 This guide is designed to familiarize you with the capabilities of LinguFlow and navigate you through its wide array of features and functionalities.
 
-After reading, feel free to dive into the [QuickStart]() section to get hands-on experience with LinguFlow.
+After reading, feel free to dive into the [QuickStart](https://github.com/pingcap/LinguFlow) section to get hands-on experience with LinguFlow.
 
 ## Key Features
 
 ### Development
 
-- **LinguFlow UI**: After deployment ([locally]() or [self-hosted]()), you can manage your LLM applications within an organized framework of [Apps and Versions]().
+- **LinguFlow UI**: After deployment ([locally](https://github.com/pingcap/LinguFlow) or [self-hosted](https://github.com/pingcap/LinguFlow)), you can manage your LLM applications within an organized framework of [Apps and Versions](https://github.com/pingcap/LinguFlow).
     - **App**: Each LLM application is recognized as an `application`, which can be executed directly using its `application_id` during production.
     - **Version**: Each App can house multiple versions, with one specified as the `published version`. Each version can be independently edited.
-- **Builder**: Opening a version reveals the [Builder](), where application logic can be crafted using a DAG (Directed Acyclic Graph) methodology.
-    - **Block**: [Blocks]() serve as the nodes within the DAG, each embodying a distinct processing logic. Block types encompass input, output, LLM, third-party tools, numerical processing, and the invocation of other LinguFlow applications.
-    - **Line**: [Lines]() link Blocks within the DAG, differentiated into data lines and decision lines (True/False).
-- **Debugging**: The [Debugging]() feature enables swift testing of a version post-application construction.
+- **Builder**: Opening a version reveals the [Builder](https://github.com/pingcap/LinguFlow), where application logic can be crafted using a DAG (Directed Acyclic Graph) methodology.
+    - **Block**: [Blocks](https://github.com/pingcap/LinguFlow) serve as the nodes within the DAG, each embodying a distinct processing logic. Block types encompass input, output, LLM, third-party tools, numerical processing, and the invocation of other LinguFlow applications.
+    - **Line**: [Lines](https://github.com/pingcap/LinguFlow) link Blocks within the DAG, differentiated into data lines and decision lines (True/False).
+- **Debugging**: The [Debugging](https://github.com/pingcap/LinguFlow) feature enables swift testing of a version post-application construction.
 
 ### Usage
 
-- **Call an application**: Execute LinguFlow applications asynchronously through API [calls](), leveraging the `published version` of an application.
-- **Tracing**: LinguFlow utilizes LangFuse as its [Tracing]() instrument, documenting every user interaction.
-- **Feedback**: The [Feedback]() API allows for the provision of feedback on each interaction, with outcomes logged in LangFuse.
+- **Call an application**: Execute LinguFlow applications asynchronously through API [calls](https://github.com/pingcap/LinguFlow), leveraging the `published version` of an application.
+- **Tracing**: LinguFlow utilizes LangFuse as its [Tracing](https://github.com/pingcap/LinguFlow) instrument, documenting every user interaction.
+- **Feedback**: The [Feedback](https://github.com/pingcap/LinguFlow) API allows for the provision of feedback on each interaction, with outcomes logged in LangFuse.
