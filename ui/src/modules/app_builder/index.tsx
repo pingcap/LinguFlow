@@ -275,7 +275,12 @@ const BuilderMenu: React.FC<{
   return (
     <Group style={{ position: 'absolute', top: '15px', left: '15px', zIndex: MENU_ZINDEX }}>
       <ActionIcon.Group>
-        <ActionIcon variant="default" aria-label="Go Back" size="lg" onClick={() => navigate(-1)}>
+        <ActionIcon
+          variant="default"
+          aria-label="Go Back"
+          size="lg"
+          onClick={() => navigate(verId ? '../..' : '..', { replace: true, relative: 'path' })}
+        >
           <IconChevronLeft style={{ width: '60%', height: '60%', color: '#000' }} stroke={1.5} />
         </ActionIcon>
 
