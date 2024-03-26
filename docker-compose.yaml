@@ -1,0 +1,21 @@
+services:
+  api:
+    build: .
+    volumes:
+      - .:/usr/src/app
+    ports:
+      - 8000:8000
+    environment:
+      - DATABASE_URL
+  ui:
+    build: ui
+    volumes:
+      - ./ui:/app
+    ports:
+      - 80:80
+    environment:
+      - VITE_ENDPOINT_BASE_URL=/linguflow-api
+    links:
+      - api:linguflow-api
+    depends_on:
+      - api
