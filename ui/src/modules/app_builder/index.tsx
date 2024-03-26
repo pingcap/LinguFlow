@@ -6,7 +6,6 @@ import 'reactflow/dist/style.css'
 import {
   getBlocksBlocksGetQueryKey,
   getPatternsPatternsGetQueryKey,
-  useActiveAppVersionApplicationsApplicationIdVersionsVersionIdActivePut,
   useBlocksBlocksGet,
   useGetAppApplicationsApplicationIdGet,
   useGetAppVersionApplicationsApplicationIdVersionsVersionIdGet,
@@ -15,12 +14,13 @@ import {
 import { useNavigate, useParams } from 'react-router-dom'
 import download from 'downloadjs'
 import yaml from 'js-yaml'
-import { useDebouncedValue, useHotkeys } from '@mantine/hooks'
+import { useDebouncedValue, useDisclosure, useHotkeys } from '@mantine/hooks'
 import { ReactFlowProvider, useNodesInitialized, useReactFlow } from 'reactflow'
 import { FormProvider, useForm, useFormContext } from 'react-hook-form'
-import { ApplicationInfo, InteractionInfo, VersionMetadata } from '@api/linguflow.schemas'
+import { ApplicationInfo, ApplicationVersionInfo, InteractionInfo, VersionMetadata } from '@api/linguflow.schemas'
 import { useIsFetching } from 'react-query'
 import { GithubLogo } from '../../components/Layout/GithubLogo'
+import { PublishModal } from '../shared/PublishModal'
 import { BuilderCanvas } from './Canvas'
 import { SchemaProvider } from './useSchema'
 import { Config, ConfigAndMetadataUI, MetadataUI } from './linguflow.type'
@@ -159,6 +159,7 @@ const AppBuilder: React.FC = () => {
       <Box w="100vw" h="100vh" style={{ overflow: 'hidden' }}>
         <BuilderMenu
           app={appData?.application}
+          ver={verData?.version}
           opened={menuOpened}
           setOpened={setMenuOpened}
           loading={isCreatingVersion}
@@ -229,18 +230,18 @@ const AppBuilder: React.FC = () => {
 
 const BuilderMenu: React.FC<{
   app?: ApplicationInfo
+  ver?: ApplicationVersionInfo
   opened: boolean
   setOpened: React.Dispatch<React.SetStateAction<boolean>>
   loading: boolean
   canSave: boolean
   createVersion: () => void
   importApp: (config: ConfigAndMetadataUI) => void
-}> = ({ app, opened, setOpened, loading, canSave, createVersion, importApp }) => {
+}> = ({ app, ver, opened, setOpened, loading, canSave, createVersion, importApp }) => {
   const { appId, verId } = useParams()
   const navigate = useNavigate()
   const { getNodes, getEdges } = useReactFlow()
   const { getValues } = useFormContext()
-  const { mutateAsync: activeVersion } = useActiveAppVersionApplicationsApplicationIdVersionsVersionIdActivePut()
 
   const importYAML = async (f: File | null) => {
     if (!f) {
@@ -272,10 +273,17 @@ const BuilderMenu: React.FC<{
     download(yaml.dump(config), `${app?.name || appId!}.${getCurrentDateTimeName()}.linguflow.yaml`, 'text/plain')
   }
 
+  const [publishModalOpened, { open: openPublishModal, close: closePublishModal }] = useDisclosure(false)
+
   return (
     <Group style={{ position: 'absolute', top: '15px', left: '15px', zIndex: MENU_ZINDEX }}>
       <ActionIcon.Group>
-        <ActionIcon variant="default" aria-label="Go Back" size="lg" onClick={() => navigate(-1)}>
+        <ActionIcon
+          variant="default"
+          aria-label="Go Back"
+          size="lg"
+          onClick={() => navigate(verId ? '../..' : '..', { replace: true, relative: 'path' })}
+        >
           <IconChevronLeft style={{ width: '60%', height: '60%', color: '#000' }} stroke={1.5} />
         </ActionIcon>
 
@@ -295,14 +303,13 @@ const BuilderMenu: React.FC<{
               Save
             </Menu.Item>
             <Menu.Item
-              disabled={!verId}
+              disabled={!ver || canSave || ver.id === app?.active_version}
               leftSection={<IconRocket style={{ width: rem(14), height: rem(14) }} />}
-              onClick={async () => {
-                await activeVersion({ applicationId: appId!, versionId: verId! })
-              }}
+              onClick={openPublishModal}
             >
               Publish
             </Menu.Item>
+            <PublishModal opened={publishModalOpened} close={closePublishModal} ver={ver} />
 
             <Menu.Divider />
 

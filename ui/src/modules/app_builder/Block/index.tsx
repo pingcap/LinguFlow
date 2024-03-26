@@ -17,7 +17,7 @@ import {
 } from '@mantine/core'
 import { IconCheck, IconCopy, IconSettings, IconX } from '@tabler/icons-react'
 import { Edge, Handle, NodeProps, Position, useEdges, useNodeId, useReactFlow, useUpdateNodeInternals } from 'reactflow'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { nanoid } from 'nanoid'
 import { useDisclosure } from '@mantine/hooks'
 import { useFormContext } from 'react-hook-form'
@@ -37,6 +37,7 @@ const PORT_OFFSET = (PORT_SIZE + PORT_BORDER) / 2
 
 const OUTPUT_BLOCK_NAME = 'Text_Output'
 const IGNORE_PORT_NAME = 'ignore'
+const CUSTOM_PORT_CLASS_NAME = 'any'
 
 const usePortCustomStyle = () => {
   const { colors } = useMantineTheme()
@@ -71,6 +72,10 @@ export const BlockNode: React.FC<NodeProps<BlockNodeProps>> = ({ data, selected 
   const targetEdges = edges.filter((e) => e.target === node.id && e.targetHandle !== BLOCK_PORT_ID_NULL)
   const restArgsEdges = targetEdges.filter((e) => e.targetHandle && !inports.some((inp) => inp.name === e.targetHandle))
   const isValidConnection = useValidConnection()
+  const inportsWithoutIgnorePorts = useMemo(
+    () => inports.filter((inport) => inport.name !== IGNORE_PORT_NAME),
+    [inports]
+  )
 
   const { getFieldState } = useFormContext()
   const { isDirty } = getFieldState(node.id)
@@ -111,7 +116,7 @@ export const BlockNode: React.FC<NodeProps<BlockNodeProps>> = ({ data, selected 
       >
         <Group justify="space-between" p="sm" style={{ position: 'relative' }}>
           <Box maw={400}>
-            <Tooltip position="left" label="Conditional(BOOLEAN)">
+            <Tooltip position="left" label="Conditional port [BOOLEAN]">
               <Handle
                 type="target"
                 position={Position.Left}
@@ -130,7 +135,7 @@ export const BlockNode: React.FC<NodeProps<BlockNodeProps>> = ({ data, selected 
           <Group gap={4}>
             <CopyButton value={node?.id || ''} timeout={2000}>
               {({ copied, copy }) => (
-                <Tooltip label={copied ? 'Copied' : 'Copy Block ID'} withArrow position="top">
+                <Tooltip label={copied ? 'Copied' : 'Copy Block ID'}>
                   <ActionIcon color={copied ? 'teal' : 'gray'} variant="subtle" onClick={copy}>
                     {copied ? <IconCheck style={{ width: rem(16) }} /> : <IconCopy style={{ width: rem(16) }} />}
                   </ActionIcon>
@@ -138,17 +143,20 @@ export const BlockNode: React.FC<NodeProps<BlockNodeProps>> = ({ data, selected 
               )}
             </CopyButton>
             {!!slots?.length && (
-              <ActionIcon variant="subtle" color="gray" onClick={openDrawer}>
-                <IconSettings size="1rem" />
-              </ActionIcon>
+              <Tooltip label="Configuration">
+                <ActionIcon variant="subtle" color="gray" onClick={openDrawer}>
+                  <IconSettings size="1rem" />
+                </ActionIcon>
+              </Tooltip>
             )}
           </Group>
         </Group>
         <Stack gap={6}>
-          {inports?.map(
-            (p) =>
-              p.name !== IGNORE_PORT_NAME &&
-              (p.class_name === 'any' ? (
+          {inportsWithoutIgnorePorts.map((p) => {
+            const isCustomPort = p.class_name === CUSTOM_PORT_CLASS_NAME
+
+            if (isCustomPort) {
+              return (
                 <RestArgs
                   key={p.name}
                   inports={inports}
@@ -158,24 +166,30 @@ export const BlockNode: React.FC<NodeProps<BlockNodeProps>> = ({ data, selected 
                     setEdges((es) => es.filter((e) => e.target !== node.id || e.targetHandle !== p.name))
                   }
                 />
-              ) : (
-                <Box key={p.name} p="sm" bg="gray.0" style={{ position: 'relative' }}>
-                  <Tooltip position="left" label={p.class_name.toUpperCase()}>
-                    <Handle
-                      type="target"
-                      position={Position.Left}
-                      id={p.name}
-                      isValidConnection={() => false}
-                      style={{
-                        ...PORT_CUSTOM_STYLE,
-                        left: `-${PORT_OFFSET}px`
-                      }}
-                    />
-                  </Tooltip>
-                  <Text fw="bold">{p.name === 'input' ? 'inport' : p.name}</Text>
-                </Box>
-              ))
-          )}
+              )
+            }
+
+            return (
+              <Box key={p.name} p="sm" bg="gray.0" style={{ position: 'relative' }}>
+                <Tooltip position="left" label={`Inport [${p.class_name.toUpperCase()}]`}>
+                  <Handle
+                    type="target"
+                    position={Position.Left}
+                    id={p.name}
+                    isValidConnection={() => false}
+                    style={{
+                      ...PORT_CUSTOM_STYLE,
+                      left: `-${PORT_OFFSET}px`
+                    }}
+                  />
+                </Tooltip>
+                <Text fw="bold" span>
+                  {inportsWithoutIgnorePorts.length === 1 ? 'inport' : p.name}
+                </Text>
+                <Text span> [{p.class_name.toUpperCase()}]</Text>
+              </Box>
+            )
+          })}
           {slots?.map((s) => (
             <Box key={s.name} p="sm" bg="gray.0" style={{ position: 'relative' }}>
               <Text maw={300} style={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
@@ -186,7 +200,7 @@ export const BlockNode: React.FC<NodeProps<BlockNodeProps>> = ({ data, selected 
           ))}
           {name !== OUTPUT_BLOCK_NAME && (
             <Box key="outport" p="sm" bg="gray.0" style={{ position: 'relative', textAlign: 'right' }}>
-              <Tooltip position="right" label={outport.toUpperCase()}>
+              <Tooltip position="right" label={`Outport [${outport.toUpperCase()}]`}>
                 <Handle
                   type="source"
                   position={Position.Right}
@@ -199,7 +213,10 @@ export const BlockNode: React.FC<NodeProps<BlockNodeProps>> = ({ data, selected 
                   }}
                 />
               </Tooltip>
-              <Text fw="bold">outport</Text>
+              <Text fw="bold" span>
+                outport
+              </Text>
+              <Text span> [{outport.toUpperCase()}]</Text>
             </Box>
           )}
         </Stack>
@@ -210,7 +227,7 @@ export const BlockNode: React.FC<NodeProps<BlockNodeProps>> = ({ data, selected 
           drawerProps={{
             opened,
             onClose: close,
-            title: `${alias} Configuration`
+            title: `${alias} Parameters`
           }}
           slots={slots}
           props={node}
@@ -242,7 +259,7 @@ const RestArgs: React.FC<{
       <Stack gap={6}>
         {ports?.map((p, idx) => (
           <Box key={p.name} p="sm" bg="gray.0" style={{ position: 'relative' }}>
-            <Tooltip label={inport.class_name}>
+            <Tooltip label={`Custom inport [${inport.class_name.toUpperCase()}]`} position="left">
               <Handle
                 key={idx}
                 type="target"
@@ -256,19 +273,26 @@ const RestArgs: React.FC<{
               />
             </Tooltip>
             <Group justify="space-between">
-              <Text fw="bold">{p.name}</Text>
-              <ActionIcon
-                variant="subtle"
-                color="gray"
-                style={{ flexShrink: 1 }}
-                onClick={() => {
-                  onPortDelete(p)
-                  setPorts((ps) => ps.filter((_p) => _p.name !== p.name))
-                  updateNodeInternals([nodeId])
-                }}
-              >
-                <IconX size="1.125rem" />
-              </ActionIcon>
+              <Box>
+                <Text fw="bold" span>
+                  {p.name}
+                </Text>
+                <Text span> [ANY]</Text>
+              </Box>
+              <Tooltip label="Delete">
+                <ActionIcon
+                  variant="subtle"
+                  color="gray"
+                  style={{ flexShrink: 1 }}
+                  onClick={() => {
+                    onPortDelete(p)
+                    setPorts((ps) => ps.filter((_p) => _p.name !== p.name))
+                    updateNodeInternals([nodeId])
+                  }}
+                >
+                  <IconX size="1.125rem" />
+                </ActionIcon>
+              </Tooltip>
             </Group>
           </Box>
         ))}
@@ -279,7 +303,7 @@ const RestArgs: React.FC<{
               <FocusTrap>
                 <TextInput
                   style={{ flexGrow: 1 }}
-                  placeholder="Input the name"
+                  placeholder="Input the inport name"
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') {
                       const value = (e.target as any).value
@@ -297,9 +321,11 @@ const RestArgs: React.FC<{
                   }}
                 />
               </FocusTrap>
-              <ActionIcon variant="subtle" color="gray" style={{ flexShrink: 1 }} onClick={() => setShowInput(false)}>
-                <IconX size="1.125rem" />
-              </ActionIcon>
+              <Tooltip label="Delete">
+                <ActionIcon variant="subtle" color="gray" style={{ flexShrink: 1 }} onClick={() => setShowInput(false)}>
+                  <IconX size="1.125rem" />
+                </ActionIcon>
+              </Tooltip>
             </Group>
           ) : (
             <UnstyledButton
@@ -310,7 +336,7 @@ const RestArgs: React.FC<{
                 setShowInput(true)
               }}
             >
-              + Add port
+              + Add an inport
             </UnstyledButton>
           )}
         </Box>
