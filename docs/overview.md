@@ -24,7 +24,7 @@ After reading, feel free to dive into the [QuickStart](quickstart) section to ge
     - **Line**: [Lines](develop/builder/summary#lines) link Blocks within the DAG, differentiated into data lines and decision lines (True/False).
 - **Debugging**: The [Debugging](develop/builder/debugging) feature enables swift testing of a version post-application construction.
 
-### Usage
+### Run
 
 - **Call an application**: Execute LinguFlow applications asynchronously through API [calls](run/call_an_application), leveraging the `published version` of an application.
 - **Tracing**: LinguFlow supports [LangFuse Cloud](https://langfuse.com/) as its [Tracing](run/tracing) instrument, tracing every application interaction.
