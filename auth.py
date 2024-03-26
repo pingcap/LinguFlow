@@ -35,7 +35,7 @@ class BaseAuthPlugin(abc.ABC):
         """
         Get user identity from request.
         """
-        return "anonymous"
+        return "default user"
 
     def message(self, request: Request) -> str:
         """
@@ -55,7 +55,7 @@ def load_auth_plugin() -> BaseAuthPlugin:
         )
         return subcls[0]()
     elif len(subcls) == 0:
-        logging.info("the default anonymous auth plugin will be used")
+        logging.info("the default auth plugin will be used")
         return BaseAuthPlugin()
     return subcls[0]()
 
