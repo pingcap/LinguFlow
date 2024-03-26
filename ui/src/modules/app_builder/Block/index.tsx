@@ -227,7 +227,7 @@ export const BlockNode: React.FC<NodeProps<BlockNodeProps>> = ({ data, selected 
           drawerProps={{
             opened,
             onClose: close,
-            title: `${alias} Configuration`
+            title: `${alias} Parameters`
           }}
           slots={slots}
           props={node}
