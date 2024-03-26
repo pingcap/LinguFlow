@@ -26,7 +26,7 @@ docker-compose -f docker-compose.dev.yaml up
 
 -> You can now access Langfuse at http://localhost:5173
 
-## Updating Langfuse
+## Updating LinguFlow
 
 To update LinguFlow to the latest version locally, a simple `git pull` is usually sufficient. However, there are two exceptions:
 
