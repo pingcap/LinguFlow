@@ -1,6 +1,6 @@
 ---
-title: Block
-sidebar_label: Builder/Block
+title: Debugging
+sidebar_label: Builder/Debugging
 sidebar_position: 4.4
 ---
 

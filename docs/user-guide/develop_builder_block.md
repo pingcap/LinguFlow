@@ -17,7 +17,7 @@ A Block represents a node within the Directed Acyclic Graph (DAG), each embodyin
 - **Inport**: The information inputted into this block. Some blocks support multiple inports. Inports can handle `text`, `list`, `dict` data types.
 - **Add an Inport**: Adds an additional inport to the block. Manually added inports support connections of `any` data type.
 - **Outport**: The information outputted from this block. Outports typically support `text`, `list`, `dict`, `boolean` data types.
-- **Configuration**: Specific configuration details for the block, which vary from one block type to another.
+- **Parameters**: Specific parameter details for the block, which vary from one block type to another.
 
 ## Block Category
 
@@ -78,13 +78,13 @@ LinguFlow offers essential Block types necessary for building LinguFlow applicat
 - **Description**: Selects a specific `key`'s `value` from a `dict`.
 - **Inport**: `dict`
 - **Outport**: `text`
-- **Configuration**:
+- **Parameters**:
     - **Key**: Specifies a particular `key`.
 - **Example**: 
 
 ```markdown
 - Inport: {"key_1": "value_1", "key_2": "value_2"}
-- Configuration: key="key_1"
+- Parameters: key="key_1"
 - Outport: "value_1"
 ```
 
@@ -93,14 +93,14 @@ LinguFlow offers essential Block types necessary for building LinguFlow applicat
 - **Description**: Merges a `list` into a single `text` string. The `list` typically contains multiple `text` elements.
 - **Inport**: Supports multiple inports, each corresponding to a `list`.
 - **Outport**: Merged `text`
-- **Configuration**:
+- **Parameters**:
     - **Template**: Describes how to render each list element.
     - **Delimiter**: Describes how to concatenate the rendered elements.
 - **Example**: 
 
 ```markdown
 - Inport: ["text 1", "text 2", "text 3"]
-- Configuration:
+- Parameters:
     - template="--{input}--"
     - delimiter='\n'
 - Outport: "--text 1--\n--text 2--\n--text 3--\n"
@@ -139,7 +139,7 @@ LinguFlow offers essential Block types necessary for building LinguFlow applicat
 - **Description**: Parses `text` into a `list` based on specified rules.
 - **Inport**: `text`
 - **Outport**: `list`
-- **Configuration**:
+- **Parameters**:
     - **Delim**: The delimiter character in the text.
     - **Prefix**: Trims a prefix from each element.
     - **Suffix**: Trims a suffix from each element.
@@ -147,7 +147,7 @@ LinguFlow offers essential Block types necessary for building LinguFlow applicat
 
 ```markdown
 - Inport: "|abc-\n|def-\n|ghi-\n"
-- Configuration:
+- Parameters:
     - delim='\n'
     - prefix='|'
     - suffix='-'
@@ -161,13 +161,13 @@ LinguFlow offers essential Block types necessary for building LinguFlow applicat
 - **Description**: Evaluates a `text` input and outputs a boolean result based on the evaluation.
 - **Inport**: `text`
 - **Outport**: `boolean`
-- **Configuration**:
+- **Parameters**:
     - **Comparator**: Supports text evaluation logic, including "Text Equals", "Text Contains", "Text Has Prefix", "Text Has Suffix". Outputs "True" if the condition is met, "False" otherwise.
 - **Example**: 
 
 ```markdown
 - Inport: "success"
-- Configuration:
+- Parameters:
     - comparator: Text_Equal_With
         - value: "success"
 - Outport: "True"
@@ -178,13 +178,13 @@ LinguFlow offers essential Block types necessary for building LinguFlow applicat
 - **Description**: Evaluates a `list` input and outputs a boolean result based on the evaluation.
 - **Inport**: `list`
 - **Outport**: `boolean`
-- **Configuration**:
+- **Parameters**:
     - **Comparator**: Supports list evaluation logic, including "List Contains", "List Is Empty". Outputs "True" if the condition is met, "False" otherwise.
 - **Example**: 
 
 ```markdown
 - Inport: ["abc", "def", "ghi"]
-- Configuration:
+- Parameters:
     - comparator: List_Is_Empty
 - Outport: "false"
 ```
@@ -196,14 +196,14 @@ LinguFlow offers essential Block types necessary for building LinguFlow applicat
 - **Description**: Interacts with an LLM.
 - **Inport**: Default inport is `text`. Additional inports can be created for input, which can be referenced in the template by inserting the inport name.
 - **Outport**: `text`
-- **Configuration**:
+- **Parameters**:
     - **Model**: Currently supports OpenAI's series of language models.
     - **Prompt Template Type**: Currently supports Zero_Shot_Prompt_Template and Few_Shot_Prompt_Template.
 - **Example**: 
 
 ```markdown
 - Inport: "who are you?"
-- Configuration:
+- Parameters:
     - model: OpenAI_Chat_LLM
         - openai_api_key: {key}
         - temperature: 0
@@ -221,14 +221,14 @@ LinguFlow offers essential Block types necessary for building LinguFlow applicat
 - **Description**: Invokes another LinguFlow application, transferring `text` type content to it.
 - **Inport**: `text`
 - **Outport**: `text`
-- **Configuration**:
+- **Parameters**:
     - **app_id**: Enter the ID of the LinguFlow application you wish to invoke.
     - **timeout**: Invocation timeout in seconds.
 - **Example**: 
 
 ```markdown
 - Inport: "who are you?"
-- Configuration:
+- Parameters:
     - app_id: {id}
     - timeout: 300
 - Outport: "I'm LinguFlow."
@@ -239,14 +239,14 @@ LinguFlow offers essential Block types necessary for building LinguFlow applicat
 - **Description**: Invokes another LinguFlow application, transferring `list` type content to it.
 - **Inport**: `list`
 - **Outport**: `text`
-- **Configuration**:
+- **Parameters**:
     - **app_id**: Enter the ID of the LinguFlow application you wish to invoke.
     - **timeout**: Invocation timeout in seconds.
 - **Example**: 
 
 ```markdown
 - Inport: ["hi", "Hello, can I help you?", "who are you?"]
-- Configuration:
+- Parameters:
     - app_id: {id}
     - timeout: 300
 - Outport: "I'm LinguFlow."
@@ -257,14 +257,14 @@ LinguFlow offers essential Block types necessary for building LinguFlow applicat
 - **Description**: Invokes another LinguFlow application, transferring `dict` type content to it.
 - **Inport**: `dict`
 - **Outport**: `text`
-- **Configuration**:
+- **Parameters**:
     - **app_id**: Enter the ID of the LinguFlow application you wish to invoke.
     - **timeout**: Invocation timeout in seconds.
 - **Example**: 
 
 ```markdown
 - Inport: {"key_1": "value_1", "key_2": "value_2"}
-- Configuration:
+- Parameters:
     - app_id: {id}
     - timeout: 300
 - Outport: "value_3"
@@ -277,7 +277,7 @@ LinguFlow offers essential Block types necessary for building LinguFlow applicat
 - **Description**: Queries results using the Google search engine.
 - **Inport**: `text`
 - **Outport**: `list`
-- **Configuration**:
+- **Parameters**:
     - **search_engine_id**: Enter your [Programmable Search Engine ID](https://developers.google.com/custom-search/v1/introduction).
     - **key**: Enter your [API Key](https://developers.google.com/custom-search/v1/introduction).
     - **top_k**: Specify the number of results to retrieve.
@@ -285,7 +285,7 @@ LinguFlow offers essential Block types necessary for building LinguFlow applicat
 
 ```markdown
 - Inport: "who are you?"
-- Configuration:
+- Parameters:
     - search_engine_id: {id}
     - key: {key}
     - top_k: 2
