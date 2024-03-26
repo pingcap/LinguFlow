@@ -1,6 +1,6 @@
 ---
 title: Call an Application
-sidebar_label: Run/Call an Application
+sidebar_label: Call an Application
 sidebar_position: 5.1
 ---
 
@@ -10,7 +10,7 @@ You can Run a LinguFlow application using an asynchronous API.
 
 ## Prerequisites
 
-You need to have a completed LinguFlow application with a [published version](https://github.com/pingcap/LinguFlow) available.
+You need to have a completed LinguFlow application with a [published version](../develop/application_and_version#version) available.
 
 When using the API to call an application, it is the published version of that application that is actually used.
 

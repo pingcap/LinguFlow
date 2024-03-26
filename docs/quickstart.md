@@ -11,9 +11,9 @@ This quick start guide will assist you in building your LLM application with Lin
 
 ## Create a New Application in LinguFlow
 
-1. Host the LinguFlow service [locally](https://github.com/pingcap/LinguFlow) or on [your own server](https://github.com/pingcap/LinguFlow).
-2. Initiate a new application.
-3. Generate a new version.
+1. Host the LinguFlow service [locally](deployment/local) or on [your own server](deployment/self_host).
+2. Initiate a new [application](develop/application_and_version#application).
+3. Generate a new [version](develop/application_and_version#version).
 
 ## Run an Example Application
 
@@ -24,11 +24,11 @@ This quick start guide will assist you in building your LLM application with Lin
 ## Build Your DAG
 
 1. Right-click or press `Space` to select blocks (including the essential `Input` & `Output` blocks).
-2. Connect different [blocks'](https://github.com/pingcap/LinguFlow) imports and exports, ensuring data types match for a successful connection.
-3. After completing the application's connections, click the [`Debug` button](https://github.com/pingcap/LinguFlow) to test the application.
+2. Connect different [blocks'](develop/builder/blocks) imports and exports, ensuring data types match for a successful connection.
+3. After completing the application's connections, click the [`Debug` button](develop/builder/debugging) to test the application.
 4. Click `Save` to store this version.
 
 ## API Call Your Application
 
 1. Click the `Publish` button to release the edited version.
-2. Run your application using the asynchronous API [call](https://github.com/pingcap/LinguFlow).
+2. Run your application using the asynchronous [API call](run/call_an_application).

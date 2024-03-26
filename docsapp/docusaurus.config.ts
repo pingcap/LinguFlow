@@ -61,7 +61,7 @@ const config: Config = {
           type: "docSidebar",
           sidebarId: "tutorialSidebar",
           position: "left",
-          label: "Tutorial",
+          label: "User Guide",
         },
         // {
         //   to: "/docs/user-guide/develop/develop_builder_block",

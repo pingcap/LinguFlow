@@ -1,14 +1,14 @@
 ---
 title: Summary
 sidebar_label: Summary
-sidebar_position: 4.1
+sidebar_position: 4.2
 ---
 
 # Builder Summary
 
-The Builder is a tool designed for constructing LinguFlow application logic using a Directed Acyclic Graph (DAG) approach. With a basic understanding of Blocks and Lines, you can quickly create an LinguFlow application.
+The Builder is a tool designed for constructing LinguFlow application logic using a [Directed Acyclic Graph (DAG)](https://en.wikipedia.org/wiki/Directed_acyclic_graph) approach. With a basic understanding of `Blocks` and `Lines`, you can quickly create an LinguFlow application.
 
-## Core Capabilities
+## Basic
 
 Within the Builder interface, you can:
 - Export the existing Blocks and Lines as a `.yaml` file. The export process anonymizes any keys.
@@ -28,13 +28,13 @@ Clicking the `info` button reveals detailed information:
 
 The foundation of the Builder is a canvas. You can drag, zoom, or center the canvas to suit your needs.
 
-## Block
+## Blocks
 
 Right-clicking or pressing the `space` key on the canvas brings up the block selection box. Selecting a specific block will place it on the canvas.
 
-Blocks are the nodes within the DAG, each representing a specific processing logic. Block types include input, output, LLM, third-party tools, numerical processing, and invoking other LinguFlow applications. For a detailed introduction to block content, refer to the [Builder - Block](https://github.com/pingcap/LinguFlow) documentation.
+Blocks are the nodes within the DAG, each representing a specific processing logic. Block types include input, output, LLM, third-party tools, numerical processing, and invoking other LinguFlow applications. For a detailed introduction to block content, refer to the [Blocks](blocks) documentation.
 
-## Line
+## Lines
 
 With two blocks on the canvas, you can connect them using a line.
 
@@ -44,4 +44,4 @@ There are two types of lines:
 
 ## Debugging
 
-The `Debugging` button, located at the bottom left corner of the Builder interface, opens the [Debugging](https://github.com/pingcap/LinguFlow) window when clicked.
+The `Debugging` button, located at the bottom left corner of the Builder interface, opens the [Debugging](debugging) window when clicked.
