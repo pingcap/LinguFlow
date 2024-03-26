@@ -63,7 +63,11 @@ const config: Config = {
           position: "left",
           label: "Tutorial",
         },
-        { to: "/blocks", label: "Blocks", position: "left" },
+        // {
+        //   to: "/docs/user-guide/develop/develop_builder_block",
+        //   label: "Blocks",
+        //   position: "left",
+        // },
         {
           href: "https://github.com/pingcap/LinguFlow",
           label: "GitHub",
