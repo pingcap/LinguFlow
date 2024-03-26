@@ -264,9 +264,18 @@ const AppCard: React.FC<{ app: ApplicationInfo }> = ({ app }) => {
       <Stack>
         <Group justify="space-between">
           <Stack gap={0} maw="80%">
-            <Title order={6} lineClamp={1}>
-              {app.name}
-            </Title>
+            <Group gap={4}>
+              <Title maw="50%" order={6} lineClamp={1}>
+                {app.name}
+              </Title>
+              <Group maw="40%" gap={0}>
+                <Text fz="xs">(ID: </Text>
+                <Text span fz="xs" maw="70%" lineClamp={1} style={{ fontFamily: 'monospace', wordBreak: 'break-all' }}>
+                  {app?.id}
+                </Text>
+                <Text fz="xs">)</Text>
+              </Group>
+            </Group>
             <Text c="gray.7" fz="sm" truncate>
               {app.active_version ? `Published ver. ${app.active_version}` : 'No published version'}
             </Text>

@@ -52,7 +52,13 @@ export const VersionListHeader: React.FC<VersionListHeaderProps> = ({ app, versi
                   </Title>
                   <Group maw="30%" gap={0}>
                     <Text fz="xs">(App ID: </Text>
-                    <Text span fz="xs" maw="55%" lineClamp={1} style={{ fontFamily: 'monospace' }}>
+                    <Text
+                      span
+                      fz="xs"
+                      maw="60%"
+                      lineClamp={1}
+                      style={{ fontFamily: 'monospace', wordBreak: 'break-all' }}
+                    >
                       {app?.id}
                     </Text>
                     <Text fz="xs">)</Text>
