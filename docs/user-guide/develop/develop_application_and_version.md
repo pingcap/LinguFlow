@@ -1,7 +1,7 @@
 ---
 title: Application & Version
 sidebar_label: Application & Version
-sidebar_position: 4.1
+sidebar_position: 4.2
 ---
 
 # Application & Version
@@ -10,13 +10,13 @@ On LinguFlow, you can build your own LLM applications, each supporting multiple 
 
 ## Application
 
-Create an application and assign it a meaningful name that reflects its business purpose. Each application should correspond to a specific business function, addressing a particular business challenge. 
+Create an application and assign it a meaningful name that reflects its business purpose. Each application should correspond to a specific business function, addressing a particular business challenge.
 
 Applications can also [invoke each other](https://github.com/pingcap/LinguFlow), enabling a modular approach to problem-solving.
 
 ## Version
 
-Within each application, you can create multiple versions. Assign each version a suitable name and manage them accordingly. 
+Within each application, you can create multiple versions. Assign each version a suitable name and manage them accordingly.
 
 In an application, only one specific version can be designated as the `Published Version`. When you [run an Application](https://github.com/pingcap/LinguFlow), it is this `Published Version` that is actually called.
 
