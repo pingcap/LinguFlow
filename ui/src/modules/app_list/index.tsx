@@ -16,7 +16,7 @@ import {
   Title
 } from '@mantine/core'
 import { IconDots, IconPlus, IconSearch } from '@tabler/icons-react'
-import { getHotkeyHandler, useDisclosure } from '@mantine/hooks'
+import { getHotkeyHandler, useClipboard, useDisclosure } from '@mantine/hooks'
 import {
   getListAppApplicationsGetQueryKey,
   useCreateAppApplicationsPost,
@@ -258,6 +258,7 @@ const AppCard: React.FC<{ app: ApplicationInfo }> = ({ app }) => {
       ? `Created at ${dayjs.unix(app.created_at).format('MMM D, YYYY')} (${timeFromNow})`
       : `Created ${timeFromNow}`
   }, [app])
+  const clipboard = useClipboard()
 
   return (
     <Card component={Link} to={`/app/${app.id}`}>
@@ -294,6 +295,7 @@ const AppCard: React.FC<{ app: ApplicationInfo }> = ({ app }) => {
               }}
             >
               <Menu.Item onClick={open}>Edit</Menu.Item>
+              <Menu.Item onClick={() => clipboard.copy(app.id)}>Copy ID</Menu.Item>
               <ModifyAppModel opened={opened} onClose={close} app={app} />
 
               <Menu.Divider />

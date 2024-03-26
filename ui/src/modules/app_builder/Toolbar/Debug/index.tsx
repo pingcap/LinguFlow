@@ -186,7 +186,7 @@ export const Debug: React.FC<{
                 onClick={() => setCurrentInteraction(interactions[index])}
                 style={{ fontFamily: 'monospace' }}
               >
-                {interaction.id.toUpperCase()}
+                {interaction.id}
               </Button>
               <Tooltip label="Export Interaction">
                 <ActionIcon
