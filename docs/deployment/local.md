@@ -24,7 +24,7 @@ cd LinguFlow
 docker-compose -f docker-compose.dev.yaml up
 ```
 
--> You can now access Langfuse at http://localhost:5173
+-> You can now access LinguFlow at http://localhost:5173
 
 ## Updating LinguFlow
 
