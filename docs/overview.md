@@ -27,5 +27,5 @@ After reading, feel free to dive into the [QuickStart](quickstart) section to ge
 ### Usage
 
 - **Call an application**: Execute LinguFlow applications asynchronously through API [calls](run/call_an_application), leveraging the `published version` of an application.
-<!-- - **Tracing**: LinguFlow utilizes LangFuse as its [Tracing](run/tracing) instrument, documenting every user interaction. -->
+- **Tracing**: LinguFlow supports [LangFuse Cloud](https://langfuse.com/) as its [Tracing](run/tracing) instrument, tracing every application interaction.
 <!-- - **Feedback**: The [Feedback](run/feedbacks) API allows for the provision of feedback on each interaction, with outcomes logged in LangFuse. -->
