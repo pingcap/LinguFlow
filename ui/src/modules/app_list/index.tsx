@@ -16,7 +16,7 @@ import {
   Title
 } from '@mantine/core'
 import { IconDots, IconPlus, IconSearch } from '@tabler/icons-react'
-import { getHotkeyHandler, useDisclosure } from '@mantine/hooks'
+import { getHotkeyHandler, useClipboard, useDisclosure } from '@mantine/hooks'
 import {
   getListAppApplicationsGetQueryKey,
   useCreateAppApplicationsPost,
@@ -258,24 +258,16 @@ const AppCard: React.FC<{ app: ApplicationInfo }> = ({ app }) => {
       ? `Created at ${dayjs.unix(app.created_at).format('MMM D, YYYY')} (${timeFromNow})`
       : `Created ${timeFromNow}`
   }, [app])
+  const clipboard = useClipboard()
 
   return (
     <Card component={Link} to={`/app/${app.id}`}>
       <Stack>
         <Group justify="space-between">
           <Stack gap={0} maw="80%">
-            <Group gap={4}>
-              <Title maw="50%" order={6} lineClamp={1}>
-                {app.name}
-              </Title>
-              <Group maw="40%" gap={0}>
-                <Text fz="xs">(ID: </Text>
-                <Text span fz="xs" maw="70%" lineClamp={1} style={{ fontFamily: 'monospace', wordBreak: 'break-all' }}>
-                  {app?.id}
-                </Text>
-                <Text fz="xs">)</Text>
-              </Group>
-            </Group>
+            <Title order={6} lineClamp={1}>
+              {app.name}
+            </Title>
             <Text c="gray.7" fz="sm" truncate>
               {app.active_version ? `Published ver. ${app.active_version}` : 'No published version'}
             </Text>
@@ -303,6 +295,7 @@ const AppCard: React.FC<{ app: ApplicationInfo }> = ({ app }) => {
               }}
             >
               <Menu.Item onClick={open}>Edit</Menu.Item>
+              <Menu.Item onClick={() => clipboard.copy(app.id)}>Copy ID</Menu.Item>
               <ModifyAppModel opened={opened} onClose={close} app={app} />
 
               <Menu.Divider />
