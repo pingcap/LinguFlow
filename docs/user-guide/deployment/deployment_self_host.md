@@ -1,6 +1,6 @@
 ---
 title: Self-Host Deployment
-sidebar_label: Deployment/Self-Host
+sidebar_label: Self-Host
 sidebar_position: 3.2
 ---
 

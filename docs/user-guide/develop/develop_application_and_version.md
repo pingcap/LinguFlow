@@ -1,6 +1,6 @@
 ---
 title: Application & Version
-sidebar_label: Develop/Application & Version
+sidebar_label: Application & Version
 sidebar_position: 4.1
 ---
 

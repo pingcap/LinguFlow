@@ -1,4 +1,6 @@
 {
     "position": 3,
-    "label": "Deployment"
+    "label": "Deployment",
+    "collapsible": false,
+    "collapsed": true
   }

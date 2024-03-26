@@ -1,6 +1,6 @@
 ---
 title: Debugging
-sidebar_label: Builder/Debugging
+sidebar_label: Debugging
 sidebar_position: 4.4
 ---
 

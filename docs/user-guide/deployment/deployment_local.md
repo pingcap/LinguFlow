@@ -1,6 +1,6 @@
 ---
 title: Local Deployment
-sidebar_label: Deployment/Local
+sidebar_label: Local
 sidebar_position: 3.1
 ---
 

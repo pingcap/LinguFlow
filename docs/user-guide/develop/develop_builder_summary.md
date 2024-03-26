@@ -1,6 +1,6 @@
 ---
 title: Summary
-sidebar_label: Builder/Summary
+sidebar_label: Summary
 sidebar_position: 4.2
 ---
 
