@@ -238,7 +238,7 @@ const BuilderMenu: React.FC<{
   createVersion: () => void
   importApp: (config: ConfigAndMetadataUI) => void
 }> = ({ app, ver, opened, setOpened, loading, canSave, createVersion, importApp }) => {
-  const { appId } = useParams()
+  const { appId, verId } = useParams()
   const navigate = useNavigate()
   const { getNodes, getEdges } = useReactFlow()
   const { getValues } = useFormContext()
