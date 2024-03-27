@@ -130,8 +130,8 @@ class AsyncInvoker:
         user: str,
         app_id: str,
         input: Union[str, dict, list],
-        version_id: str = None,
-        session_id: str = None,
+        version_id: Optional[str] = None,
+        session_id: Optional[str] = None,
     ) -> str:
         """
         Invoke the specified application with the given input.
@@ -262,9 +262,9 @@ def invoke(
     user: str,
     app_id: str,
     input: Union[str, HashableDict, HashableList],
-    session_id: str,
-    timeout: int = 300,
-    interval: int = 10,
+    session_id: Optional[str] = None,
+    timeout: Optional[int] = 300,
+    interval: Optional[int] = 10,
 ) -> str:
     env = Env()
     env.read_env()
