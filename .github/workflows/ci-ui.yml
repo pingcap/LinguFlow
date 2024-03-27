@@ -22,4 +22,5 @@ jobs:
         working-directory: ./ui
         run: |
           yarn --frozen-lockfile
+          yarn gen:api
           yarn lint
