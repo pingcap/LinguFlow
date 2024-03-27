@@ -4,7 +4,7 @@ import threading
 import time
 import uuid
 from datetime import datetime
-from typing import Dict, List, Tuple, Union
+from typing import Dict, List, Optional, Tuple, Union
 
 from environs import Env
 from sqlalchemy import create_engine
