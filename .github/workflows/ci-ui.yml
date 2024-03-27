@@ -8,6 +8,9 @@ on:
 jobs:
   lint:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./ui
     steps:
       - uses: actions/checkout@v4
         with:
@@ -20,8 +23,7 @@ jobs:
           cache: "yarn"
           cache-dependency-path: "**/yarn.lock"
 
-      - name: Install dependencies
-        run: yarn --frozen-lockfile
-
       - name: Run lint
-        run: yarn lint
+        run: |
+          yarn --frozen-lockfile
+          yarn lint
