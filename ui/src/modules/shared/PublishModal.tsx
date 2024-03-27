@@ -15,7 +15,6 @@ export interface PublishModalProps {
 }
 
 export const PublishModal: React.FC<PublishModalProps> = ({ opened, close, ver, beforePublish, onSuccess }) => {
-  console.log(ver)
   const qc = useQueryClient()
   const { mutateAsync: activeVersion, isLoading } =
     useActiveAppVersionApplicationsApplicationIdVersionsVersionIdActivePut({
