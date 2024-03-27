@@ -249,9 +249,18 @@ class ApplicationCreate(APIModel):
     langfuse_secret_key: Optional[str]
 
 
+class InteractionScore(APIModel):
+    """
+    The request model for scoring interaction.
+    """
+
+    value: float
+    comment: Optional[str]
+
+
 class ItemDeleteResponse(APIModel):
     """
-    The response model for app/version deletion.
+    The response model for item deletion.
     """
 
     success: bool
@@ -260,7 +269,16 @@ class ItemDeleteResponse(APIModel):
 
 class ItemUpdateResponse(APIModel):
     """
-    The response model for app/version update.
+    The response model for item update.
+    """
+
+    success: bool
+    message: str
+
+
+class ItemCreateResponse(APIModel):
+    """
+    The response model for item create.
     """
 
     success: bool

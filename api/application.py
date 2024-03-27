@@ -9,6 +9,7 @@ from fastapi import Request
 from fastapi.responses import JSONResponse
 from fastapi_utils.cbv import cbv
 from fastapi_utils.inferring_router import InferringRouter
+from langfuse import Langfuse
 from sqlalchemy import create_engine
 
 import patterns
@@ -29,6 +30,8 @@ from api.api_schemas import (
     BlockInfo,
     InteractionInfo,
     InteractionInfoResponse,
+    InteractionScore,
+    ItemCreateResponse,
     ItemDeleteResponse,
     ItemUpdateResponse,
     Parameter,
@@ -41,6 +44,7 @@ from api.api_schemas import (
 )
 from blocks import AsyncInvoker
 from database import Database
+from exceptions import ApplicationNotFound, InteractionNotFound
 from model import Application, ApplicationVersion
 from resolver import Resolver
 
@@ -284,6 +288,52 @@ class ApplicationView:
                 else None
             )
         )
+
+    @router.post("/interactions/{interaction_id}/scores")
+    def score_interaction(
+        self,
+        request: Request,
+        interaction_id: str,
+        score: InteractionScore,
+    ) -> ItemCreateResponse:
+        """
+        Give an interaction a feedback to measure if the result is good.
+
+        Args:
+            interaction_id (str): The ID of the interaction to score.
+            score (InteractionScore): The score detail
+
+        Returns:
+            ItemCreateResponse: An object indicating the success or failure of the score operation.
+        """
+
+        # get langfuse configuration
+        interaction = self.database.get_interaction(interaction_id)
+        if not interaction:
+            raise InteractionNotFound(interaction_id)
+        app = self.database.get_application(interaction.app_id)
+        if not app:
+            raise ApplicationNotFound(app_id)
+        if not app.langfuse_public_key or not app.langfuse_secret_key:
+            return ItemCreateResponse(
+                success=False,
+                message=f"Langfuse was not configured correctly application {interaction.app_id}.",
+            )
+
+        # create score
+        langfuse = Langfuse(
+            public_key=app.langfuse_public_key,
+            secret_key=app.langfuse_secret_key,
+        )
+        langfuse.score(
+            trace_id=interaction_id,
+            # use user name as score name since a interaction may be scored by different users
+            name=request.state.user,
+            value=score.value,
+            comment=score.comment,
+        )
+
+        return ItemCreateResponse(success=True, message=f"Score has been created.")
 
     @router.put("/applications/{application_id}")
     def update_app_meta(
