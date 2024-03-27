@@ -2,6 +2,7 @@
 title: Blocks
 sidebar_label: Blocks
 sidebar_position: 4.3
+toc_max_heading_level: 4
 ---
 
 
@@ -36,7 +37,7 @@ LinguFlow offers essential Block categories necessary for building LinguFlow app
 
 - **Description**: Defines the input type for a LinguFlow App. It allows sending information of `text` type to the LinguFlow application during an API call.
 - **Outport**: `text`
-- **Example**: 
+- **Example**:
 
 ```markdown
 - Outport: "Who are you?"
@@ -46,7 +47,7 @@ LinguFlow offers essential Block categories necessary for building LinguFlow app
 
 - **Description**: Defines the input type for a LinguFlow App. It supports sending information of `list` type to the LinguFlow application during an API call.
 - **Outport**: `list`
-- **Example**: 
+- **Example**:
 
 ```markdown
 - Outport: ["hi", "Hello, can I help you?", "Who are you?"]
@@ -56,7 +57,7 @@ LinguFlow offers essential Block categories necessary for building LinguFlow app
 
 - **Description**: Defines the input type for a LinguFlow App. It facilitates sending information of `dict` type to the LinguFlow application during an API call.
 - **Outport**: `dict`
-- **Example**: 
+- **Example**:
 
 ```markdown
 - Outport: {"key_1": "value_1", "key_2": "value_2"}
@@ -66,7 +67,7 @@ LinguFlow offers essential Block categories necessary for building LinguFlow app
 
 - **Description**: Specifies the output type for a LinguFlow App. After the LinguFlow application has finished running, it outputs a result of `text` type.
 - **Inport**: `text`
-- **Example**: 
+- **Example**:
 
 ```markdown
 - Inport: "I'm LinguFlow."
@@ -81,7 +82,7 @@ LinguFlow offers essential Block categories necessary for building LinguFlow app
 - **Outport**: `text`
 - **Parameters**:
     - **Key**: Specifies a particular `key`.
-- **Example**: 
+- **Example**:
 
 ```markdown
 - Inport: {"key_1": "value_1", "key_2": "value_2"}
@@ -97,7 +98,7 @@ LinguFlow offers essential Block categories necessary for building LinguFlow app
 - **Parameters**:
     - **Template**: Describes how to render each list element.
     - **Delimiter**: Describes how to concatenate the rendered elements.
-- **Example**: 
+- **Example**:
 
 ```markdown
 - Inport: ["text 1", "text 2", "text 3"]
@@ -110,11 +111,11 @@ LinguFlow offers essential Block categories necessary for building LinguFlow app
 #### List_Concat_to_List
 
 - **Description**: Concatenates two `lists` in sequence into a single `list`.
-- **Inport**: 
+- **Inport**:
     - **seq1**: `list`
     - **seq2**: `list`
 - **Outport**: Concatenated `list`.
-- **Example**: 
+- **Example**:
 
 ```markdown
 - Inport: ["a", "b"], ["1", "2"]
@@ -126,10 +127,10 @@ LinguFlow offers essential Block categories necessary for building LinguFlow app
 - **Description**: Combines multiple `texts` into a `dict`.
 - **Inport**: Supports multiple inports, each corresponding to a `text`.
 - **Outport**: Combined `dict`.
-- **Example**: 
+- **Example**:
 
 ```markdown
-- Inport: 
+- Inport:
     - Inport name: "a", value: "b"
     - Inport name: "1", value: "2"
 - Outport: {"a": "b", "1": "2"}
@@ -144,7 +145,7 @@ LinguFlow offers essential Block categories necessary for building LinguFlow app
     - **Delim**: The delimiter character in the text.
     - **Prefix**: Trims a prefix from each element.
     - **Suffix**: Trims a suffix from each element.
-- **Example**: 
+- **Example**:
 
 ```markdown
 - Inport: "|abc-\n|def-\n|ghi-\n"
@@ -164,7 +165,7 @@ LinguFlow offers essential Block categories necessary for building LinguFlow app
 - **Outport**: `boolean`
 - **Parameters**:
     - **Comparator**: Supports text evaluation logic, including "Text Equals", "Text Contains", "Text Has Prefix", "Text Has Suffix". Outputs "True" if the condition is met, "False" otherwise.
-- **Example**: 
+- **Example**:
 
 ```markdown
 - Inport: "success"
@@ -181,7 +182,7 @@ LinguFlow offers essential Block categories necessary for building LinguFlow app
 - **Outport**: `boolean`
 - **Parameters**:
     - **Comparator**: Supports list evaluation logic, including "List Contains", "List Is Empty". Outputs "True" if the condition is met, "False" otherwise.
-- **Example**: 
+- **Example**:
 
 ```markdown
 - Inport: ["abc", "def", "ghi"]
@@ -200,7 +201,7 @@ LinguFlow offers essential Block categories necessary for building LinguFlow app
 - **Parameters**:
     - **Model**: Currently supports OpenAI's series of language models.
     - **Prompt Template Type**: Currently supports Zero_Shot_Prompt_Template and Few_Shot_Prompt_Template.
-- **Example**: 
+- **Example**:
 
 ```markdown
 - Inport: "who are you?"
@@ -225,7 +226,7 @@ LinguFlow offers essential Block categories necessary for building LinguFlow app
 - **Parameters**:
     - **app_id**: Enter the ID of the LinguFlow application you wish to invoke.
     - **timeout**: Invocation timeout in seconds.
-- **Example**: 
+- **Example**:
 
 ```markdown
 - Inport: "who are you?"
@@ -243,7 +244,7 @@ LinguFlow offers essential Block categories necessary for building LinguFlow app
 - **Parameters**:
     - **app_id**: Enter the ID of the LinguFlow application you wish to invoke.
     - **timeout**: Invocation timeout in seconds.
-- **Example**: 
+- **Example**:
 
 ```markdown
 - Inport: ["hi", "Hello, can I help you?", "who are you?"]
@@ -261,7 +262,7 @@ LinguFlow offers essential Block categories necessary for building LinguFlow app
 - **Parameters**:
     - **app_id**: Enter the ID of the LinguFlow application you wish to invoke.
     - **timeout**: Invocation timeout in seconds.
-- **Example**: 
+- **Example**:
 
 ```markdown
 - Inport: {"key_1": "value_1", "key_2": "value_2"}
@@ -282,7 +283,7 @@ LinguFlow offers essential Block categories necessary for building LinguFlow app
     - **search_engine_id**: Enter your [Programmable Search Engine ID](https://developers.google.com/custom-search/v1/introduction).
     - **key**: Enter your [API Key](https://developers.google.com/custom-search/v1/introduction).
     - **top_k**: Specify the number of results to retrieve.
-- **Example**: 
+- **Example**:
 
 ```markdown
 - Inport: "who are you?"
