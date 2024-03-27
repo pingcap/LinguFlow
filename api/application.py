@@ -333,6 +333,10 @@ class ApplicationView:
             comment=score.comment,
         )
 
+        # XXX:
+        #   The Langfuse SDK executes network requests in the background on a separate thread. 
+        #   Any exception on that thread cannot be caught here. Therefore, a response with success=True 
+        #   does not necessarily mean that the Langfuse server has accepted the score.
         return ItemCreateResponse(success=True, message=f"Score has been created.")
 
     @router.put("/applications/{application_id}")
