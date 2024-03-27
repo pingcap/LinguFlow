@@ -121,6 +121,7 @@ export const BuilderCanvas: React.FC<BuilderCanvasProps> = ({
       return
     }
     initApp.current({ config, blockMap, metadata, interaction, errorInteraction, needFitview: false })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [interaction, errorInteraction])
 
   // manipulate nodes
@@ -148,6 +149,7 @@ export const BuilderCanvas: React.FC<BuilderCanvasProps> = ({
       })
       onConnect(params)
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [getNodeType, setEdges]
   )
 

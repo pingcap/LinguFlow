@@ -7,6 +7,7 @@ export const Secret: React.FC<SlotTypeComponentProps> = ({ slot, formPath, disab
   const { register } = useFormContext()
   useEffect(() => {
     register(`${formPath}.name`, { value: 'Secret' })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
   return (
     <Controller
