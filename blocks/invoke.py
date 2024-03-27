@@ -38,7 +38,7 @@ class AsyncInvoker:
 
     ```
     invoker = AsyncInvoker(Database(...))
-    interaction_id = invoker.invoke("<user>", "<app_id>", "the input")
+    interaction_id = invoker.invoke(user="...", app_id="...", input=...)
 
     result = None
     while not result:
@@ -131,6 +131,7 @@ class AsyncInvoker:
         app_id: str,
         input: Union[str, dict, list],
         version_id: str = None,
+        session_id: str = None,
     ) -> str:
         """
         Invoke the specified application with the given input.
@@ -175,7 +176,7 @@ class AsyncInvoker:
             )
         )
 
-        @trace(id=_id, name=app.name, user_id=user)
+        @trace(id=_id, name=app.name, user_id=user, session_id=session_id)
         def async_task(input: Union[str, dict, list]) -> str:
             h = AsyncExceptionHandler()
             register_exception_handlers(h)
@@ -187,6 +188,7 @@ class AsyncInvoker:
                         "version_id": version_id,
                         "interaction_id": _id,
                         "user": user,
+                        "session_id": session_id,
                     },
                     node_callback=lambda *args: self.database.update_interaction(
                         _id,
@@ -251,11 +253,16 @@ class HashableList(list):
 
 
 @functools.lru_cache
-@span(name="invoke")
+@span(
+    name="invoke",
+    input_fn=lambda _, kwargs: {"app_id": kwargs["app_id"], "input": kwargs["input"]},
+)
 def invoke(
+    *,
     user: str,
     app_id: str,
     input: Union[str, HashableDict, HashableList],
+    session_id: str,
     timeout: int = 300,
     interval: int = 10,
 ) -> str:
@@ -265,7 +272,9 @@ def invoke(
     db = Database(create_engine(env.str("DATABASE_URL")))
     invoker = AsyncInvoker(db)
 
-    interaction_id = invoker.invoke(user, app_id, input)
+    interaction_id = invoker.invoke(
+        user=user, app_id=app_id, input=input, session_id=session_id
+    )
     while timeout > 0:
         interaction = invoker.poll(interaction_id)
         if not interaction:
@@ -291,10 +300,11 @@ class Invoke(BaseBlock):
 
     def __call__(self, input: str) -> str:
         return invoke(
-            self.context["user"] + "@" + self.context["interaction_id"][:8],
-            self.app_id,
-            input,
+            user=self.context["user"] + "@" + self.context["interaction_id"][:8],
+            app_id=self.app_id,
+            input=input,
             timeout=self.timeout,
+            session_id=self.context.get("session_id"),
         )
 
 
@@ -310,10 +320,11 @@ class InvokeWithList(BaseBlock):
 
     def __call__(self, input: list) -> str:
         return invoke(
-            self.context["user"] + "@" + self.context["interaction_id"][:8],
-            self.app_id,
-            input,
+            user=self.context["user"] + "@" + self.context["interaction_id"][:8],
+            app_id=self.app_id,
+            input=input,
             timeout=self.timeout,
+            session_id=self.context.get("session_id"),
         )
 
 
@@ -329,8 +340,9 @@ class InvokeWithDict(BaseBlock):
 
     def __call__(self, input: dict) -> str:
         return invoke(
-            self.context["user"] + "@" + self.context["interaction_id"][:8],
-            self.app_id,
-            input,
+            user=self.context["user"] + "@" + self.context["interaction_id"][:8],
+            app_id=self.app_id,
+            input=input,
             timeout=self.timeout,
+            session_id=self.context.get("session_id"),
         )

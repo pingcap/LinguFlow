@@ -304,6 +304,7 @@ class ApplicationRun(APIModel):
     """The request model for trigger an app."""
 
     input: Union[str, List[str], Dict[str, str]]
+    session_id: Optional[str]
 
 
 class ApplicationRunResponse(APIModel):
