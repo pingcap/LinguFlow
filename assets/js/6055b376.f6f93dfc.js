@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkdocsapp=self.webpackChunkdocsapp||[]).push([[713],{2965:e=>{e.exports=JSON.parse('{"title":"Run","slug":"/category/run","permalink":"/docs/category/run","navigation":{"previous":{"title":"Debugging","permalink":"/docs/develop/builder/debugging"},"next":{"title":"Call an Application","permalink":"/docs/run/call_an_application"}}}')}}]);
