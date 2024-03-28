@@ -47,6 +47,13 @@ def langfuse(**decorator_kwargs):
             token = ctx.push("langfuse", Langfuse(**decorator_kwargs))
             try:
                 return func(*args, **kwargs)
+            except Exception as e:
+                ctx.langfuse.event(
+                    name=type(e).__name__,
+                    level="ERROR",
+                    status_message=str(e),
+                )
+                raise e
             finally:
                 ctx.langfuse.flush()
                 ctx.pop(token)
@@ -58,6 +65,13 @@ def langfuse(**decorator_kwargs):
             token = ctx.push("langfuse", Langfuse(**decorator_kwargs))
             try:
                 return await func(*args, **kwargs)
+            except Exception as e:
+                ctx.langfuse.event(
+                    name=type(e).__name__,
+                    level="ERROR",
+                    status_message=str(e),
+                )
+                raise e
             finally:
                 ctx.langfuse.flush()
                 ctx.pop(token)
@@ -90,6 +104,13 @@ def trace(
                 output = func(*args, **kwargs)
                 ctx.this_observation.update(output=output_fn(output))
                 return output
+            except Exception as e:
+                ctx.this_observation.event(
+                    name=type(e).__name__,
+                    level="ERROR",
+                    status_message=str(e),
+                )
+                raise e
             finally:
                 ctx.last_observation = ctx.this_observation
                 ctx.pop(token)
@@ -112,6 +133,13 @@ def trace(
                 output = await func(*args, **kwargs)
                 ctx.this_observation.update(output=output_fn(output))
                 return output
+            except Exception as e:
+                ctx.this_observation.event(
+                    name=type(e).__name__,
+                    level="ERROR",
+                    status_message=str(e),
+                )
+                raise e
             finally:
                 ctx.last_observation = ctx.this_observation
                 ctx.pop(token)
@@ -144,6 +172,13 @@ def span(
                 output = func(*args, **kwargs)
                 ctx.this_observation.end(output=output_fn(output))
                 return output
+            except Exception as e:
+                ctx.this_observation.event(
+                    name=type(e).__name__,
+                    level="ERROR",
+                    status_message=str(e),
+                )
+                raise e
             finally:
                 ctx.last_observation = ctx.this_observation
                 ctx.pop(token)
@@ -166,6 +201,13 @@ def span(
                 output = await func(*args, **kwargs)
                 ctx.this_observation.end(output=output_fn(output))
                 return output
+            except Exception as e:
+                ctx.this_observation.event(
+                    name=type(e).__name__,
+                    level="ERROR",
+                    status_message=str(e),
+                )
+                raise e
             finally:
                 ctx.last_observation = ctx.this_observation
                 ctx.pop(token)
@@ -204,6 +246,13 @@ def generation(
                 else:
                     ctx.this_observation.end(output=output_fn(output))
                 return output
+            except Exception as e:
+                ctx.this_observation.event(
+                    name=type(e).__name__,
+                    level="ERROR",
+                    status_message=str(e),
+                )
+                raise e
             finally:
                 ctx.last_observation = ctx.this_observation
                 ctx.pop(token)
@@ -231,6 +280,13 @@ def generation(
                 else:
                     ctx.this_observation.end(output=output_fn(output))
                 return output
+            except Exception as e:
+                ctx.this_observation.event(
+                    name=type(e).__name__,
+                    level="ERROR",
+                    status_message=str(e),
+                )
+                raise e
             finally:
                 ctx.last_observation = ctx.this_observation
                 ctx.pop(token)
