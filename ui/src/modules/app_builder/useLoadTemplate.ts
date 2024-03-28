@@ -1,4 +1,3 @@
-import { useEffect } from 'react'
 import { ConfigAndMetadataUI } from './linguflow.type'
 
 const templateMap: { [k: string]: string } = {
