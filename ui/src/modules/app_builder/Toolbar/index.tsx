@@ -66,15 +66,17 @@ export const Toolbar: React.FC<{
           <IconBug style={{ width: '80%', height: '80%', color: colors.gray[9] }} stroke={1} />
         </ToolbarButton>
         <Group gap="xs" pr="sm">
-          {app && ver && (
+          {app && (
             <>
               <Box>
                 <Text span fw="bold" c="gray.9" size="xs">
                   {app.name}
                 </Text>
-                <Text span c="gray.9" size="xs">
-                  /{ver.name}
-                </Text>
+                {ver && (
+                  <Text span c="gray.9" size="xs">
+                    /{ver.name}
+                  </Text>
+                )}
               </Box>
               <ToolbarButton
                 tooltip="Information"
@@ -84,6 +86,8 @@ export const Toolbar: React.FC<{
                     setToolbarPaneOpened((v) => !v)
                   }
                 }}
+                disabled={versionNotSaved || noInputBlock}
+                disabledTooltip={versionNotSaved ? 'Current version not saved.' : 'Invalid input block.'}
               >
                 <IconInfoCircle style={{ width: '80%', height: '80%', color: colors.gray[9] }} stroke={1} />
               </ToolbarButton>
