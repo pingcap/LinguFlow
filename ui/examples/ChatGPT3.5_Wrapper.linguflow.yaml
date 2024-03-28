@@ -15,7 +15,7 @@ config:
             openai_api_key:
               name: Secret
               slots:
-                plaintext: 
+                plaintext:
         prompt_template_type:
           name: Chat_Message_Prompt
           slots:
@@ -37,37 +37,43 @@ config:
       case: null
 ui:
   nodes:
-    - width: 342
+    - width: 355
       height: 111
       position:
-        x: 6.999999999999915
-        'y': 432
+        x: 0
+        'y': 97.88427734375
       id: Ub01XPpYeAVyMFoWPfCGj
       dragging: false
       positionAbsolute:
-        x: 6.999999999999915
-        'y': 432
+        x: 0
+        'y': 97.88427734375
       selected: false
       type: custom_block_node
-    - width: 359
+      targetPosition: left
+      sourcePosition: right
+    - width: 381
       height: 314
       position:
-        x: 595.1765624959938
-        'y': 293.88988734077503
+        x: 641.9974060058594
+        'y': 0
       id: 0i1IUkK4JLXJ_rW6YHdG5
       dragging: false
       positionAbsolute:
-        x: 595.1765624959938
-        'y': 293.88988734077503
+        x: 641.9974060058594
+        'y': 0
       selected: true
       type: custom_block_node
-    - width: 350
+      targetPosition: left
+      sourcePosition: right
+    - width: 360
       height: 111
       position:
-        x: 1075.7204734354546
-        'y': 635.1457081528558
+        x: 1308.6255798339844
+        'y': 97.88429260253906
       id: z-VDaVqKg4ONmIlAIFehb
       positionAbsolute:
-        x: 1075.7204734354546
-        'y': 635.1457081528558
+        x: 1308.6255798339844
+        'y': 97.88429260253906
       type: custom_block_node
+      targetPosition: left
+      sourcePosition: right
