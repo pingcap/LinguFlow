@@ -1,6 +1,6 @@
 import { ActionIcon, Button, Card, FocusTrap, Stack, Text, Textarea } from '@mantine/core'
 import { IconCircleX } from '@tabler/icons-react'
-import { useDisclosure } from '@mantine/hooks'
+import { getHotkeyHandler, useDisclosure } from '@mantine/hooks'
 import type { InteractionProps } from '.'
 
 export const ListIntercation: React.FC<InteractionProps<string[]>> = ({ value = [], onChange }) => {
@@ -44,10 +44,20 @@ const ListItem: React.FC<{ data: string; onDelete: () => void; onEdit: (v: strin
   onEdit
 }) => {
   const [isEdit, { open, close }] = useDisclosure(false)
+  const handleSubmit = (e: React.FocusEvent<HTMLTextAreaElement>) => {
+    if (!e.target.value) {
+      return
+    }
+    onEdit(e.target.value)
+    close()
+  }
+
   return !isEdit ? (
     <Card p="xs" style={{ position: 'relative', cursor: 'pointer' }} withBorder shadow="xs" onClick={open}>
       <Text>{data}</Text>
       <ActionIcon
+        variant="subtle"
+        color="gray"
         style={{ position: 'absolute', right: 10, top: 10 }}
         onClick={(e) => {
           e.stopPropagation()
@@ -59,17 +69,7 @@ const ListItem: React.FC<{ data: string; onDelete: () => void; onEdit: (v: strin
     </Card>
   ) : (
     <FocusTrap active>
-      <Textarea
-        size="xs"
-        autosize
-        onBlur={(e) => {
-          if (!e.target.value) {
-            return
-          }
-          onEdit(e.target.value)
-          close()
-        }}
-      />
+      <Textarea size="xs" autosize onBlur={handleSubmit} onKeyDown={getHotkeyHandler([['Enter', handleSubmit]])} />
     </FocusTrap>
   )
 }
