@@ -249,9 +249,10 @@ class ApplicationView:
         """
         return ApplicationRunResponse(
             id=self.invoker.invoke(
-                request.state.user,
-                application_id,
-                config.input,
+                user=request.state.user,
+                app_id=application_id,
+                input=config.input,
+                session_id=config.session_id,
             )
         )
 
@@ -372,10 +373,11 @@ class ApplicationView:
         """
         return ApplicationRunResponse(
             id=self.invoker.invoke(
-                request.state.user,
-                application_id,
-                config.input,
+                user=request.state.user,
+                app_id=application_id,
+                input=config.input,
                 version_id=version_id,
+                session_id=config.session_id,
             )
         )
 
