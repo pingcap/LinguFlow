@@ -1,4 +1,4 @@
-import { Anchor, Button, Chip, Code, Divider, Group, Modal, Stack, Text, TextInput, Title } from '@mantine/core'
+import { Anchor, Box, Button, Chip, Code, Divider, Group, Modal, Stack, Text, TextInput, Title } from '@mantine/core'
 import { getHotkeyHandler } from '@mantine/hooks'
 import {
   getListAppApplicationsGetQueryKey,
@@ -131,10 +131,12 @@ export const ModifyAppModel: React.FC<ModifyAppModelProps> = ({ opened, onClose,
             <Divider />
 
             <Title order={6}>
-              Templates{' '}
-              <Anchor href="https://github.com/pingcap/LinguFlow/tree/main/ui/examples" target="_blank" fz="xs">
-                More
-              </Anchor>
+              <Group justify="space-between">
+                <Box>Templates </Box>
+                <Anchor href="https://github.com/pingcap/LinguFlow/tree/main/ui/examples" target="_blank" fz="xs">
+                  More
+                </Anchor>
+              </Group>
             </Title>
 
             <Chip.Group
