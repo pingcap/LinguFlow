@@ -3,7 +3,7 @@ import { PasswordInput } from '@mantine/core'
 import { useEffect } from 'react'
 import type { SlotTypeComponentProps } from './Slot'
 
-export const Secret: React.FC<SlotTypeComponentProps> = ({ slot, formPath, disabled }) => {
+export const Secret: React.FC<SlotTypeComponentProps> = ({ slot, formPath, disabled, required }) => {
   const { register } = useFormContext()
   useEffect(() => {
     register(`${formPath}.name`, { value: 'Secret' })
@@ -14,7 +14,7 @@ export const Secret: React.FC<SlotTypeComponentProps> = ({ slot, formPath, disab
       name={`${formPath}.slots.plaintext`}
       render={({ field: { onChange, value, ref } }) => (
         <PasswordInput
-          withAsterisk
+          withAsterisk={required}
           variant={disabled ? 'filled' : 'default'}
           ref={ref}
           label={slot.name}

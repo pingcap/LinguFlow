@@ -20,8 +20,8 @@ export const useCreateVersion = (version?: ApplicationVersionInfo) => {
   const { mutateAsync: _createVersion, isLoading } = useCreateAppVersionApplicationsApplicationIdVersionsPost()
 
   const [canSave, setCanSave] = useState(false)
-  const createVersion = async () => {
-    if (!canSave || isLoading) {
+  const createVersion = async (force = false) => {
+    if ((!canSave || isLoading) && !force) {
       return
     }
     setCanSave(false)
