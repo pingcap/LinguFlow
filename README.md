@@ -45,13 +45,13 @@ cd LinguFlow
 docker-compose -f docker-compose.dev.yaml up
 ```
 
--> You can now access LinguFlow at http://localhost:5173. More about deploying locally.
+-> You can now access LinguFlow at http://localhost:5173. More about [deploying locally](https://www.linguflow.com/docs/deployment/local).
 
 ### Self-Hosting (docker)
 
 LinguFlow Server, which includes the API and Web UI, is open-source and can be self-hosted using Docker.
 
--> More about deploying self-host.
+-> More about [deploying self-host](https://www.linguflow.com/docs/deployment/self_host).
 
 ### API Call
 
@@ -59,7 +59,7 @@ LinguFlow Server, which includes the API and Web UI, is open-source and can be s
 2. Follow the instructions to use the POST API to call the asynchronous interface, obtaining the interaction id for this interaction.
 3. Use the GET API to query the previously obtained interaction id, retrieving the final response from the LinguFlow application.
 
--> More about APIs.
+-> More about [APIs](https://www.linguflow.com/docs/run/call_an_application).
 
 ## License
 
