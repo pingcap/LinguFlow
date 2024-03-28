@@ -355,6 +355,7 @@ const ConfigDrawer: React.FC<{ drawerProps: DrawerProps; slots: Parameter[]; pro
     <Drawer
       {...drawerProps}
       keepMounted={false}
+      shadow="xs"
       position="right"
       size="sm"
       withOverlay={false}
