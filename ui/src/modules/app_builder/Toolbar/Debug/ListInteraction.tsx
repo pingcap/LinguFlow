@@ -5,10 +5,19 @@ import type { InteractionProps } from '.'
 
 export const ListIntercation: React.FC<InteractionProps<string[]>> = ({ value = [], onChange }) => {
   const [showAddInput, { open, close }] = useDisclosure(false)
+  const handleSubmit = (e: React.FocusEvent<HTMLTextAreaElement>) => {
+    if (!e.target.value) {
+      return
+    }
+    onChange([...value, e.target.value])
+    close()
+  }
+
   return (
     <Stack>
       {value?.map((item, index) => (
         <ListItem
+          key={index}
           data={item}
           onDelete={() => onChange(value.filter((_, _index) => index !== _index))}
           onEdit={(v) => onChange([...value.slice(0, index), v, ...value.slice(index + 1)])}
@@ -16,17 +25,7 @@ export const ListIntercation: React.FC<InteractionProps<string[]>> = ({ value = 
       ))}
       {showAddInput && (
         <FocusTrap active>
-          <Textarea
-            size="xs"
-            autosize
-            onBlur={(e) => {
-              if (!e.target.value) {
-                return
-              }
-              onChange([...value, e.target.value])
-              close()
-            }}
-          />
+          <Textarea size="xs" autosize onBlur={handleSubmit} onKeyDown={getHotkeyHandler([['Enter', handleSubmit]])} />
         </FocusTrap>
       )}
       {!showAddInput && (
