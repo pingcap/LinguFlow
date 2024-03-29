@@ -1,16 +1,12 @@
 services:
   api:
-    build: .
-    volumes:
-      - .:/usr/src/app
+    image: pingcap/linguflow-api
     ports:
       - 8000:8000
     environment:
       - DATABASE_URL
   ui:
-    build: ui
-    volumes:
-      - ./ui:/app
+    image: pingcap/linguflow-ui
     ports:
       - 80:80
     environment:
