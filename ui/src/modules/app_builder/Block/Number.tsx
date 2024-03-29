@@ -2,12 +2,13 @@ import { Controller } from 'react-hook-form'
 import { NumberInput } from '@mantine/core'
 import type { SlotTypeComponentProps } from './Slot'
 
-export const NumberComponent: React.FC<SlotTypeComponentProps> = ({ slot, formPath, disabled }) => {
+export const NumberComponent: React.FC<SlotTypeComponentProps> = ({ slot, formPath, disabled, required }) => {
   return (
     <Controller
       name={formPath}
       render={({ field: { onChange, value, ref } }) => (
         <NumberInput
+          required={required}
           variant={disabled ? 'filled' : 'default'}
           hideControls={disabled}
           ref={ref}

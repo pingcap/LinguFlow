@@ -135,7 +135,7 @@ export const Debug: React.FC<{
     <Group h="100%">
       <Group align="flex-start" h="100%" style={{ flexGrow: 1 }}>
         <Title order={6}>Input</Title>
-        <Box style={{ flexGrow: 1 }}>
+        <Box h="100%" style={{ flexGrow: 1, overflowY: 'auto' }}>
           <InteractionComponent.component
             value={value}
             onChange={setValue}

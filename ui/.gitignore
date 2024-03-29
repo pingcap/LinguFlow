@@ -12,7 +12,6 @@ dist
 dist-ssr
 *.local
 .env
-examples/
 .yarn
 src/api
 

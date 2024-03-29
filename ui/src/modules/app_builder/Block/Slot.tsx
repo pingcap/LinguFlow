@@ -16,6 +16,7 @@ export interface SlotTypeComponentProps {
   slot: Parameter
   disabled?: boolean
   stackIndex?: number
+  required?: boolean
 }
 
 const BuiltinTypeComponent: { [k: string]: React.FC<SlotTypeComponentProps> } = {
@@ -36,7 +37,15 @@ export const Slot: React.FC<SlotTypeComponentProps> = React.memo(({ formPath, sl
   const subFormPath = `${formPath}.slots.${slot.name}`
   const SlotComponent =
     BuiltinTypeComponent[slot.class_name] || ExternalTypeComponent[slot.class_name] || ExternalTypeSelect
-  return <SlotComponent formPath={subFormPath} slot={slot} disabled={disabled} stackIndex={stackIndex} />
+  return (
+    <SlotComponent
+      formPath={subFormPath}
+      slot={slot}
+      disabled={disabled}
+      stackIndex={stackIndex}
+      required={slot.default === null}
+    />
+  )
 })
 
 const ExternalTypeSelect: React.FC<SlotTypeComponentProps> = ({ formPath, slot, disabled, stackIndex }) => {
@@ -55,6 +64,7 @@ const ExternalTypeSelect: React.FC<SlotTypeComponentProps> = ({ formPath, slot, 
       render={({ field: { value, onChange } }) => (
         <>
           <Select
+            required
             placeholder="Pick candidates"
             size="xs"
             allowDeselect={false}

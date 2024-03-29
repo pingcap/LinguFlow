@@ -37,6 +37,7 @@
   },
   "devDependencies": {
     "@mdx-js/rollup": "^3.0.1",
+    "@modyfi/vite-plugin-yaml": "^1.1.0",
     "@types/axios": "^0.14.0",
     "@types/dagre": "^0.7.48",
     "@types/downloadjs": "^1.4.3",

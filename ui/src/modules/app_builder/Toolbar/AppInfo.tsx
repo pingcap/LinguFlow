@@ -1,6 +1,6 @@
 import { ApplicationInfo, ApplicationVersionInfo } from '@api/linguflow.schemas'
-import { ActionIcon, Group, Stack, Text, TextInput } from '@mantine/core'
-import { IconCheck, IconPencil, IconX } from '@tabler/icons-react'
+import { ActionIcon, CopyButton, Group, Stack, Text, TextInput, Tooltip, rem } from '@mantine/core'
+import { IconCheck, IconCopy, IconPencil, IconX } from '@tabler/icons-react'
 import { useState } from 'react'
 import { useGetAppVersionApplicationsApplicationIdVersionsVersionIdGet } from '@api/linguflow'
 import { useParams } from 'react-router-dom'
@@ -46,6 +46,15 @@ export const AppInfo: React.FC<{
         <Text fw="bold" fz="xs" span>
           {app?.id}
         </Text>
+        <CopyButton value={app?.id || ''} timeout={2000}>
+          {({ copied, copy }) => (
+            <Tooltip label={copied ? 'Copied' : 'Copy'} withArrow position="right">
+              <ActionIcon color={copied ? 'teal' : 'gray'} variant="subtle" onClick={copy}>
+                {copied ? <IconCheck style={{ width: rem(16) }} /> : <IconCopy style={{ width: rem(16) }} />}
+              </ActionIcon>
+            </Tooltip>
+          )}
+        </CopyButton>
       </Group>
 
       <Group align="center" gap="xs" h="30">

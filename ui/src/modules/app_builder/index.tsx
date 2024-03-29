@@ -11,7 +11,7 @@ import {
   useGetAppVersionApplicationsApplicationIdVersionsVersionIdGet,
   usePatternsPatternsGet
 } from '@api/linguflow'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import download from 'downloadjs'
 import yaml from 'js-yaml'
 import { useDebouncedValue, useDisclosure, useHotkeys } from '@mantine/hooks'
@@ -29,6 +29,7 @@ import { TOOLBAR_HEIGHT, TOOLBAR_PANE_HEIGHT, Toolbar } from './Toolbar'
 import { getCurrentDateTimeName, useCreateVersion, useUpdateVersion } from './useMutateVersion'
 import { useCloseAllDrawer } from './Block/useBlockDrawer'
 import { ErrorInteraction } from './Toolbar/Debug'
+import { useLoadTemplate } from './useLoadTemplate'
 
 const MENU_ZINDEX = 99
 
@@ -50,6 +51,8 @@ const AppBuilderWithReactFlowProviders: React.FC = () => {
 
 const AppBuilder: React.FC = () => {
   const { appId, verId } = useParams()
+  const [sp] = useSearchParams()
+  const template = sp.get('template')
   const firstInitRef = useRef(false)
   const { data: appData, isLoading: isAppLoading } = useGetAppApplicationsApplicationIdGet(appId!, {
     query: {
@@ -110,10 +113,10 @@ const AppBuilder: React.FC = () => {
     setCanSave
   } = useCreateVersion(verData?.version)
   const isCreatingVersion = _isCreatingVersion || isVerLoading
-  const createVersion = () => {
+  const createVersion = (force = false) => {
     setToolbarPaneOpened(false)
     closeAllDrawer()
-    return _createVersion()
+    return _createVersion(force)
   }
   const { canUpdate, setCanUpdate, updateVersion } = useUpdateVersion(verData?.version)
   const [debouncedCanUpdate] = useDebouncedValue(canUpdate, 5 * 1000, { leading: false })
@@ -153,6 +156,28 @@ const AppBuilder: React.FC = () => {
       }
     ]
   ])
+
+  const loadTemplate = useLoadTemplate()
+
+  useEffect(() => {
+    const loadConfig = async () => {
+      const config = await loadTemplate(template)
+      if (!config) {
+        return
+      }
+
+      setImportConfig(config.config)
+      setImportMetadata(config.ui)
+      setCanSave(true)
+    }
+
+    // import template only when there's no version
+    if (verId) {
+      return
+    }
+    loadConfig()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   return (
     <ContainerElemProvider value={containerElem.current}>
