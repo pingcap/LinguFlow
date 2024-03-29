@@ -1,6 +1,6 @@
 # LinguFlow
 
-🎉🚀🌍 **LinguFlow** is now live for the world to see! `hello! world!`
+🎉🚀🌍 **LinguFlow** is now live for the world to see! `Hello, World!`
 
 ## What is LinguFlow
 
