@@ -1,10 +1,10 @@
-:construction: This repository is currently under construction. Stay tuned – it's coming soon!
-
 # LinguFlow
+
+🎉🚀🌍 **LinguFlow** is now live for the world to see! `Hello, World!`
 
 ## What is LinguFlow
 
-LinguFlow, a low-code tool designed for LLM application development, simplifies the building, debugging, and deployment process for developers. It utilizes a DAG-based message flow for business logic, requiring only minimal familiarity with LinguFlow blocks to effectively use.
+LinguFlow, a low-code tool designed for LLM application development, simplifies the building, debugging, and deployment process for developers. It utilizes a [DAG (Directed Acyclic Graph)](https://en.wikipedia.org/wiki/Directed_acyclic_graph)-based message flow for business logic, requiring only minimal familiarity with LinguFlow blocks to effectively use.
 
 ### Why we need LinguFlow?
 
@@ -14,9 +14,9 @@ When attempting to apply LLM to real-world business scenarios, the limitations o
 - The inability to restrict the conversation to business-relevant topics only.
 - Challenges in handling complex business processes.
 
-LinguFlow is needed precisely to overcome these challenges, offering a platform that enables the structured building of LLM applications tailored to specific business needs and enhancing their accuracy over time. The most classic approach to deploying applications with LLM (Large Language Models) is through the construction of a [DAG (Directed Acyclic Graph)](https://en.wikipedia.org/wiki/Directed_acyclic_graph). 
+LinguFlow is needed precisely to overcome these challenges, offering a platform that enables the structured building of LLM applications tailored to specific business needs and enhancing their accuracy over time. The most classic approach to deploying applications with LLM (Large Language Models) is through the construction of a DAG. 
 
-### the features with LinguFlow
+### Features with LinguFlow
 
 Thus, the features of applications developed with LinguFlow include:
 
@@ -33,11 +33,12 @@ In essence, LinguFlow's design and implementation method offer a structured and 
 
 ### Localhost (docker)
 
-You can run LinguFlow on your local machine using [docker](https://docs.docker.com/get-docker/) compose. This setup is perfect for developing, testing LinguFlow applications, and diagnosing integration issues.
+You can run LinguFlow on your local machine using [docker compose](https://docs.docker.com/compose/install/). This setup is perfect for developing, testing LinguFlow applications, and diagnosing integration issues.
 
 ```sh
 # Clone the LinguFlow repository
 git clone git@github.com:pingcap/LinguFlow.git
+
 # Navigate into the LinguFlow directory
 cd LinguFlow
 
