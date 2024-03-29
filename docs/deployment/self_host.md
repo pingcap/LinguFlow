@@ -58,10 +58,17 @@ To update the application:
 
 ```sh
 cd LinguFlow
+
+# update docker images
 docker-compose down
+docker pull pingcap/linguflow-api
+docker pull pingcap/linguflow-ui
+
+# if the new version has schema changes
 git pull
-docker-compose build --no-cache
 alembic revision --autogenerate -m "update schema if any necessary database migrations"
 alembic upgrade head
+
+# start the service
 docker-compose up
 ```
