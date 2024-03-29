@@ -33,7 +33,7 @@ In essence, LinguFlow's design and implementation method offer a structured and 
 
 ### Localhost (docker)
 
-You can run LinguFlow on your local machine using [docker compose](https://docs.docker.com/get-docker/). This setup is perfect for developing, testing LinguFlow applications, and diagnosing integration issues.
+You can run LinguFlow on your local machine using [docker compose](https://docs.docker.com/compose/install/). This setup is perfect for developing, testing LinguFlow applications, and diagnosing integration issues.
 
 ```sh
 # Clone the LinguFlow repository
