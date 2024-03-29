@@ -6,7 +6,7 @@ export const Footer: React.FC = () => {
       <Stack gap="xs">
         <Box>© 2024 LinguFlow</Box>
         <Group mx="-xs" gap="xs">
-          <Anchor href="https://github.com/pingcap/LinguFlow" target="_blank">
+          <Anchor href="https://www.linguflow.com/docs/overview/" target="_blank">
             <Button variant="subtle" size="compact-lg" color="dark">
               Docs
             </Button>
