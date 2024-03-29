@@ -1,6 +1,6 @@
-:construction: This repository is currently under construction. Stay tuned – it's coming soon!
-
 # LinguFlow
+
+🎉🚀🌍 **LinguFlow** is now live for the world to see! `hello! world!`
 
 ## What is LinguFlow
 
