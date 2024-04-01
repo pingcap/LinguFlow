@@ -64,4 +64,4 @@ LinguFlow Server, which includes the API and Web UI, is open-source and can be s
 
 ## License
 
-This repository is MIT licensed, except for the ee/ folder. See [LICENSE](LICENSE) for more details.
+This repository is MIT licensed. See [LICENSE](LICENSE) for more details.
