@@ -41,6 +41,7 @@ export interface BuilderCanvasProps {
   onClick?: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void
   interaction?: InteractionInfo
   errorInteraction?: ErrorInteraction
+  toobarFocusedRef: React.RefObject<boolean>
   onNodeDragStop: NodeDragHandler
   onNodesDelete: OnNodesDelete
   onAddNode: (n: Node<BlockNodeProps>[]) => void
@@ -62,6 +63,7 @@ export const BuilderCanvas: React.FC<BuilderCanvasProps> = ({
   metadata,
   interaction,
   errorInteraction,
+  toobarFocusedRef,
   onClick,
   onNodeDragStop,
   onNodesDelete,
@@ -154,7 +156,13 @@ export const BuilderCanvas: React.FC<BuilderCanvasProps> = ({
   )
 
   // hot keys
-  const { events: paneEvents, hotKeyMenuOpened, setHotKeyMenuOpened, menuPosition, menuStatus } = useHotKeyMenu()
+  const {
+    events: paneEvents,
+    hotKeyMenuOpened,
+    setHotKeyMenuOpened,
+    menuPosition,
+    menuStatus
+  } = useHotKeyMenu(toobarFocusedRef)
 
   useHotkeys([
     [

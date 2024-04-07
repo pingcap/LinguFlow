@@ -1,7 +1,7 @@
 import { getHotkeyHandler } from '@mantine/hooks'
 import { useEffect, useRef, useState } from 'react'
 
-export const useHotKeyMenu = () => {
+export const useHotKeyMenu = (toobarFocusedRef: React.RefObject<boolean>) => {
   const [menuPosition, setMenuPosition] = useState([0, 0])
   const [hotKeyMenuOpened, setHotKeyMenuOpened] = useState(false)
   const menuStatus = useRef({
@@ -29,7 +29,7 @@ export const useHotKeyMenu = () => {
   }
 
   const showHotKeyMenu = () => {
-    if (!menuStatus.current.inPane) {
+    if (!menuStatus.current.inPane || toobarFocusedRef.current) {
       return
     }
     setMenuPosition([menuStatus.current.mouseX, menuStatus.current.mouseY])
