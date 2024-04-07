@@ -50,6 +50,7 @@ export const useHotKeyMenu = (toobarFocusedRef: React.RefObject<boolean>) => {
     const showHotKeyMenuHandler = getHotkeyHandler([['Space', showHotKeyMenu]])
     document.body.addEventListener('keyup', showHotKeyMenuHandler)
     return () => document.body.removeEventListener('keyup', showHotKeyMenuHandler)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return {
