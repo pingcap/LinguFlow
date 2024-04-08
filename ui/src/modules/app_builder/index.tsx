@@ -23,13 +23,14 @@ import { GithubLogo } from '../../components/Layout/GithubLogo'
 import { PublishModal } from '../shared/PublishModal'
 import { BuilderCanvas } from './Canvas'
 import { SchemaProvider } from './useSchema'
-import { Config, ConfigAndMetadataUI, MetadataUI } from './linguflow.type'
+import { Config, ConfigAndMetadataUI, MetadataUI, Node } from './linguflow.type'
 import { ContainerElemProvider } from './Canvas/useContainerElem'
 import { TOOLBAR_HEIGHT, TOOLBAR_PANE_HEIGHT, Toolbar } from './Toolbar'
 import { getCurrentDateTimeName, useCreateVersion, useUpdateVersion } from './useMutateVersion'
 import { useCloseAllDrawer } from './Block/useBlockDrawer'
 import { ErrorInteraction } from './Toolbar/Debug'
 import { useLoadTemplate } from './useLoadTemplate'
+import { SECRET_NAME } from './Block/Secret'
 
 const MENU_ZINDEX = 99
 
@@ -278,10 +279,28 @@ const BuilderMenu: React.FC<{
     importApp(config)
   }
 
+  const sanitize = (values: { [k: string]: any }) => {
+    if (!values) {
+      return
+    }
+
+    const isSerect = values.name === SECRET_NAME
+    if (isSerect && values.slots.plaintext) {
+      values.slots.plaintext = ''
+    }
+    if (values.slots) {
+      Object.values(values.slots as { [k: string]: any }).forEach((v: { [k: string]: any }) => sanitize(v))
+    }
+    return values as Node[]
+  }
+
   const exportYAML = () => {
+    const nodes = Object.values(getValues())
+    nodes.forEach((v: { [k: string]: any }) => sanitize(v))
+
     const config: ConfigAndMetadataUI = {
       config: {
-        nodes: Object.values(getValues()),
+        nodes,
         edges: getEdges().map((e) => ({
           src_block: e.source,
           dst_block: e.target,
