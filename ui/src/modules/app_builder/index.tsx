@@ -97,10 +97,10 @@ const AppBuilder: React.FC = () => {
   const [menuOpened, setMenuOpened] = useState(false)
   const [toolbarPaneOpened, setToolbarPaneOpened] = useState(false)
   const { ref: focusRef, focused: toolbarFocused } = useFocusWithin()
-  const toobarFocusedRef = useRef(toolbarFocused)
+  const toolbarFocusedRef = useRef(toolbarFocused)
 
   useEffect(() => {
-    toobarFocusedRef.current = toolbarFocused
+    toolbarFocusedRef.current = toolbarFocused
   }, [toolbarFocused])
 
   const [currentInteraction, setCurrentInteraction] = useState<InteractionInfo>()
@@ -229,7 +229,7 @@ const AppBuilder: React.FC = () => {
             metadata={verMetadata}
             interaction={currentInteraction}
             errorInteraction={errorInteraction}
-            toobarFocusedRef={toobarFocusedRef}
+            toolbarFocusedRef={toolbarFocusedRef}
             onClick={() => setMenuOpened(false)}
             onNodeDragStop={() => setCanUpdate(true)}
             onRelayout={() => setCanUpdate(true)}
