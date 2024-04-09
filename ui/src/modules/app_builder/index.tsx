@@ -23,7 +23,7 @@ import { GithubLogo } from '../../components/Layout/GithubLogo'
 import { PublishModal } from '../shared/PublishModal'
 import { BuilderCanvas } from './Canvas'
 import { SchemaProvider } from './useSchema'
-import { Config, ConfigAndMetadataUI, MetadataUI, Node } from './linguflow.type'
+import { Config, ConfigAndMetadataUI, MetadataUI } from './linguflow.type'
 import { ContainerElemProvider } from './Canvas/useContainerElem'
 import { TOOLBAR_HEIGHT, TOOLBAR_PANE_HEIGHT, Toolbar } from './Toolbar'
 import { getCurrentDateTimeName, useCreateVersion, useUpdateVersion } from './useMutateVersion'
@@ -284,14 +284,13 @@ const BuilderMenu: React.FC<{
       return
     }
 
-    const isSerect = values.name === SECRET_NAME
-    if (isSerect && values.slots.plaintext) {
+    const isSecret = values.name === SECRET_NAME
+    if (isSecret && values.slots.plaintext) {
       values.slots.plaintext = ''
     }
     if (values.slots) {
       Object.values(values.slots as { [k: string]: any }).forEach((v: { [k: string]: any }) => sanitize(v))
     }
-    return values as Node[]
   }
 
   const exportYAML = () => {
