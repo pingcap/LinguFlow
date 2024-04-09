@@ -6,16 +6,17 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { useReactFlow } from 'reactflow'
 import { useFormContext } from 'react-hook-form'
 import dayjs from 'dayjs'
-import { ApplicationVersionInfo, GraphEdge } from '@api/linguflow.schemas'
+import { ApplicationVersionInfo } from '@api/linguflow.schemas'
 import { useEffect, useState } from 'react'
-import { BLOCK_PORT_ID_NULL } from './Block/useValidConnection'
+import { useGetLinguFlowEdge } from './Block/useValidConnection'
 
 export const getCurrentDateTimeName = () => `v${dayjs().format('YYYY-MM-DD')}.${dayjs().unix()}`
 
 export const useCreateVersion = (version?: ApplicationVersionInfo) => {
   const { appId, verId } = useParams()
   const navigate = useNavigate()
-  const { getNodes, getEdges } = useReactFlow()
+  const { getNodes } = useReactFlow()
+  const getLinguFlowEdge = useGetLinguFlowEdge()
   const { getValues, resetField } = useFormContext()
   const { mutateAsync: _createVersion, isLoading } = useCreateAppVersionApplicationsApplicationIdVersionsPost()
 
@@ -33,16 +34,7 @@ export const useCreateVersion = (version?: ApplicationVersionInfo) => {
         name: getCurrentDateTimeName(),
         configuration: {
           nodes: Object.values(getValues()),
-          edges: getEdges().map(
-            (e) =>
-              ({
-                src_block: e.source,
-                dst_block: e.target,
-                dst_port: e.targetHandle === BLOCK_PORT_ID_NULL ? null : e.targetHandle!,
-                alias: e.data?.alias,
-                case: e.data?.case
-              } as GraphEdge)
-          )
+          edges: getLinguFlowEdge()
         },
         metadata: {
           ...version?.metadata,

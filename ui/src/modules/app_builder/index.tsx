@@ -31,6 +31,7 @@ import { useCloseAllDrawer } from './Block/useBlockDrawer'
 import { ErrorInteraction } from './Toolbar/Debug'
 import { useLoadTemplate } from './useLoadTemplate'
 import { SECRET_NAME } from './Block/Secret'
+import { useGetLinguFlowEdge } from './Block/useValidConnection'
 
 const MENU_ZINDEX = 99
 
@@ -266,7 +267,8 @@ const BuilderMenu: React.FC<{
 }> = ({ app, ver, opened, setOpened, loading, canSave, createVersion, importApp }) => {
   const { appId, verId } = useParams()
   const navigate = useNavigate()
-  const { getNodes, getEdges } = useReactFlow()
+  const { getNodes } = useReactFlow()
+  const getLinguFlowEdge = useGetLinguFlowEdge()
   const { getValues } = useFormContext()
 
   const importYAML = async (f: File | null) => {
@@ -300,13 +302,7 @@ const BuilderMenu: React.FC<{
     const config: ConfigAndMetadataUI = {
       config: {
         nodes,
-        edges: getEdges().map((e) => ({
-          src_block: e.source,
-          dst_block: e.target,
-          dst_port: e.targetHandle!,
-          alias: e.data?.alias,
-          case: e.data?.case
-        }))
+        edges: getLinguFlowEdge()
       },
       ui: {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
