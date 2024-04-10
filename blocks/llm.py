@@ -10,8 +10,13 @@ from resolver import block
 from .base import BaseBlock
 
 
-@block(name="LLM", kind="llm", description="""test
-test new line""", examples="""this is a text""")
+@block(
+    name="LLM",
+    kind="llm",
+    description="""test
+test new line""",
+    examples="""this is a text""",
+)
 class LLMChain(BaseBlock):
     """
     LLMChain render template with given text and pass the result to llm model.
