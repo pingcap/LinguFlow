@@ -1,5 +1,6 @@
-import { Connection, Node, useStoreApi } from 'reactflow'
+import { Connection, Node, useReactFlow, useStoreApi } from 'reactflow'
 import { useCallback } from 'react'
+import { GraphEdge } from '@api/linguflow.schemas'
 import { usePatternSchema } from '../useSchema'
 import { BlockNodeProps } from '.'
 
@@ -38,4 +39,20 @@ export const useNodeType = () => {
     [store]
   )
   return useNodeTypeFn
+}
+
+export const useGetLinguFlowEdge = () => {
+  const { getEdges } = useReactFlow()
+
+  return () =>
+    getEdges().map(
+      (e) =>
+        ({
+          src_block: e.source,
+          dst_block: e.target,
+          dst_port: e.targetHandle === BLOCK_PORT_ID_NULL ? null : e.targetHandle!,
+          alias: e.data?.alias,
+          case: e.data?.case
+        } as GraphEdge)
+    )
 }

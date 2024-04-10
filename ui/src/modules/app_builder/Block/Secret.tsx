@@ -3,10 +3,12 @@ import { PasswordInput } from '@mantine/core'
 import { useEffect } from 'react'
 import type { SlotTypeComponentProps } from './Slot'
 
+export const SECRET_NAME = 'Secret'
+
 export const Secret: React.FC<SlotTypeComponentProps> = ({ slot, formPath, disabled, required }) => {
   const { register } = useFormContext()
   useEffect(() => {
-    register(`${formPath}.name`, { value: 'Secret' })
+    register(`${formPath}.name`, { value: SECRET_NAME })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
   return (

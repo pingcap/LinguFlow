@@ -30,6 +30,8 @@ import { getCurrentDateTimeName, useCreateVersion, useUpdateVersion } from './us
 import { useCloseAllDrawer } from './Block/useBlockDrawer'
 import { ErrorInteraction } from './Toolbar/Debug'
 import { useLoadTemplate } from './useLoadTemplate'
+import { SECRET_NAME } from './Block/Secret'
+import { useGetLinguFlowEdge } from './Block/useValidConnection'
 
 const MENU_ZINDEX = 99
 
@@ -265,7 +267,8 @@ const BuilderMenu: React.FC<{
 }> = ({ app, ver, opened, setOpened, loading, canSave, createVersion, importApp }) => {
   const { appId, verId } = useParams()
   const navigate = useNavigate()
-  const { getNodes, getEdges } = useReactFlow()
+  const { getNodes } = useReactFlow()
+  const getLinguFlowEdge = useGetLinguFlowEdge()
   const { getValues } = useFormContext()
 
   const importYAML = async (f: File | null) => {
@@ -278,17 +281,28 @@ const BuilderMenu: React.FC<{
     importApp(config)
   }
 
+  const sanitize = (values: { [k: string]: any }) => {
+    if (!values) {
+      return
+    }
+
+    const isSecret = values.name === SECRET_NAME
+    if (isSecret && values.slots.plaintext) {
+      values.slots.plaintext = ''
+    }
+    if (values.slots) {
+      Object.values(values.slots as { [k: string]: any }).forEach((v: { [k: string]: any }) => sanitize(v))
+    }
+  }
+
   const exportYAML = () => {
+    const nodes = Object.values(getValues())
+    nodes.forEach((v: { [k: string]: any }) => sanitize(v))
+
     const config: ConfigAndMetadataUI = {
       config: {
-        nodes: Object.values(getValues()),
-        edges: getEdges().map((e) => ({
-          src_block: e.source,
-          dst_block: e.target,
-          dst_port: e.targetHandle!,
-          alias: e.data?.alias,
-          case: e.data?.case
-        }))
+        nodes,
+        edges: getLinguFlowEdge()
       },
       ui: {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
