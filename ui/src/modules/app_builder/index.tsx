@@ -14,7 +14,7 @@ import {
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import download from 'downloadjs'
 import yaml from 'js-yaml'
-import { useDebouncedValue, useDisclosure, useHotkeys } from '@mantine/hooks'
+import { useDebouncedValue, useDisclosure, useFocusWithin, useHotkeys } from '@mantine/hooks'
 import { ReactFlowProvider, useNodesInitialized, useReactFlow } from 'reactflow'
 import { FormProvider, useForm, useFormContext } from 'react-hook-form'
 import { ApplicationInfo, ApplicationVersionInfo, InteractionInfo, VersionMetadata } from '@api/linguflow.schemas'
@@ -98,6 +98,12 @@ const AppBuilder: React.FC = () => {
   const containerElem = useRef<HTMLDivElement>(null)
   const [menuOpened, setMenuOpened] = useState(false)
   const [toolbarPaneOpened, setToolbarPaneOpened] = useState(false)
+  const { ref: focusRef, focused: toolbarFocused } = useFocusWithin()
+  const toolbarFocusedRef = useRef(toolbarFocused)
+
+  useEffect(() => {
+    toolbarFocusedRef.current = toolbarFocused
+  }, [toolbarFocused])
 
   const [currentInteraction, setCurrentInteraction] = useState<InteractionInfo>()
   const [errorInteraction, setErrorInteraction] = useState<ErrorInteraction>()
@@ -225,6 +231,7 @@ const AppBuilder: React.FC = () => {
             metadata={verMetadata}
             interaction={currentInteraction}
             errorInteraction={errorInteraction}
+            toolbarFocusedRef={toolbarFocusedRef}
             onClick={() => setMenuOpened(false)}
             onNodeDragStop={() => setCanUpdate(true)}
             onRelayout={() => setCanUpdate(true)}
@@ -241,15 +248,17 @@ const AppBuilder: React.FC = () => {
             onCanSave={() => setCanSave(true)}
           />
         </Box>
-        <Toolbar
-          app={appData?.application}
-          ver={verData?.version}
-          toolbarPaneOpened={toolbarPaneOpened}
-          setToolbarPaneOpened={setToolbarPaneOpened}
-          isCreatingVersion={isCreatingVersion}
-          onUpdateCurrentInteraction={setCurrentInteraction}
-          onInteractionError={setErrorInteraction}
-        />
+        <div ref={focusRef}>
+          <Toolbar
+            app={appData?.application}
+            ver={verData?.version}
+            toolbarPaneOpened={toolbarPaneOpened}
+            setToolbarPaneOpened={setToolbarPaneOpened}
+            isCreatingVersion={isCreatingVersion}
+            onUpdateCurrentInteraction={setCurrentInteraction}
+            onInteractionError={setErrorInteraction}
+          />
+        </div>
       </Box>
     </ContainerElemProvider>
   )

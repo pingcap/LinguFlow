@@ -1,7 +1,7 @@
 import { getHotkeyHandler } from '@mantine/hooks'
 import { useEffect, useRef, useState } from 'react'
 
-export const useHotKeyMenu = () => {
+export const useHotKeyMenu = (toolbarFocusedRef: React.RefObject<boolean>) => {
   const [menuPosition, setMenuPosition] = useState([0, 0])
   const [hotKeyMenuOpened, setHotKeyMenuOpened] = useState(false)
   const menuStatus = useRef({
@@ -29,7 +29,7 @@ export const useHotKeyMenu = () => {
   }
 
   const showHotKeyMenu = () => {
-    if (!menuStatus.current.inPane) {
+    if (!menuStatus.current.inPane || toolbarFocusedRef.current) {
       return
     }
     setMenuPosition([menuStatus.current.mouseX, menuStatus.current.mouseY])
@@ -50,6 +50,7 @@ export const useHotKeyMenu = () => {
     const showHotKeyMenuHandler = getHotkeyHandler([['Space', showHotKeyMenu]])
     document.body.addEventListener('keyup', showHotKeyMenuHandler)
     return () => document.body.removeEventListener('keyup', showHotKeyMenuHandler)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return {
