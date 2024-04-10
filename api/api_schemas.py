@@ -96,6 +96,8 @@ class BlockInfo(BaseModel):
     slots: List[Parameter]
     inports: List[Parameter]
     outport: str  # the output class name
+    description: str
+    examples: str
 
 
 class ApplicationBlocksResponse(APIModel):
