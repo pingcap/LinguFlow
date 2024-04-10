@@ -196,7 +196,9 @@ class Resolver:
         return signature.return_annotation
 
 
-def block(name: str, kind: str, alias: str = None, description: str = "", examples: str = ""):
+def block(
+    name: str, kind: str, alias: str = None, description: str = "", examples: str = ""
+):
     """
     Decorator for registering a block class.
     Args:
