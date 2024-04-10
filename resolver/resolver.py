@@ -197,7 +197,11 @@ class Resolver:
 
 
 def block(
-    name: str, kind: str, alias: str = None, description: str = "", examples: str = ""
+    name: str,
+    kind: str,
+    alias: Optional[str] = None,
+    description: Optional[str] = None,
+    examples: Optional[str] = None,
 ):
     """
     Decorator for registering a block class.
