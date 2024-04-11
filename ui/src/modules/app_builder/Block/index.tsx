@@ -17,7 +17,7 @@ import {
 } from '@mantine/core'
 import { IconCheck, IconCopy, IconSettings, IconX } from '@tabler/icons-react'
 import { Edge, Handle, NodeProps, Position, useEdges, useNodeId, useReactFlow, useUpdateNodeInternals } from 'reactflow'
-import { useMemo, useState } from 'react'
+import { forwardRef, useMemo, useState } from 'react'
 import { nanoid } from 'nanoid'
 import { useDisclosure } from '@mantine/hooks'
 import { useFormContext } from 'react-hook-form'
@@ -62,7 +62,10 @@ export interface DisplayedInteraction {
   isError: boolean
 }
 
-export const BlockNode: React.FC<NodeProps<BlockNodeProps>> = ({ data, selected }) => {
+export const BlockNode = forwardRef<
+  HTMLDivElement,
+  NodeProps<BlockNodeProps> & { readonly?: boolean; onClick?: () => void }
+>(({ data, selected, readonly, onClick }, ref) => {
   const { colors } = useMantineTheme()
   const PORT_CUSTOM_STYLE = usePortCustomStyle()
   const { schema, node, interaction } = data
@@ -93,7 +96,7 @@ export const BlockNode: React.FC<NodeProps<BlockNodeProps>> = ({ data, selected 
   useRegisterCloseDrawer(close)
 
   return (
-    <>
+    <Box style={readonly ? { cursor: 'pointer', pointerEvents: 'none' } : undefined} ref={ref} onClick={onClick}>
       <Stack
         bg="white"
         miw="220px"
@@ -126,11 +129,13 @@ export const BlockNode: React.FC<NodeProps<BlockNodeProps>> = ({ data, selected 
                   ...PORT_CUSTOM_STYLE,
                   background: colors.gray[4],
                   border: `${PORT_BORDER}px solid ${colors.gray[2]}`,
-                  left: `-${PORT_OFFSET}px`
+                  left: `-${PORT_OFFSET}px`,
+                  ...(readonly ? { cursor: 'pointer', pointerEvents: 'none' } : {})
                 }}
               />
             </Tooltip>
-            {alias}({node.id})
+            {alias}
+            {node.id ? `(${node.id})` : ''}
           </Box>
           <Group gap={4}>
             <CopyButton value={node?.id || ''} timeout={2000}>
@@ -179,7 +184,8 @@ export const BlockNode: React.FC<NodeProps<BlockNodeProps>> = ({ data, selected 
                     isValidConnection={() => false}
                     style={{
                       ...PORT_CUSTOM_STYLE,
-                      left: `-${PORT_OFFSET}px`
+                      left: `-${PORT_OFFSET}px`,
+                      ...(readonly ? { cursor: 'pointer', pointerEvents: 'none' } : {})
                     }}
                   />
                 </Tooltip>
@@ -209,7 +215,8 @@ export const BlockNode: React.FC<NodeProps<BlockNodeProps>> = ({ data, selected 
                   isValidConnection={isValidConnection}
                   style={{
                     ...PORT_CUSTOM_STYLE,
-                    right: `-${PORT_OFFSET}px`
+                    right: `-${PORT_OFFSET}px`,
+                    ...(readonly ? { cursor: 'pointer', pointerEvents: 'none' } : {})
                   }}
                 />
               </Tooltip>
@@ -233,9 +240,9 @@ export const BlockNode: React.FC<NodeProps<BlockNodeProps>> = ({ data, selected 
           props={node}
         />
       )}
-    </>
+    </Box>
   )
-}
+})
 
 interface Port {
   id: string
