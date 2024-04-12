@@ -137,24 +137,26 @@ export const BlockNode = forwardRef<
             {alias}
             {node.id ? `(${node.id})` : ''}
           </Box>
-          <Group gap={4}>
-            <CopyButton value={node?.id || ''} timeout={2000}>
-              {({ copied, copy }) => (
-                <Tooltip label={copied ? 'Copied' : 'Copy Block ID'}>
-                  <ActionIcon color={copied ? 'teal' : 'gray'} variant="subtle" onClick={copy}>
-                    {copied ? <IconCheck style={{ width: rem(16) }} /> : <IconCopy style={{ width: rem(16) }} />}
+          {!readonly && (
+            <Group gap={4}>
+              <CopyButton value={node?.id || ''} timeout={2000}>
+                {({ copied, copy }) => (
+                  <Tooltip label={copied ? 'Copied' : 'Copy Block ID'}>
+                    <ActionIcon color={copied ? 'teal' : 'gray'} variant="subtle" onClick={copy}>
+                      {copied ? <IconCheck style={{ width: rem(16) }} /> : <IconCopy style={{ width: rem(16) }} />}
+                    </ActionIcon>
+                  </Tooltip>
+                )}
+              </CopyButton>
+              {!!slots?.length && (
+                <Tooltip label="Configuration">
+                  <ActionIcon variant="subtle" color="gray" onClick={openDrawer}>
+                    <IconSettings size="1rem" />
                   </ActionIcon>
                 </Tooltip>
               )}
-            </CopyButton>
-            {!!slots?.length && (
-              <Tooltip label="Configuration">
-                <ActionIcon variant="subtle" color="gray" onClick={openDrawer}>
-                  <IconSettings size="1rem" />
-                </ActionIcon>
-              </Tooltip>
-            )}
-          </Group>
+            </Group>
+          )}
         </Group>
         <Stack gap={6}>
           {inportsWithoutIgnorePorts.map((p) => {
