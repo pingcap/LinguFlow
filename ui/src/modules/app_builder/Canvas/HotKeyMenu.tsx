@@ -136,7 +136,7 @@ const BlockItem: React.FC<{ block: BlockInfo; onClick: (b: BlockInfo) => void }>
       </Popover.Target>
       <Popover.Dropdown>
         <Group align="flex-start">
-          <Stack gap="xs" justify="flex-start" maw="200px">
+          <Stack gap="xs" justify="flex-start" maw="300px">
             {block.description && (
               <>
                 <Title order={5}>Description</Title>
