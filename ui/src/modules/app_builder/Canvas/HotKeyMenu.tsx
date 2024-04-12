@@ -1,4 +1,4 @@
-import { Box, Menu, Popover, Stack, Text, TextInput, Title, rem } from '@mantine/core'
+import { Box, Group, Menu, Popover, Stack, Text, TextInput, Title, rem } from '@mantine/core'
 import { IconChevronRight } from '@tabler/icons-react'
 import { MutableRefObject, useEffect, useMemo, useRef, useState } from 'react'
 import { BlockInfo } from '@api/linguflow.schemas'
@@ -110,7 +110,7 @@ const BlockItem: React.FC<{ block: BlockInfo; onClick: (b: BlockInfo) => void }>
     if (!hovered && !inItem) {
       timerRef.current = setTimeout(() => {
         close()
-      }, 200) as any as number
+      }, 100) as any as number
     }
   }, [hovered, inItem, close])
 
@@ -135,14 +135,24 @@ const BlockItem: React.FC<{ block: BlockInfo; onClick: (b: BlockInfo) => void }>
         </Menu.Item>
       </Popover.Target>
       <Popover.Dropdown>
-        <Stack gap="xs">
-          <Title order={5}>Description</Title>
-          <Text>test</Text>
-          <Title order={5}>Example</Title>
-          <Text>test</Text>
+        <Group align="flex-start">
+          <Stack gap="xs" justify="flex-start" maw="200px">
+            {block.description && (
+              <>
+                <Title order={5}>Description</Title>
+                <Text>{block.description}</Text>
+              </>
+            )}
+            {block.examples && (
+              <>
+                <Title order={5}>Example</Title>
+                <Text>{block.examples}</Text>
+              </>
+            )}
+          </Stack>
           {/* <Box ref={ref}>123 {hovered.toString()}</Box> */}
           <ROBlock schema={block} node={{} as any} onClick={() => onClick(block)} />
-        </Stack>
+        </Group>
       </Popover.Dropdown>
     </Popover>
   )
