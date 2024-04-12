@@ -136,20 +136,22 @@ const BlockItem: React.FC<{ block: BlockInfo; onClick: (b: BlockInfo) => void }>
       </Popover.Target>
       <Popover.Dropdown>
         <Group align="flex-start">
-          <Stack gap="xs" justify="flex-start" maw="300px">
-            {block.description && (
-              <>
-                <Title order={5}>Description</Title>
-                <Text>{block.description}</Text>
-              </>
-            )}
-            {block.examples && (
-              <>
-                <Title order={5}>Example</Title>
-                <Text>{block.examples}</Text>
-              </>
-            )}
-          </Stack>
+          {(block.description || block.examples) && (
+            <Stack gap="xs" justify="flex-start" maw="300px">
+              {block.description && (
+                <>
+                  <Title order={5}>Description</Title>
+                  <Text>{block.description}</Text>
+                </>
+              )}
+              {block.examples && (
+                <>
+                  <Title order={5}>Example</Title>
+                  <Text>{block.examples}</Text>
+                </>
+              )}
+            </Stack>
+          )}
           {/* <Box ref={ref}>123 {hovered.toString()}</Box> */}
           <ROBlock schema={block} node={{} as any} onClick={() => onClick(block)} />
         </Group>
