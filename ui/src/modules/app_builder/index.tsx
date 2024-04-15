@@ -23,7 +23,7 @@ import { GithubLogo } from '../../components/Layout/GithubLogo'
 import { PublishModal } from '../shared/PublishModal'
 import { BuilderCanvas } from './Canvas'
 import { SchemaProvider } from './useSchema'
-import { Config, ConfigAndMetadataUI, MetadataUI } from './linguflow.type'
+import { Config, ConfigAndMetadataUI, MetadataUI, Node } from './linguflow.type'
 import { ContainerElemProvider } from './Canvas/useContainerElem'
 import { TOOLBAR_HEIGHT, TOOLBAR_PANE_HEIGHT, Toolbar } from './Toolbar'
 import { getCurrentDateTimeName, useCreateVersion, useUpdateVersion } from './useMutateVersion'
@@ -305,7 +305,7 @@ const BuilderMenu: React.FC<{
   }
 
   const exportYAML = () => {
-    const nodes = Object.values(getValues())
+    const nodes: Node[] = JSON.parse(JSON.stringify(Object.values(getValues())))
     nodes.forEach((v: { [k: string]: any }) => sanitize(v))
 
     const config: ConfigAndMetadataUI = {
