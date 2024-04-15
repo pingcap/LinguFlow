@@ -1,8 +1,14 @@
 import { ActionIcon, Box, Code, CopyButton, Group, HoverCard, ScrollArea, Stack, Text, Tooltip } from '@mantine/core'
 import { IconBug, IconCheck, IconCopy } from '@tabler/icons-react'
+import { useMemo } from 'react'
 import type { DisplayedInteraction } from '.'
 
 export const DebugInfo: React.FC<{ data: DisplayedInteraction }> = ({ data: { interaction, isError } }) => {
+  const interactionStr = useMemo(
+    () => (typeof interaction !== 'string' ? JSON.stringify(interaction) : interaction),
+    [interaction]
+  )
+
   return (
     <HoverCard width="target" offset={16} withinPortal openDelay={500} closeDelay={500}>
       <HoverCard.Target>
@@ -14,14 +20,14 @@ export const DebugInfo: React.FC<{ data: DisplayedInteraction }> = ({ data: { in
         >
           <IconBug size="1.2rem" />
           <Text span style={{ verticalAlign: 'text-bottom' }} ml="xs">
-            {interaction}
+            {interactionStr}
           </Text>
         </Box>
       </HoverCard.Target>
       <HoverCard.Dropdown miw="400" onDoubleClick={(e) => e.stopPropagation()}>
         <Stack gap="xs">
           <Group justify="flex-end">
-            <CopyButton value={interaction} timeout={2000}>
+            <CopyButton value={interactionStr} timeout={2000}>
               {({ copied, copy }) => (
                 <Tooltip label={copied ? 'Copied' : 'Copy'} withArrow position="right">
                   <ActionIcon variant="subtle" color={copied ? 'teal' : 'gray'} onClick={copy}>
@@ -33,7 +39,7 @@ export const DebugInfo: React.FC<{ data: DisplayedInteraction }> = ({ data: { in
           </Group>
           <Code block>
             <ScrollArea h={260} fz="xs">
-              {interaction}
+              {interactionStr}
             </ScrollArea>
           </Code>
         </Stack>
