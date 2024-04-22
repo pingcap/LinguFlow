@@ -127,6 +127,7 @@ const ListChat: React.FC<{
       return
     }
     onChange(interactions[interactions.length - 1].output!)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [interactions])
   const chatItems = useMemo(() => {
     const items = [...value]
