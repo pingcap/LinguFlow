@@ -1,6 +1,6 @@
 import { ActionIcon, Box, Button, Card, FocusTrap, Group, Stack, Text, Textarea, Tooltip } from '@mantine/core'
 import { IconCircleX, IconSwitchHorizontal } from '@tabler/icons-react'
-import { getHotkeyHandler, useClickOutside, useDisclosure } from '@mantine/hooks'
+import { getHotkeyHandler, useDisclosure } from '@mantine/hooks'
 import { useEffect, useMemo, useState } from 'react'
 import { InteractionInfo } from '@api/linguflow.schemas'
 import type { InteractionProps } from '.'
@@ -24,8 +24,11 @@ export const ListIntercation: React.FC<InteractionProps<string[]>> = ({
     onChange([])
     _setShowChat(v)
   }
-  const handleAddChat = (t: string) => {
-    onChange([...value, t])
+  const handleAddChat = (t: string[]) => {
+    onChange([...value, ...t])
+  }
+  const handleChangeChat = (t: string) => {
+    onChange([...value.slice(0, value.length - 1), t])
   }
 
   return (
@@ -46,7 +49,13 @@ export const ListIntercation: React.FC<InteractionProps<string[]>> = ({
       </Tooltip>
       <Stack style={{ flexGrow: 1 }}>
         {showChat ? (
-          <ListChat interactions={interactions} value={value} onChange={handleAddChat} onSubmit={onSubmit} />
+          <ListChat
+            interactions={interactions}
+            value={value}
+            onChange={handleChangeChat}
+            onAdd={handleAddChat}
+            onSubmit={onSubmit}
+          />
         ) : (
           <>
             {value?.map((item, index) => (
@@ -118,36 +127,45 @@ const ListItem: React.FC<{ data: string; onDelete: () => void; onEdit: (v: strin
 const ListChat: React.FC<{
   value: string[]
   interactions?: InteractionInfo[]
+  onAdd: (t: string[]) => void
   onChange: (t: string) => void
   onSubmit: () => void
-}> = ({ value, interactions = [], onChange, onSubmit }) => {
+}> = ({ value, interactions = [], onChange, onAdd, onSubmit }) => {
   const [chatInput, setChatInput] = useState('')
   useEffect(() => {
     if (!value.length) {
       return
     }
-    onChange(interactions[interactions.length - 1].output!)
+    onAdd([interactions[interactions.length - 1].output!, ''])
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [interactions])
   const chatItems = useMemo(() => {
     const items = [...value]
-    items.reverse()
-    return items
-  }, [value])
-  const outsideRef = useClickOutside(() => {
-    if (!chatInput) {
-      return
+
+    if ((!!chatInput && chatInput === items[items.length - 1]) || !items[items.length - 1]) {
+      items.pop()
     }
-    onChange(chatInput)
-    setChatInput('')
-  })
+    items.reverse()
+
+    return items
+  }, [value, chatInput])
 
   return (
-    <Stack ref={outsideRef} pos="relative" maw="100%">
+    <Stack pos="relative" maw="100%">
       <Box pos="sticky" top={0} left={0} style={{ zIndex: 99 }}>
         <Textarea
           value={chatInput}
-          onChange={(e) => setChatInput(e.currentTarget.value)}
+          onChange={(e: React.FocusEvent<HTMLTextAreaElement>) => {
+            const t = e.target.value
+
+            if (!chatInput && value[value.length - 1] !== '' && !!t) {
+              onAdd([t])
+            } else {
+              onChange(t)
+            }
+
+            setChatInput(t)
+          }}
           onKeyDown={getHotkeyHandler([
             [
               'Enter',
@@ -155,11 +173,8 @@ const ListChat: React.FC<{
                 if (!e.target.value) {
                   return
                 }
-                onChange(e.target.value)
                 setChatInput('')
-                setTimeout(() => {
-                  onSubmit()
-                }, 500)
+                onSubmit()
               }
             ]
           ])}
