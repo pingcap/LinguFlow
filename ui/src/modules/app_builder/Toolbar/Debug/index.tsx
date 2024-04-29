@@ -1,6 +1,6 @@
 import { ActionIcon, Box, Button, Divider, FileButton, Group, Kbd, Stack, Title, Tooltip } from '@mantine/core'
 import { IconPackageExport, IconPackageImport } from '@tabler/icons-react'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import download from 'downloadjs'
 import yaml from 'js-yaml'
 import { ApplicationInfo, ApplicationVersionInfo, InteractionInfo } from '@api/linguflow.schemas'
@@ -19,14 +19,15 @@ export interface InteractionProps<V = any> {
   value: V
   onChange: (v: V) => void
   onSubmit: () => void
+  interactions?: InteractionInfo[]
 }
 
 const interactionComponents: {
-  [k: string]: { component: React.FC<InteractionProps>; defaultValue: () => any }
+  [k: string]: { component: React.FC<InteractionProps>; defaultValue: (v?: any) => any }
 } = {
   Text_Input: { component: TextIntercation, defaultValue: () => '' },
   Dict_Input: { component: ObjectIntercation, defaultValue: () => ({}) },
-  List_Input: { component: ListIntercation, defaultValue: () => [] }
+  List_Input: { component: ListIntercation, defaultValue: (v) => (v as []) || [] }
 }
 
 export const INPUT_NAMES = ['Text_Input', 'Dict_Input', 'List_Input']
@@ -81,7 +82,7 @@ export const Debug: React.FC<{
           if (!isInteractionFinished(data.interaction)) {
             return
           }
-          setValue(InteractionComponent.defaultValue())
+          setValue(InteractionComponent.defaultValue)
           setInteractions((v) => [...v, data.interaction!])
         },
         onError: (error: InteractionErrResponse) => {
@@ -115,7 +116,7 @@ export const Debug: React.FC<{
       if (!isInteractionFinished(debugRst.interaction)) {
         return
       }
-      setValue(InteractionComponent.defaultValue())
+      setValue(InteractionComponent.defaultValue)
       setInteractions((v) => [...v, debugRst.interaction!])
     } catch (error: any) {
       setIsError(true)
@@ -131,27 +132,28 @@ export const Debug: React.FC<{
     }
   }
 
+  const btnRef = useRef(null)
+
   return (
-    <Group h="100%">
-      <Group align="flex-start" h="100%" style={{ flexGrow: 1 }}>
+    <Group h="100%" style={{ flexWrap: 'nowrap' }}>
+      <Group align="flex-start" h="100%" style={{ flexGrow: 1, flexWrap: 'nowrap' }}>
         <Title order={6}>Input</Title>
         <Box h="100%" style={{ flexGrow: 1, overflowY: 'auto' }}>
           <InteractionComponent.component
             value={value}
             onChange={setValue}
-            onSubmit={() => {
-              return
-            }}
+            onSubmit={() => (btnRef.current as any as { click: () => void }).click()}
+            interactions={interactions}
           />
         </Box>
-        <Button variant="light" loading={isLoading} onClick={runInteraction}>
+        <Button ref={btnRef} variant="light" style={{ flexShrink: 0 }} loading={isLoading} onClick={runInteraction}>
           Send
         </Button>
       </Group>
 
       <Divider orientation="vertical" />
 
-      <Stack h="100%" w="400px" style={{ overflow: 'auto' }} align="flex-start">
+      <Stack h="100%" w="400px" style={{ overflow: 'auto', flexShrink: 0 }} align="flex-start">
         <Group gap="xs">
           <Title order={6}>History(0)</Title>
           <FileButton
