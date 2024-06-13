@@ -15,17 +15,18 @@ class Pinecone(VectorDB):
     VectorDB implementation using Pinecone.
     """
 
-    def __init__(self, environment: str, index: str, api_key: Secret):
+    def __init__(self, index: str, api_key: Secret):
         """
         Initialize a Pinecone instance.
 
         Args:
-            environment (str): The Pinecone environment.
             index (str): The name of the index.
             api_key (Secret): The API key for accessing Pinecone services.
         """
-        pinecone.init(environment=environment, api_key=api_key)
-        self.index = pinecone.Index(index)
+        pc = pinecone.Pinecone(api_key=api_key)
+        self.index = pc.Index(
+            name=index
+        )  #  https://github.com/pinecone-io/pinecone-python-client/blob/v3.0.0/pinecone/control/pinecone.py#L489
 
     def delete_ns(self, ns: str):
         """
