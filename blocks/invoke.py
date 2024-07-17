@@ -157,7 +157,7 @@ class AsyncInvoker:
         if not version:
             raise VersionnNotFound(version_id)
         graph = self.initialize_graph(version.configuration)
-        if type(input) != graph.input_type():
+        if not isinstance(input, graph.input_type()):
             raise ApplicationInputTypeMismatch(graph.input_type(), type(input))
 
         _id = str(uuid.uuid4())
@@ -322,7 +322,7 @@ class InvokeWithList(BaseBlock):
         return invoke(
             user=self.context["user"] + "@" + self.context["interaction_id"][:8],
             app_id=self.app_id,
-            input=input,
+            input=HashableList(input),
             timeout=self.timeout,
             session_id=self.context.get("session_id"),
         )
@@ -342,7 +342,7 @@ class InvokeWithDict(BaseBlock):
         return invoke(
             user=self.context["user"] + "@" + self.context["interaction_id"][:8],
             app_id=self.app_id,
-            input=input,
+            input=HashableDict(input),
             timeout=self.timeout,
             session_id=self.context.get("session_id"),
         )
