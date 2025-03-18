@@ -20,7 +20,7 @@
     "@mantine/modals": "^7.5.3",
     "@mantine/notifications": "^7.5.3",
     "@tabler/icons-react": "^2.30.0",
-    "axios": "^1.4.0",
+    "axios": "^1.8.2",
     "dagre": "^0.8.5",
     "dayjs": "^1.11.9",
     "downloadjs": "^1.4.7",
