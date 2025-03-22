@@ -1,11 +1,13 @@
-import { Box, Menu, TextInput, rem } from '@mantine/core'
+import { Box, Group, Menu, Popover, Stack, Text, TextInput, Title, rem } from '@mantine/core'
 import { IconChevronRight } from '@tabler/icons-react'
-import { useEffect, useMemo, useState } from 'react'
+import { MutableRefObject, useEffect, useMemo, useRef, useState } from 'react'
 import { BlockInfo } from '@api/linguflow.schemas'
 import { nanoid } from 'nanoid'
 import { Node, useReactFlow } from 'reactflow'
+import { useDisclosure, useHover } from '@mantine/hooks'
 import { DIR_SORTS, useBlockSchema } from '../useSchema'
 import { BLOCK_NODE_NAME, BlockNodeProps } from '../Block'
+import { ROBlock } from '../Block/ROBlock'
 import { useContainerElem } from './useContainerElem'
 
 export const HotKeyMenu: React.FC<{
@@ -68,12 +70,7 @@ export const HotKeyMenu: React.FC<{
         />
         {(!search || !!searchedBlocks.length) && <Menu.Divider />}
 
-        {!!search &&
-          searchedBlocks.map((b) => (
-            <Menu.Item key={b.name} onClick={() => handleClickBlock(b)}>
-              {b.alias}
-            </Menu.Item>
-          ))}
+        {!!search && searchedBlocks.map((b) => <BlockItem key={b.name} block={b} onClick={handleClickBlock} />)}
         {!search &&
           dirAndBlocks.map(([dir, blocks]) => (
             <Menu
@@ -92,14 +89,73 @@ export const HotKeyMenu: React.FC<{
               </Menu.Target>
               <Menu.Dropdown>
                 {blocks.map((b) => (
-                  <Menu.Item key={b.name} onClick={() => handleClickBlock(b)}>
-                    {b.alias}
-                  </Menu.Item>
+                  <BlockItem key={b.name} block={b} onClick={handleClickBlock} />
                 ))}
               </Menu.Dropdown>
             </Menu>
           ))}
       </Menu.Dropdown>
     </Menu>
+  )
+}
+
+const BlockItem: React.FC<{ block: BlockInfo; onClick: (b: BlockInfo) => void }> = ({ block, onClick }) => {
+  const [inItem, setInItem] = useState(false)
+  const [opened, { close, open }] = useDisclosure(false)
+  const { hovered, ref } = useHover()
+  const timerRef: MutableRefObject<number | null> = useRef(null)
+
+  useEffect(() => {
+    clearTimeout(timerRef.current as any as number)
+    if (!hovered && !inItem) {
+      timerRef.current = setTimeout(() => {
+        close()
+      }, 100) as any as number
+    }
+  }, [hovered, inItem, close])
+
+  return (
+    <Popover
+      opened={opened}
+      position="right-end"
+      offset={{ mainAxis: 8, crossAxis: 4 }}
+      shadow="sm"
+      withinPortal={false}
+    >
+      <Popover.Target>
+        <Menu.Item
+          onClick={() => onClick(block)}
+          onMouseEnter={() => {
+            setInItem(true)
+            open()
+          }}
+          onMouseLeave={() => setInItem(false)}
+        >
+          {block.alias}
+        </Menu.Item>
+      </Popover.Target>
+      <Popover.Dropdown>
+        <Group align="flex-start">
+          {(block.description || block.examples) && (
+            <Stack gap="xs" justify="flex-start" maw="300px">
+              {block.description && (
+                <>
+                  <Title order={5}>Description</Title>
+                  <Text>{block.description}</Text>
+                </>
+              )}
+              {block.examples && (
+                <>
+                  <Title order={5}>Example</Title>
+                  <Text>{block.examples}</Text>
+                </>
+              )}
+            </Stack>
+          )}
+          {/* <Box ref={ref}>123 {hovered.toString()}</Box> */}
+          <ROBlock schema={block} node={{} as any} onClick={() => onClick(block)} />
+        </Group>
+      </Popover.Dropdown>
+    </Popover>
   )
 }

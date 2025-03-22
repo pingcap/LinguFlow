@@ -196,13 +196,21 @@ class Resolver:
         return signature.return_annotation
 
 
-def block(name: str, kind: str, alias: str = None):
+def block(
+    name: str,
+    kind: str,
+    alias: Optional[str] = None,
+    description: Optional[str] = None,
+    examples: Optional[str] = None,
+):
     """
     Decorator for registering a block class.
     Args:
         name: The name of the block.
         kind: The kind of the block (e.g., 'input', 'output').
         alias: An optional alias for the block name.
+        description: The description of the block.
+        examples: Examples about the usage of the block.
     Returns:
         The decorated class.
     """
@@ -215,6 +223,8 @@ def block(name: str, kind: str, alias: str = None):
                 "category": "block",
                 "dir": kind,
                 "class": cls,
+                "description": description,
+                "examples": examples,
             }
         )
         return cls
