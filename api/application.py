@@ -147,6 +147,8 @@ class ApplicationView:
                         slots=self.resolve_params(self.resolver.slots(name)),
                         inports=self.resolve_params(self.resolver.inports(name)),
                         outport=self.resolver.relookup(self.resolver.outport(name)),
+                        description=self.resolver.lookup(name, "description"),
+                        examples=self.resolver.lookup(name, "examples"),
                     )
                 )
 
